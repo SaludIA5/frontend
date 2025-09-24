@@ -7,7 +7,17 @@ export default function PatientList({ patients }: { patients: User[] }) {
         <li key={i} className="flex w-4/5 align-middle  items-center justify-around rounded-2xl border border-gray-50 my-4 p-4 shadow-sm">
           <div>
             <p className="text-lg font-medium ">
-              {patient.firstName} {patient.lastName}
+              {patient.firstName} {patient.lastName} {patient.secondLastname || ""}
+            </p>
+          </div>
+          <div>
+            <p className="text-lg font-medium ">
+              {patient.rut}
+            </p>
+          </div>
+          <div>
+            <p className="text-lg font-medium ">
+              {patient.sex != "O"? patient.sex: ""}
             </p>
           </div>
 
