@@ -29,7 +29,7 @@ export default function NewPatientRegister({ isOpen, onClose, onSave }: NewPatie
     // Agregar guion antes del último caracter
     if (clean.length > 1) {
       let body = clean.slice(0,-1)
-      let dv = clean.slice(-1)
+      const dv = clean.slice(-1)
       body = body.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
       clean = body + "-" + dv
     }
