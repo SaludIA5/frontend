@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import PatientList from '../components/PatientList'
+import PatientManager from '../components/PatientManager'
 import type { User } from '../types/user'
+import { mockPatients } from '../types/user'
 import NewPatientRegister from '../components/NewPatientRegister'
 
 export default function LandingPage() {
-    const [patients, setPatients] = useState<User[]>([])
+    const [patients, setPatients] = useState<User[]>(mockPatients)
     const [modalOpen, setModalOpen] = useState(false)
 
     const handleAddUser = (newPatient: User) => {
@@ -18,7 +19,7 @@ export default function LandingPage() {
 
     return (
         <>
-            <PatientList patients={patients} />
+            <PatientManager patients={patients} />
             <button onClick={handleModalToggle}>Agregar Paciente</button>
             <NewPatientRegister isOpen={modalOpen} onClose={handleModalToggle} onSave={handleAddUser}/>
         </>
