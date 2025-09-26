@@ -32,7 +32,7 @@ export default function PatientManager({ patients }: { patients: User[] }) {
 
   
   return (
-    <div className='my-4'>
+    <div className='m-4'>
     <PatientControls
       search={search}
       setSearch={setSearch}

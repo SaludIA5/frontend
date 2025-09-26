@@ -3,6 +3,7 @@ import PatientManager from '../components/PatientManager'
 import type { User } from '../types/user'
 import { mockPatients } from '../types/user'
 import NewPatientRegister from '../components/NewPatientRegister'
+import Header from '../components/Header'
 
 export default function LandingPage() {
     const [patients, setPatients] = useState<User[]>(mockPatients)
@@ -19,6 +20,7 @@ export default function LandingPage() {
 
     return (
         <>
+            <Header onLogout={()=>{}}/>
             <button onClick={handleModalToggle}>Agregar Paciente</button>
             <PatientManager patients={patients} />
             <NewPatientRegister isOpen={modalOpen} onClose={handleModalToggle} onSave={handleAddUser}/>
