@@ -7,7 +7,7 @@ export default function PatientManager({ patients }: { patients: User[] }) {
   const [search, setSearch] = useState("")
   const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all")
   const [sortBy, setSortBy] = useState<"name" | "rut">("name")
-  const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "O">("all")
+  const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all")
 
   const filteredPatients = patients
   .filter((p) => {
@@ -32,7 +32,7 @@ export default function PatientManager({ patients }: { patients: User[] }) {
 
   
   return (
-    <div>
+    <div className='my-4'>
     <PatientControls
       search={search}
       setSearch={setSearch}

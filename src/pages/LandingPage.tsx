@@ -19,8 +19,8 @@ export default function LandingPage() {
 
     return (
         <>
-            <PatientManager patients={patients} />
             <button onClick={handleModalToggle}>Agregar Paciente</button>
+            <PatientManager patients={patients} />
             <NewPatientRegister isOpen={modalOpen} onClose={handleModalToggle} onSave={handleAddUser}/>
         </>
     )

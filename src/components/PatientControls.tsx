@@ -3,8 +3,8 @@ type Props = {
     setSearch: (v: string) => void
     filterEligible: "all" | "yes" | "no"
     setFilterEligible: (v: "all" | "yes" | "no") => void
-    filterGender: "all" | "M" | "F" | "O"
-    setFilterGender: (v: "all" | "M" | "F" | "O") => void
+    filterGender: "all" | "M" | "F" | "ND"
+    setFilterGender: (v: "all" | "M" | "F" | "ND") => void
     sortBy: "name" | "rut"
     setSortBy: (v: "name" | "rut") => void
   }
@@ -33,7 +33,7 @@ return (
     {/* Filtro por elegibilidad */}
     <select
         value={filterEligible}
-        onChange={(e) => setFilterEligible(e.target.value as any)}
+        onChange={(e) => setFilterEligible(e.target.value as "all" | "yes" | "no")}
         className="rounded border p-2"
     >
         <option value="all">Todos</option>
@@ -44,19 +44,19 @@ return (
     {/* Filtro por género */}
     <select
         value={filterGender}
-        onChange={(e) => setFilterGender(e.target.value as any)}
+        onChange={(e) => setFilterGender(e.target.value as "all" | "M" | "F" | "ND")}
         className="rounded border p-2"
     >
         <option value="all">Todos</option>
         <option value="M">Masculino</option>
         <option value="F">Femenino</option>
-        <option value="O">No descrito</option>
+        <option value="ND">No descrito</option>
     </select>
 
     {/* Orden */}
     <select
         value={sortBy}
-        onChange={(e) => setSortBy(e.target.value as any)}
+        onChange={(e) => setSortBy(e.target.value as "name" | "rut")}
         className="rounded border p-2"
     >
         <option value="name">Ordenar por Nombre</option>

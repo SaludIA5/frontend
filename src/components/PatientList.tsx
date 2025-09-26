@@ -2,20 +2,20 @@ import type { User } from '../types/user'
 
 export default function PatientList({ patients }: { patients: User[] }){
     return(
-        <ul className="space-y-2 max-w-5xl mx-auto overflow-scroll">
+        <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
         {patients.map((patient, i) => (
           <li
             key={i}
-            className="grid grid-cols-[2fr_1.5fr_1fr_2fr_auto] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm"
+            className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm"
           >
-            <p className="text-lg font-medium truncate">
+            <p className="text-lg text-left font-medium truncate">
               {patient.firstName} {patient.lastName} {patient.secondLastname || ""}
             </p>
   
             <p className="text-lg font-medium">{patient.rut}</p>
   
             <p className="text-lg font-medium">
-              {patient.sex !== "O" ? patient.sex : ""}
+              {patient.sex}
             </p>
   
             {patient.isEligible ? (
