@@ -1,6 +1,10 @@
-import type { User } from '../types/user'
+import { useNavigate } from 'react-router-dom';
+import { usePatients } from "../context/PatientContext"; // BORRAR CUANDO HAYA BACK
 
-export default function PatientList({ patients }: { patients: User[] }) {
+export default function PatientList() {
+  const { patients } = usePatients(); // BORRAR CUANDO HAYA BACK
+  const navigate = useNavigate();
+
   return (
     <ul className="space-y-3 max-w-full mx-auto flex flex-col items-center justify-center">
       {patients.map((patient, i) => (
@@ -30,7 +34,11 @@ export default function PatientList({ patients }: { patients: User[] }) {
                 No Aplica Ley Urgencia
             </span>
           )}
-          <button className="rounded-xl bg-blue-600 px-4 py-2 text-white shadow hover:bg-blue-700">Procesar Paciente</button>
+          <button 
+            className="rounded-xl bg-blue-600 px-4 py-2 text-white shadow hover:bg-blue-700" 
+            onClick={() => navigate('/editPatient')}>
+              Procesar Paciente
+          </button>
         </li>
       ))}
     </ul>
