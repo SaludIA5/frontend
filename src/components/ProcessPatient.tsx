@@ -1,37 +1,31 @@
 import { useState } from "react";
 import type { User } from "../types/user";
-import { usePatients } from "../hooks/usePatients"; // BORRAR CUANDO HAYA BACK
 import { useNavigate } from "react-router-dom";
 
-export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+
+export default function ProcessPatient() {
   const [newPatient, setNewPatient] = useState<User>({
     firstName: "",
     lastName: "",
     isEligible: false,
     rut: "",
     sex: "",
-    examPerformed: "", // Assuming a default value
-    oxygenSaturation: 0,  // Assuming a default value
-    heartRate: 0,         // Assuming a default value
-    bloodPressure: "0/0"  // Assuming a default value
+    oxygenSaturation: 0,
+    heartRate: 0,
+    bloodPressure: 0,
+    examPerformed: "",
   });
 
-  const { addPatient } = usePatients(); // BORRAR CUANDO HAYA BACK
   const navigate = useNavigate();
 
   const handleSave = () => {
-    // Convert oxygenSaturation (number) to Uint8Array as required by the type
-    addPatient({
-      ...newPatient,
-      oxygenSaturation: Number(newPatient.oxygenSaturation)
-    });
-    setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex: "", examPerformed: "", oxygenSaturation: 0, heartRate: 0, bloodPressure: "0/0" });
-    onClose();
-    navigate("/patientsList");
-    navigate("/patientsList");     
+    // onSave(newPatient);
+    // setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex:"" });
+    navigate('/patientsList')
   };
 
-  if (!isOpen) return null;
+
+//   if (!isOpen) return null;
 
   const handleRutChange = (value: string) => {
     // Eliminar cualquier caracter que no sea número o K/k
@@ -50,7 +44,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-2xl p-6 w-96 shadow-lg text-black">
-        <h2 className="text-xl font-bold mb-4">Agregar paciente</h2>
+        <h2 className="text-xl font-bold mb-4">Procesar paciente</h2>
 
         <input
           type="text"
@@ -98,13 +92,57 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           <option value="" disabled>Sexo del paciente</option>
           <option value="M">Masculino</option>
           <option value="F">Femenino</option>
-          <option value="ND">No Declarado</option>
+          <option value="O">No Declarado</option>
         </select>
+
+        <select
+          value={newPatient.examPerformed}
+          onChange={(e) => setNewPatient({ ...newPatient, examPerformed: e.target.value })}
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+        >
+          <option value="" disabled>Exámenes Realizados</option>
+          <option value="Blood Tests">Exámenes de Sangre</option>
+          <option value="None">Ninguno</option>
+        </select>
+
+        <h3 className="text-lg font-semibold mb-2">Signos Vitales</h3>
+        <p>Saturación de Oxígeno</p>
+        <input
+          type="number"
+          placeholder="Saturación de Oxígeno (%)"
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={newPatient.oxygenSaturation}
+          onChange={(e) =>
+            setNewPatient({ ...newPatient, oxygenSaturation: e.target.value })
+          }
+        />
+
+        <p>Frecuencia Cardíaca</p>
+        <input
+          type="number"
+          placeholder="Frecuencia Cardíaca (lpm)"
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={newPatient.heartRate}
+          onChange={(e) =>
+            setNewPatient({ ...newPatient, heartRate: e.target.value })
+          }
+        />
+
+        <p>Presión Arterial</p>
+        <input
+          type="text"
+          placeholder="Presión Arterial (mmHg)"
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={newPatient.bloodPressure}
+          onChange={(e) =>
+            setNewPatient({ ...newPatient, bloodPressure: e.target.value })
+          }
+        />
 
         <div className="flex justify-end space-x-3">
           <button
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
-            onClick={onClose}
+            onClick={handleSave}
           >
             Cancelar
           </button>
