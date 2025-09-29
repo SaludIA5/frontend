@@ -96,7 +96,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           <option value="" disabled>Sexo del paciente</option>
           <option value="M">Masculino</option>
           <option value="F">Femenino</option>
-          <option value="O">No Declarado</option>
+          <option value="ND">No Declarado</option>
         </select>
 
         <div className="flex justify-end space-x-3">

@@ -1,7 +1,12 @@
 import { useState } from 'react'
+import PatientManager from '../components/PatientManager'
+import type { User } from '../types/user'
+import { mockPatients } from '../types/user'
 import NewPatientRegister from '../components/NewPatientRegister'
+import Header from '../components/Header'
 
 export default function LandingPage() {
+    const [patients, setPatients] = useState<User[]>(mockPatients)
     const [modalOpen, setModalOpen] = useState(false)
 
     const handleModalToggle = () => {
@@ -10,9 +15,10 @@ export default function LandingPage() {
 
     return (
         <>
-            {/* <PatientList /> */}
+            <Header onLogout={()=>{}}/>
             <button onClick={handleModalToggle}>Agregar Paciente</button>
-            <NewPatientRegister isOpen={modalOpen} onClose={handleModalToggle}/>
+            <PatientManager patients={patients} />
+            <NewPatientRegister isOpen={modalOpen} onClose={handleModalToggle} onSave={handleAddUser}/>
         </>
     )
 }
