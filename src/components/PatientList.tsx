@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { usePatients } from "../context/PatientContext"; // BORRAR CUANDO HAYA BACK
+import type { User } from '../types/user';
 
 export default function PatientList({ patients }: { patients: User[] }){
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage.tsx';
-import PatientList from '../components/PatientList.tsx';
+import PatientManager from '../components/PatientManager.tsx';
 import ProcessPatient from '../components/ProcessPatient.tsx';
 
 
@@ -9,7 +9,7 @@ function Routing(){
         <>
         <Routes>   
             <Route path="/" element={<LandingPage />} />
-            <Route path='/patientsList' element={<PatientList />} />
+            <Route path='/patientsList' element={<PatientManager />} />
             <Route path='/editPatient' element={<ProcessPatient />} />
         </Routes>
         </>

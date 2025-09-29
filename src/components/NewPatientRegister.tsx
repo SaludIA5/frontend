@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { User } from "../types/user";
-import { usePatients } from "../context/PatientContext"; // BORRAR CUANDO HAYA BACK
+import { usePatients } from "../hooks/usePatients"; // BORRAR CUANDO HAYA BACK
 import { useNavigate } from "react-router-dom";
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -20,12 +20,14 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   const navigate = useNavigate();
 
   const handleSave = () => {
+    // Convert oxygenSaturation (number) to Uint8Array as required by the type
     addPatient({
       ...newPatient,
-      oxygenSaturation: newPatient.oxygenSaturation as unknown as Uint8Array // Cast to the expected type
-    });        
+      oxygenSaturation: Number(newPatient.oxygenSaturation)
+    });
     setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex: "", examPerformed: "", oxygenSaturation: 0, heartRate: 0, bloodPressure: "0/0" });
     onClose();
+    navigate("/patientsList");
     navigate("/patientsList");     
   };
 

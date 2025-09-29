@@ -1,49 +1,50 @@
-import { useState } from 'react'
-import type { User } from '../types/user'
-import PatientList from './PatientList'
-import PatientControls from './PatientControls'
+import { useState } from 'react';
+import PatientList from './PatientList';
+import PatientControls from './PatientControls';
+import { usePatients } from '../hooks/usePatients';
 
-export default function PatientManager({ patients }: { patients: User[] }) {
-  const [search, setSearch] = useState("")
-  const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all")
-  const [sortBy, setSortBy] = useState<"name" | "rut">("name")
-  const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all")
+export default function PatientManager() {
+  // Extraemos el array de pacientes y la función para agregar pacientes desde el contexto
+  const { patients } = usePatients();
 
+  const [search, setSearch] = useState("");
+  const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all");
+  const [sortBy, setSortBy] = useState<"name" | "rut">("name");
+  const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all");
+
+  // Filtrado y ordenamiento
   const filteredPatients = patients
-  .filter((p) => {
-    const fullName = `${p.firstName} ${p.lastName} ${p.secondLastname ?? ""}`
-    return fullName.toLowerCase().includes(search.toLowerCase())
-  })
-  .filter((p) => {
-    if (filterEligible === "yes") return p.isEligible
-    if (filterEligible === "no") return !p.isEligible
-    return true
-  }).filter((p) => {
-    return filterGender != "all"? p.sex == filterGender : p
-  })
-  .sort((a, b) => {
-    if (sortBy === "name") {
-      return a.firstName.localeCompare(b.firstName)
-    } else if (sortBy === "rut") {
-      return a.rut.localeCompare(b.rut)
-    }
-    return 0
-  })
+    .filter((p) => {
+      const fullName = `${p.firstName} ${p.lastName} ${p.secondLastname ?? ""}`;
+      return fullName.toLowerCase().includes(search.toLowerCase());
+    })
+    .filter((p) => {
+      if (filterEligible === "yes") return p.isEligible;
+      if (filterEligible === "no") return !p.isEligible;
+      return true;
+    })
+    .filter((p) => {
+      return filterGender !== "all" ? p.sex === filterGender : true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") return a.firstName.localeCompare(b.firstName);
+      if (sortBy === "rut") return a.rut.localeCompare(b.rut);
+      return 0;
+    });
 
-  
   return (
     <div className='m-4'>
-    <PatientControls
-      search={search}
-      setSearch={setSearch}
-      filterEligible={filterEligible}
-      setFilterEligible={setFilterEligible}
-      filterGender={filterGender}
-      setFilterGender={setFilterGender}
-      sortBy={sortBy}
-      setSortBy={setSortBy}
-    />
-    <PatientList patients={filteredPatients}/>
+      <PatientControls
+        search={search}
+        setSearch={setSearch}
+        filterEligible={filterEligible}
+        setFilterEligible={setFilterEligible}
+        filterGender={filterGender}
+        setFilterGender={setFilterGender}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
+      <PatientList patients={filteredPatients} />
     </div>
-  )
+  );
 }

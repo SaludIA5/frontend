@@ -1,27 +1,11 @@
 // borrar este archivo cuando enchufemos al backend
 
 // context/PatientsContext.tsx
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import type { User } from "../types/user";
+import { PatientsContext } from "./PatientsContext";
 
-export type User = {
-  firstName: string;
-  lastName: string;
-  secondLastname?: string;
-  rut: string;
-  sex: string;
-  isEligible: boolean;
-  oxygenSaturation?: BigInteger;
-  
-};
-
-type PatientsContextType = {
-  patients: User[];
-  addPatient: (patient: User) => void;
-};
-
-const PatientsContext = createContext<PatientsContextType | undefined>(undefined);
-
-export function PatientsProvider({ children }: { children: ReactNode }) {
+export const PatientsProvider = ({ children }: { children: ReactNode }) => {
   const [patients, setPatients] = useState<User[]>([]);
 
   const addPatient = (patient: User) => {
@@ -33,10 +17,4 @@ export function PatientsProvider({ children }: { children: ReactNode }) {
       {children}
     </PatientsContext.Provider>
   );
-}
-
-export function usePatients() {
-  const ctx = useContext(PatientsContext);
-  if (!ctx) throw new Error("usePatients debe usarse dentro de PatientsProvider");
-  return ctx;
 }
