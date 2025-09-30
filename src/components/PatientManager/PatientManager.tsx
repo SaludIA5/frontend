@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PatientList from './PatientList';
 import PatientControls from './PatientControls';
-import { usePatients } from '../hooks/usePatients';
+import { usePatients } from '../../hooks/usePatients';
 
 export default function PatientManager() {
   // Extraemos el array de pacientes y la función para agregar pacientes desde el contexto

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { User } from "../types/user";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { usePatients } from "../hooks/usePatients";
+import { useEffect } from "react";
+
 
 
 export default function ProcessPatient() {
@@ -16,12 +19,27 @@ export default function ProcessPatient() {
     examPerformed: "",
   });
 
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { rut } = useParams<{rut: string}>();
+  const { patients, updatePatient } = usePatients();
+
+  useEffect(() => {
+    if (rut) {
+      const foundPatient = patients.find((p) => p.rut === rut);
+      if (foundPatient) {
+        setNewPatient(foundPatient);
+      }
+    }
+  }, [rut, patients]);
+
   const navigate = useNavigate();
 
   const handleSave = () => {
-    // onSave(newPatient);
-    // setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex:"" });
-    navigate('/patientsList')
+    if(newPatient && rut){
+      updatePatient(rut, newPatient)
+    }
+    navigate('/')
   };
 
 
@@ -51,6 +69,7 @@ export default function ProcessPatient() {
           placeholder="Nombre"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.firstName}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, firstName: e.target.value })
           }
@@ -61,6 +80,7 @@ export default function ProcessPatient() {
           placeholder="Primer Apellido"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.lastName}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, lastName: e.target.value })
           }
@@ -70,6 +90,7 @@ export default function ProcessPatient() {
           placeholder="Segundo Apellido"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.secondLastname}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, secondLastname: e.target.value })
           }
@@ -80,12 +101,14 @@ export default function ProcessPatient() {
           placeholder="RUT (12.345.678-9)"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.rut}
+          disabled={!isEditing}
           onChange={(e) => handleRutChange(e.target.value)}
           maxLength={12} // Máximo 9 dígitos + guion
         />
 
         <select
           value={newPatient.sex}
+          disabled={!isEditing}
           onChange={(e) => setNewPatient({ ...newPatient, sex: e.target.value })}
           className="w-full mb-3 rounded border border-gray-300 p-2"
         >
@@ -97,6 +120,7 @@ export default function ProcessPatient() {
 
         <select
           value={newPatient.examPerformed}
+          disabled={!isEditing}
           onChange={(e) => setNewPatient({ ...newPatient, examPerformed: e.target.value })}
           className="w-full mb-3 rounded border border-gray-300 p-2"
         >
@@ -112,6 +136,7 @@ export default function ProcessPatient() {
           placeholder="Saturación de Oxígeno (%)"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.oxygenSaturation}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, oxygenSaturation: e.target.value })
           }
@@ -123,6 +148,7 @@ export default function ProcessPatient() {
           placeholder="Frecuencia Cardíaca (lpm)"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.heartRate}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, heartRate: e.target.value })
           }
@@ -134,6 +160,7 @@ export default function ProcessPatient() {
           placeholder="Presión Arterial (mmHg)"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.bloodPressure}
+          disabled={!isEditing}
           onChange={(e) =>
             setNewPatient({ ...newPatient, bloodPressure: e.target.value })
           }
@@ -145,6 +172,12 @@ export default function ProcessPatient() {
             onClick={handleSave}
           >
             Cancelar
+          </button>
+          <button
+            className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            onClick={()=>setIsEditing(!isEditing)}
+          >
+            Editar
           </button>
           <button
             className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Header from '../components/Header';
-import PatientManager from '../components/PatientManager';
+import PatientManager from '../components/PatientManager/PatientManager';
 import NewPatientRegister from '../components/NewPatientRegister';
 
 export default function LandingPage() {
