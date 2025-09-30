@@ -10,10 +10,6 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     isEligible: false,
     rut: "",
     sex: "",
-    examPerformed: "", // Assuming a default value
-    oxygenSaturation: 0,  // Assuming a default value
-    heartRate: 0,         // Assuming a default value
-    bloodPressure: "0/0"  // Assuming a default value
   });
 
   const { addPatient } = usePatients(); // BORRAR CUANDO HAYA BACK
@@ -98,7 +94,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           <option value="" disabled>Sexo del paciente</option>
           <option value="M">Masculino</option>
           <option value="F">Femenino</option>
-          <option value="ND">No Declarado</option>
+          <option value="O">No Declarado</option>
         </select>
 
         <div className="flex justify-end space-x-3">
