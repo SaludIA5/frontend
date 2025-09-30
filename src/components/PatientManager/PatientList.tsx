@@ -1,15 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import type { User } from '../types/user';
+import type { User } from '../../types/user';
 
 export default function PatientList({ patients }: { patients: User[] }){
   const navigate = useNavigate();
   
     return(
         <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
+        <li className='grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center text-black text-center p-4'> 
+          <p className='text-left'>Nombre</p> <p className='text-left'>RUT</p> <p>Genero</p> <p>Aplica Ley</p> <p>Procesar</p>
+        </li>
         {patients.map((patient, i) => (
           <li
             key={i}
-            className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm"
+            className="grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm"
           >
             <p className="text-lg text-left font-medium truncate">
               {patient.firstName} {patient.lastName} {patient.secondLastname || ""}
@@ -17,7 +20,7 @@ export default function PatientList({ patients }: { patients: User[] }){
   
             <p className="text-lg font-medium">{patient.rut}</p>
   
-            <p className="text-lg font-medium">
+            <p className="text-lg font-medium text-center">
               {patient.sex}
             </p>
   
@@ -31,8 +34,8 @@ export default function PatientList({ patients }: { patients: User[] }){
             </span>
           )}
           <button 
-            className="rounded-xl bg-blue-600 px-4 py-2 text-white shadow hover:bg-blue-700" 
-            onClick={() => navigate('/editPatient')}>
+            className="rounded-xl bg-blue-600 px-2 py-2 text-white shadow hover:bg-blue-700" 
+            onClick={() => navigate(`/editPatient/${patient.rut}`)}>
               Procesar Paciente
           </button>
         </li>
