@@ -25,10 +25,10 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   const [isLoading, setIsLoading] = useState(true);
   const [showReview, setShowReview] = useState(false);
   const [isAiObservationLoading, setIsAiObservationLoading] = useState(false);
-  const [aiObservation, setAiObservation] = useState<string>(
-    "El sistemallllllllllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro delllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro delllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro delllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro delllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro delllllllllllllllllllllllllllllllllllllllll detectó parámetros clínicos dentro de rangos moderados. Se sugiere evaluar criterios de Ley de Urgencia en base a signos vitales y antecedentes."
+  const [aiObservation] = useState<string>(
+    "El sistema detectó parámetros clínicos dentro de rangos moderados. Se sugiere evaluar criterios de Ley de Urgencia en base a signos vitales y antecedentes."
   );
-  const [aiSuggestion, setAiSuggestion] = useState<"Aplica" | "No Aplica">("No Aplica");
+  const [aiSuggestion] = useState<"Aplica" | "No Aplica">("No Aplica");
 
   const { patients, updatePatient } = usePatients();
   const aiTimerRef = useRef<number | null>(null);
