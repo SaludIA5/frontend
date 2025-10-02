@@ -8,7 +8,6 @@ interface PatientManagerProps {
 }
 
 export default function PatientManager({ onProcessPatient }: PatientManagerProps) {
-  // Extraemos el array de pacientes y la función para agregar pacientes desde el contexto
   const { patients } = usePatients();
 
   const [search, setSearch] = useState("");
@@ -16,7 +15,6 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
   const [sortBy, setSortBy] = useState<"name" | "rut">("name");
   const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all");
 
-  // Filtrado y ordenamiento
   const filteredPatients = patients
     .filter((p) => {
       const fullName = `${p.firstName} ${p.lastName} ${p.secondLastname ?? ""}`;

@@ -1,6 +1,3 @@
-// borrar este archivo cuando enchufemos al backend
-
-// context/PatientsContext.tsx
 import { useState, type ReactNode } from "react";
 import type { User } from "../types/user";
 import { PatientsContext } from "./PatientsContext";

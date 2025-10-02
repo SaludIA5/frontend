@@ -7,8 +7,8 @@ export interface User {
     lastName: string
     secondLastname?: string
     isEligible: boolean
-    rut: string // 12.345.678-9
-    sex: string // "M","F" o "ND"
+    rut: string
+    sex: string
 }
 
 export const mockPatients: User[] = [
@@ -27,4 +27,4 @@ export const mockPatients: User[] = [
     { firstName: "José", lastName: "Cárdenas", secondLastname: "Ortiz", isEligible: true, rut: "19.876.543-2", sex: "M" },
     { firstName: "Francisca", lastName: "Rojas", secondLastname: "Martínez", isEligible: true, rut: "16.543.219-K", sex: "F" },
     { firstName: "Matías", lastName: "Vargas", secondLastname: "Contreras", isEligible: false, rut: "21.234.567-8", sex: "ND" },
-  ]
+]
