@@ -8,12 +8,12 @@ return (
     <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-[1fr_3fr_1fr] items-center h-16">
         {/* Título en el centro */}
-        <h1 className="col-start-2 text-xl font-bold text-center">SaludIA</h1>
+        <h1 className="col-start-2 text-xl text-white font-bold text-center">SaludIA</h1>
 
         {/* "Botón" como texto, ocupa toda la col */}
         <button
             onClick={onLogout}
-            className="col-start-3 h-full w-full text-center px-4 bg-blue-600 
+            className="col-start-3 h-full w-full text-center px-4 bg-blue-600
             border-none rounded-none hover:bg-blue-700 transition"
         >
             Cerrar sesión
@@ -22,4 +22,4 @@ return (
     </div>
     </header>
 )
-}  
+}
