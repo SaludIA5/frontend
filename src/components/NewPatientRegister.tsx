@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { User } from "../types/user";
-import { usePatients } from "../hooks/usePatients"; // BORRAR CUANDO HAYA BACK
-import { useNavigate } from "react-router-dom";
+import { usePatients } from "../hooks/usePatients";
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<User>({
@@ -12,39 +11,53 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     sex: "",
   });
 
-  const { addPatient } = usePatients(); // BORRAR CUANDO HAYA BACK
-  const navigate = useNavigate();
+  const { addPatient } = usePatients();
+
+  const resetForm = () => {
+    setNewPatient({
+      firstName: "",
+      lastName: "",
+      isEligible: false,
+      rut: "",
+      sex: "",
+      examPerformed: "",
+      oxygenSaturation: 0,
+      heartRate: 0,
+      bloodPressure: "0/0"
+    });
+  };
 
   const handleSave = () => {
-    // Convert oxygenSaturation (number) to Uint8Array as required by the type
     addPatient({
       ...newPatient,
       oxygenSaturation: Number(newPatient.oxygenSaturation)
     });
-    setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex: "", examPerformed: "", oxygenSaturation: 0, heartRate: 0, bloodPressure: "0/0" });
+
+    resetForm();
     onClose();
-    navigate("/patientsList");
-    navigate("/patientsList");     
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
   };
 
   if (!isOpen) return null;
 
   const handleRutChange = (value: string) => {
-    // Eliminar cualquier caracter que no sea número o K/k
     let clean = value.replace(/[^0-9kK]/g, '');
-    // Agregar guion antes del último caracter
     if (clean.length > 1) {
-      let body = clean.slice(0,-1)
+      let body = clean.slice(0, -1)
       const dv = clean.slice(-1)
-      body = body.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+      body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       clean = body + "-" + dv
     }
-    
+
     setNewPatient({ ...newPatient, rut: clean });
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <div className="bg-white rounded-2xl p-6 w-96 shadow-lg text-black">
         <h2 className="text-xl font-bold mb-4">Agregar paciente</h2>
 
@@ -83,7 +96,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.rut}
           onChange={(e) => handleRutChange(e.target.value)}
-          maxLength={12} // Máximo 9 dígitos + guion
+          maxLength={12}
         />
 
         <select
@@ -100,7 +113,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
         <div className="flex justify-end space-x-3">
           <button
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
-            onClick={onClose}
+            onClick={handleClose}
           >
             Cancelar
           </button>

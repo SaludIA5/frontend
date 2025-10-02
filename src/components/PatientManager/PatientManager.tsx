@@ -3,8 +3,11 @@ import PatientList from './PatientList';
 import PatientControls from './PatientControls';
 import { usePatients } from '../../hooks/usePatients';
 
-export default function PatientManager() {
-  // Extraemos el array de pacientes y la función para agregar pacientes desde el contexto
+interface PatientManagerProps {
+  onProcessPatient: (patientRut: string) => void;
+}
+
+export default function PatientManager({ onProcessPatient }: PatientManagerProps) {
   const { patients } = usePatients();
 
   const [search, setSearch] = useState("");
@@ -12,7 +15,6 @@ export default function PatientManager() {
   const [sortBy, setSortBy] = useState<"name" | "rut">("name");
   const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all");
 
-  // Filtrado y ordenamiento
   const filteredPatients = patients
     .filter((p) => {
       const fullName = `${p.firstName} ${p.lastName} ${p.secondLastname ?? ""}`;
@@ -44,7 +46,7 @@ export default function PatientManager() {
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
-      <PatientList patients={filteredPatients} />
+      <PatientList patients={filteredPatients} onProcessPatient={onProcessPatient} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css'
 import Routing from './common/Routing.tsx'
 
-import { PatientsProvider } from './context/PatientContext.tsx'; // BORRAR CUANDO HAYA BACKEND
+import { PatientsProvider } from './context/PatientContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
