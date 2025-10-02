@@ -3,7 +3,11 @@ import PatientList from './PatientList';
 import PatientControls from './PatientControls';
 import { usePatients } from '../../hooks/usePatients';
 
-export default function PatientManager() {
+interface PatientManagerProps {
+  onProcessPatient: (patientRut: string) => void;
+}
+
+export default function PatientManager({ onProcessPatient }: PatientManagerProps) {
   // Extraemos el array de pacientes y la función para agregar pacientes desde el contexto
   const { patients } = usePatients();
 
@@ -44,7 +48,7 @@ export default function PatientManager() {
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
-      <PatientList patients={filteredPatients} />
+      <PatientList patients={filteredPatients} onProcessPatient={onProcessPatient} />
     </div>
   );
 }

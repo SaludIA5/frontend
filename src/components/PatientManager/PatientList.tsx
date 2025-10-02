@@ -1,8 +1,11 @@
-import { useNavigate } from 'react-router-dom';
 import type { User } from '../../types/user';
 
-export default function PatientList({ patients }: { patients: User[] }) {
-  const navigate = useNavigate();
+interface PatientListProps {
+  patients: User[];
+  onProcessPatient: (patientRut: string) => void;
+}
+
+export default function PatientList({ patients, onProcessPatient }: PatientListProps) {
 
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
@@ -44,7 +47,7 @@ export default function PatientList({ patients }: { patients: User[] }) {
           })()}
           <button
             className="rounded-xl bg-blue-600 px-2 py-2 text-white shadow hover:bg-blue-700"
-            onClick={() => navigate(`/editPatient/${patient.rut}`)}>
+            onClick={() => onProcessPatient(patient.rut)}>
             Procesar Paciente
           </button>
         </li>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { User } from "../types/user";
-import { usePatients } from "../hooks/usePatients"; // BORRAR CUANDO HAYA BACK
-import { useNavigate } from "react-router-dom";
+import { usePatients } from "../hooks/usePatients";
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<User>({
@@ -12,34 +11,40 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     sex: "",
   });
 
-  const { addPatient } = usePatients(); // BORRAR CUANDO HAYA BACK
-  const navigate = useNavigate();
+  const { addPatient } = usePatients();
 
   const handleSave = () => {
-    // Convert oxygenSaturation (number) to Uint8Array as required by the type
     addPatient({
       ...newPatient,
       oxygenSaturation: Number(newPatient.oxygenSaturation)
     });
-    setNewPatient({ firstName: "", lastName: "", isEligible: false, rut: "", sex: "", examPerformed: "", oxygenSaturation: 0, heartRate: 0, bloodPressure: "0/0" });
+
+    setNewPatient({
+      firstName: "",
+      lastName: "",
+      isEligible: false,
+      rut: "",
+      sex: "",
+      examPerformed: "",
+      oxygenSaturation: 0,
+      heartRate: 0,
+      bloodPressure: "0/0"
+    });
+
     onClose();
-    navigate("/patientsList");
-    navigate("/patientsList");     
   };
 
   if (!isOpen) return null;
 
   const handleRutChange = (value: string) => {
-    // Eliminar cualquier caracter que no sea número o K/k
     let clean = value.replace(/[^0-9kK]/g, '');
-    // Agregar guion antes del último caracter
     if (clean.length > 1) {
-      let body = clean.slice(0,-1)
+      let body = clean.slice(0, -1)
       const dv = clean.slice(-1)
-      body = body.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+      body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       clean = body + "-" + dv
     }
-    
+
     setNewPatient({ ...newPatient, rut: clean });
   };
 
@@ -83,7 +88,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.rut}
           onChange={(e) => handleRutChange(e.target.value)}
-          maxLength={12} // Máximo 9 dígitos + guion
+          maxLength={12}
         />
 
         <select
