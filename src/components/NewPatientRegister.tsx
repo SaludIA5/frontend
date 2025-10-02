@@ -13,12 +13,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const { addPatient } = usePatients();
 
-  const handleSave = () => {
-    addPatient({
-      ...newPatient,
-      oxygenSaturation: Number(newPatient.oxygenSaturation)
-    });
-
+  const resetForm = () => {
     setNewPatient({
       firstName: "",
       lastName: "",
@@ -30,7 +25,20 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       heartRate: 0,
       bloodPressure: "0/0"
     });
+  };
 
+  const handleSave = () => {
+    addPatient({
+      ...newPatient,
+      oxygenSaturation: Number(newPatient.oxygenSaturation)
+    });
+
+    resetForm();
+    onClose();
+  };
+
+  const handleClose = () => {
+    resetForm();
     onClose();
   };
 
@@ -49,7 +57,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <div className="bg-white rounded-2xl p-6 w-96 shadow-lg text-black">
         <h2 className="text-xl font-bold mb-4">Agregar paciente</h2>
 
@@ -105,7 +113,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
         <div className="flex justify-end space-x-3">
           <button
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
-            onClick={onClose}
+            onClick={handleClose}
           >
             Cancelar
           </button>

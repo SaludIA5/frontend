@@ -10,7 +10,7 @@ export default function PatientList({ patients, onProcessPatient }: PatientListP
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
       <li className='grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center text-black text-center p-4'>
-        <p className='text-left'>Nombre</p> <p className='text-center'>RUT</p> <p>Sexo</p> <p>Aplica Ley</p> <p>Procesar</p>
+        <p className='text-left'>Nombre</p> <p className='text-center'>RUT</p> <p>Sexo</p> <p>Aplica Ley</p> <p></p>
       </li>
       {patients.map((patient, i) => (
         <li

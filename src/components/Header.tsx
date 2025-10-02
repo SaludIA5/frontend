@@ -14,7 +14,7 @@ return (
         <button
             onClick={onLogout}
             className="col-start-3 h-full w-full text-center px-4 bg-blue-600
-            border-none rounded-none hover:bg-blue-700 transition"
+            border-none rounded-none hover:bg-blue-700 transition text-white"
         >
             Cerrar sesión
         </button>
