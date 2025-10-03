@@ -46,7 +46,7 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
-      <PatientList patients={filteredPatients} onProcessPatient={onProcessPatient} />
+      <PatientList onProcessPatient={onProcessPatient} />
     </div>
   );
 }
