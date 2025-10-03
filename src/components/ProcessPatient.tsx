@@ -28,6 +28,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       diastolicBloodPressure: ""
     },
     examPerformed: "",
+    age: ""
   });
 
   const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory">("personal");
@@ -57,6 +58,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           diastolicBloodPressure: ""
         },
         examPerformed: "",
+        age: ""
       });
       setIsEditing(false);
     }
