@@ -1,14 +1,20 @@
+import type { BloodPressure, Procedures } from "./patientInfo"
+
 export interface User {
-    examPerformed?: string | number | readonly string[] | undefined
-    oxygenSaturation?: string | number | readonly string[] | undefined
-    heartRate?: string | number | readonly string[] | undefined
-    bloodPressure?: string | number | readonly string[] | undefined
     firstName: string
     lastName: string
     secondLastname?: string
-    isEligible: boolean
     rut: string
     sex: string
+    isEligible: boolean
+    examPerformed?: string | number | readonly string[] | undefined
+    oxygenSaturation?: string | number | readonly string[] | undefined
+    heartRate?: string | number | readonly string[] | undefined
+    bloodPressure?: BloodPressure
+    cardiacHistory?: boolean
+    diabetesHistory?: boolean
+    hypertensionHistory?: boolean
+    proceduresDone?: Procedures
     age: string
 }
 

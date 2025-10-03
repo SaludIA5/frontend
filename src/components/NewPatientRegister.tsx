@@ -31,7 +31,11 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       examPerformed: "",
       oxygenSaturation: 0,
       heartRate: 0,
-      bloodPressure: "0/0"
+      bloodPressure: {
+        mediumBloodPressure: "0/0",
+        sistolicBloodPressure: "0/0",
+        diastolicBloodPressure: "0/0"
+      }
     });
   };
 
