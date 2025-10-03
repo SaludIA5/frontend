@@ -5,6 +5,7 @@ import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
 import ExamDataTab from "./PatientFormTabs/ExamDataTab";
 import VitalSignsDataTab from "./PatientFormTabs/VitalSignsDataTab";
 import TabButton from "./PatientFormTabs/TabButton";
+import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
 interface ProcessPatientProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,11 +21,15 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     sex: "",
     oxygenSaturation: "",
     heartRate: "",
-    bloodPressure: "",
+    bloodPressure: {
+      mediumBloodPressure: "",
+      sistolicBloodPressure: "",
+      diastolicBloodPressure: ""
+    },
     examPerformed: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals">("personal");
+  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +50,11 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         sex: "",
         oxygenSaturation: "",
         heartRate: "",
-        bloodPressure: "",
+        bloodPressure: {
+          mediumBloodPressure: "",
+          sistolicBloodPressure: "",
+          diastolicBloodPressure: ""
+        },
         examPerformed: "",
       });
       setIsEditing(false);
@@ -58,7 +67,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   };
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab as "personal" | "exams" | "vitals");
+    setActiveTab(tab as "personal" | "exams" | "vitals" | "medhistory");
   };
 
   if (!isOpen) return null;
@@ -71,6 +80,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Exámenes" code="exams" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Signos Vitales" code="vitals" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />
         </div>
 
         {/* Form content */}
@@ -82,8 +92,10 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
               <PersonalDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "exams" ? (
               <ExamDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
-            ) : (
+            ) : activeTab === "vitals" ? (
               <VitalSignsDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
+            ) : (
+              <MedHistoryTab newPatient={newPatient} setNewPatient={setNewPatient} />
             )}
           </fieldset>
         </div>
@@ -94,13 +106,13 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
             onClick={onClose}
           >
-            Cancelar
+            Cerrar
           </button>
           <button
             className={`rounded-xl px-4 py-2 text-white transition-colors duration-200 w-32 text-sm ${isEditing ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}`}
             onClick={() => setIsEditing(!isEditing)}
           >
-            {isEditing ? "Cancelar Edición" : "Editar"}
+            {isEditing ? "Desactivar Edición" : "Editar"}
           </button>
           <button
             className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
