@@ -19,6 +19,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     heartRate: "",
     bloodPressure: "",
     examPerformed: "",
+    age: ""
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -52,6 +53,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         heartRate: "",
         bloodPressure: "",
         examPerformed: "",
+        age: ""
       });
       setIsEditing(false);
       setShowReview(false);
