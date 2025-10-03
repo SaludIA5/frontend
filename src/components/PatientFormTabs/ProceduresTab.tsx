@@ -1,0 +1,71 @@
+import type { User } from "../../types/user";
+import type { Procedures } from "../../types/patientInfo";
+import { updateNestedField } from "../../utils/updateNestedField";
+
+interface Props {
+  newPatient: User;
+  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+}
+
+interface Procedure {
+  code: keyof Procedures;            // Clave principal
+  label: string;
+  sameDayKey?: keyof Procedures;     // Clave para el checkbox "Same Day"
+  sameDayLabel?: string;
+}
+
+const PROCEDURES: Procedure[] = [
+  { code: "hemoDinamia", label: "Hemo Dinamia", sameDayKey: "hemoDinamiaSameDay", sameDayLabel: "¿Mismo día?" },
+  { code: "endoscopy", label: "Endoscopía", sameDayKey: "endoscopySameDay", sameDayLabel: "¿Mismo día?" },
+  { code: "dialysis", label: "Diálisis" },
+  { code: "trombolysis", label: "Trombolisis", sameDayKey: "trombolysisSameDay", sameDayLabel: "¿Mismo día?" },
+  { code: "pcr", label: "PCR" },
+];
+
+export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h2>Se han realizado:</h2>
+
+      {PROCEDURES.map((procedure) => {
+        const isChecked = !!newPatient.proceduresDone?.[procedure.code];
+
+        return (
+          <div className="flex flex-col gap-1" key={procedure.code}>
+            {/* Checkbox principal */}
+            <div className="flex gap-3 items-center">
+              <input
+                type="checkbox"
+                id={procedure.code}
+                checked={isChecked}
+                onChange={(e) =>
+                  setNewPatient((prev) =>
+                    updateNestedField(prev, "proceduresDone", procedure.code, e.target.checked)
+                  )
+                }
+              />
+              <label htmlFor={procedure.code}>{procedure.label}</label>
+            </div>
+
+            {/* Sub-checkbox "Same Day" */}
+            {procedure.sameDayKey && isChecked && (
+              <div className="ml-6 flex gap-2 items-center">
+                <input
+                  type="checkbox"
+                  id={`${procedure.code}-sameDay`}
+                  checked={!!newPatient.proceduresDone?.[procedure.sameDayKey]}
+                  onChange={(e) =>
+                    setNewPatient((prev) =>
+                      updateNestedField(prev, "proceduresDone", procedure.sameDayKey!, e.target.checked)
+                    )
+                  }
+                />
+                <label htmlFor={`${procedure.code}-sameDay`}>{procedure.sameDayLabel}</label>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}

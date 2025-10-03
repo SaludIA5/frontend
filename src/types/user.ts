@@ -1,4 +1,4 @@
-import type { BloodPressure } from "./patientVitals"
+import type { BloodPressure, Procedures } from "./patientInfo"
 
 export interface User {
     firstName: string
@@ -14,6 +14,7 @@ export interface User {
     cardiacHistory?: boolean
     diabetesHistory?: boolean
     hypertensionHistory?: boolean
+    proceduresDone?: Procedures
 }
 
 export const mockPatients: User[] = [
