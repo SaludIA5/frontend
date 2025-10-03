@@ -1,6 +1,7 @@
 import type { User } from "../../types/user";
 import type { Procedures } from "../../types/patientInfo";
 import { updateNestedField } from "../../utils/updateNestedField";
+import { resetProcedure } from "../../utils/resetProcedure";
 
 interface Props {
   newPatient: User;
@@ -34,16 +35,18 @@ export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
           <div className="flex flex-col gap-1" key={procedure.code}>
             {/* Checkbox principal */}
             <div className="flex gap-3 items-center">
-              <input
+            <input
                 type="checkbox"
                 id={procedure.code}
-                checked={isChecked}
+                checked={!!newPatient.proceduresDone?.[procedure.code]}
                 onChange={(e) =>
-                  setNewPatient((prev) =>
-                    updateNestedField(prev, "proceduresDone", procedure.code, e.target.checked)
-                  )
+                    setNewPatient((prev) =>
+                    e.target.checked
+                        ? updateNestedField(prev, "proceduresDone", procedure.code, true)
+                        : resetProcedure(prev, procedure.code)
+                    )
                 }
-              />
+            />
               <label htmlFor={procedure.code}>{procedure.label}</label>
             </div>
 
