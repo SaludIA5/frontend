@@ -1,16 +1,49 @@
-import type { User } from '../../types/user';
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+interface User {
+  rut: string;
+  name: string;
+  age: number;
+  isElegible: boolean;
+}
 
 interface PatientListProps {
-  patients: User[];
   onProcessPatient: (patientRut: string) => void;
 }
 
-export default function PatientList({ patients, onProcessPatient }: PatientListProps) {
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: true,
+});
+
+export default function PatientList({ onProcessPatient }: PatientListProps) {
+  const [patients, setPatients] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await api.get('/patients');
+        setPatients(res.data.items);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
+
+  if (loading) {
+    return <p>Cargando pacientes...</p>;
+  }
 
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
       <li className='grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center text-black text-center p-4'>
-        <p className='text-left'>Nombre</p> <p className='text-center'>RUT</p> <p>Sexo</p> <p>Ley de Urgencia</p> <p></p>
+        <p className='text-left'>Nombre</p> <p className='text-center'>RUT</p> <p>Edad</p> <p>Ley de Urgencia</p> <p></p>
       </li>
       {patients.map((patient, i) => (
         <li
@@ -18,17 +51,17 @@ export default function PatientList({ patients, onProcessPatient }: PatientListP
           className="grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm bg-white transition-colors duration-150 hover:border-gray-400 hover:shadow"
         >
           <p className="text-lg text-left font-medium truncate">
-            {patient.firstName} {patient.lastName} {patient.secondLastname || ""}
+            { patient.name || "" }
           </p>
 
           <p className="text-lg text-center font-medium">{patient.rut}</p>
 
           <p className="text-lg font-medium text-center">
-            {patient.sex || "-"}
+            {patient.age || "-"}
           </p>
 
           {(() => {
-            const isEligible = patient.isEligible;
+            const isEligible = patient.isElegible;
             const statusConfig = isEligible
               ? {
                 text: "Aplica",

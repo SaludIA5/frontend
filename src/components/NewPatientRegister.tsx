@@ -1,6 +1,12 @@
 import { useState } from "react";
 import type { User } from "../types/user";
 import { usePatients } from "../hooks/usePatients";
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: true,
+});
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<User>({
@@ -9,6 +15,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     isEligible: false,
     rut: "",
     sex: "",
+    age: "",
   });
 
   const { addPatient } = usePatients();
@@ -20,6 +27,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       isEligible: false,
       rut: "",
       sex: "",
+      age: "",
       examPerformed: "",
       oxygenSaturation: 0,
       heartRate: 0,
@@ -35,6 +43,22 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
     resetForm();
     onClose();
+  };
+
+  const handleSubmit = async () => {
+    const fullName = `${newPatient.firstName} ${newPatient.lastName} ${newPatient.secondLastname}`;
+    const age = Number(newPatient.age);
+
+    try {
+      await api.post('/patients/', {
+        name: fullName,
+        age: age,
+        rut: newPatient.rut,
+      });
+      handleSave();
+    } catch (error) {
+      console.error("Error adding patient:", error);
+    }
   };
 
   const handleClose = () => {
@@ -99,16 +123,14 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           maxLength={12}
         />
 
-        <select
-          value={newPatient.sex}
-          onChange={(e) => setNewPatient({ ...newPatient, sex: e.target.value })}
+        <input
+          type="text"
+          placeholder="Edad del paciente"
           className="w-full mb-3 rounded border border-gray-300 p-2"
-        >
-          <option value="" disabled>Sexo del paciente</option>
-          <option value="M">Masculino</option>
-          <option value="F">Femenino</option>
-          <option value="O">No Declarado</option>
-        </select>
+          value={newPatient.age}
+          onChange={(e) => setNewPatient({ ...newPatient, age: e.target.value })}
+          maxLength={3}
+        />
 
         <div className="flex justify-end space-x-3">
           <button
@@ -119,7 +141,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           </button>
           <button
             className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-            onClick={handleSave}
+            onClick={handleSubmit}
           >
             Guardar
           </button>
