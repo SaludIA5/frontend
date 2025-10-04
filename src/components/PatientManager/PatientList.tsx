@@ -20,14 +20,25 @@ const api = axios.create({
 export default function PatientList({ onProcessPatient }: PatientListProps) {
   const [patients, setPatients] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
+      if (!import.meta.env.VITE_BACKEND_URL) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await api.get('/patients');
-        setPatients(res.data.items);
+        const patientsData = res.data?.items || res.data || [];
+        setPatients(Array.isArray(patientsData) ? patientsData : []);
+        setError(false);
       } catch (error) {
         console.error("Error fetching patients:", error);
+        setPatients([]);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -40,18 +51,30 @@ export default function PatientList({ onProcessPatient }: PatientListProps) {
     return <p>Cargando pacientes...</p>;
   }
 
+  const patientsList = patients || [];
+
+  if (patientsList.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">
+          {error ? "No se pudo cargar la lista de pacientes." : "No hay pacientes disponibles."}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
       <li className='grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center text-black text-center p-4'>
         <p className='text-left'>Nombre</p> <p className='text-center'>RUT</p> <p>Edad</p> <p>Ley de Urgencia</p> <p></p>
       </li>
-      {patients.map((patient, i) => (
+      {patientsList.map((patient, i) => (
         <li
           key={i}
           className="grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center rounded-2xl border border-gray-200 p-4 shadow-sm bg-white transition-colors duration-150 hover:border-gray-400 hover:shadow"
         >
           <p className="text-lg text-left font-medium truncate">
-            { patient.name || "" }
+            {patient.name || ""}
           </p>
 
           <p className="text-lg text-center font-medium">{patient.rut}</p>
