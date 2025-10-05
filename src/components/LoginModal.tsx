@@ -19,7 +19,7 @@ const LoginModal = () => {
                             <LoginForm />
                             <div className="mt-4 text-sm text-gray-500">
                                 ¿No tienes cuenta?{' '}
-                                <button onClick={() => setShowSignup(true)} className="text-blue-600 hover:text-blue-700 underline">
+                                <button type="button" onClick={() => setShowSignup(true)} className="text-blue-600 hover:text-blue-700 underline border-0 outline-none focus:outline-none focus:ring-0 appearance-none bg-transparent p-0">
                                     Regístrate aquí
                                 </button>
                             </div>
