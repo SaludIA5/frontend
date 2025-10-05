@@ -1,23 +1,14 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { AuthContext } from './AuthContextBase';
+import type { AuthContextValue, AuthUser } from './AuthContextBase';
 
-type AuthUser = {
-    id: number;
-    email: string;
-    isDoctor: boolean;
-    isChiefDoctor: boolean;
+type JwtPayload = {
+    sub?: string | number;
+    email?: string;
+    is_doctor?: unknown;
+    is_chief_doctor?: unknown;
 };
-
-type AuthContextValue = {
-    isAuthenticated: boolean;
-    user: AuthUser | null;
-    token: string | null;
-    login: (email: string, password: string) => Promise<void>;
-    logout: () => void;
-    signup: (name: string, rut: string, email: string, password: string, opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }) => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const STORAGE_KEY = 'auth_token';
 const baseURL: string | undefined = import.meta.env.VITE_BACKEND_URL;
@@ -43,13 +34,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem(STORAGE_KEY, token);
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
             try {
-                const payload = JSON.parse(atob(token.split('.')[1] || '')) as any;
-                setUser({
-                    id: Number(payload.sub),
-                    email: payload.email,
-                    isDoctor: Boolean(payload.is_doctor),
-                    isChiefDoctor: Boolean(payload.is_chief_doctor),
-                });
+                const base64 = token.split('.')[1] || '';
+                const decoded = base64 ? atob(base64) : '{}';
+                const payload = JSON.parse(decoded) as unknown as JwtPayload;
+                const idValue = typeof payload.sub === 'string' || typeof payload.sub === 'number' ? Number(payload.sub) : NaN;
+                const emailValue = typeof payload.email === 'string' ? payload.email : '';
+                if (!Number.isNaN(idValue) && emailValue) {
+                    setUser({
+                        id: idValue,
+                        email: emailValue,
+                        isDoctor: Boolean(payload.is_doctor),
+                        isChiefDoctor: Boolean(payload.is_chief_doctor),
+                    });
+                } else {
+                    setUser(null);
+                }
             } catch {
                 setUser(null);
             }
@@ -98,12 +97,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-    const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-    return ctx;
 }
 
 

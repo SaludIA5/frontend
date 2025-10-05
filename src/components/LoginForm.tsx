@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContextBase';
 
 export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
     const { login } = useAuth();
@@ -15,8 +15,9 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         try {
             await login(email, password);
             onSuccess?.();
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Error al iniciar sesión');
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { detail?: string } } };
+            setError(axiosErr.response?.data?.detail || 'Error al iniciar sesión');
         } finally {
             setIsLoading(false);
         }

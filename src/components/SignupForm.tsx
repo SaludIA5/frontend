@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContextBase';
 
 export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => void; onCancel?: () => void }) {
     const { signup } = useAuth();
@@ -28,8 +28,9 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
         try {
             await signup(name, rut, email, password, { isDoctor, isChiefDoctor });
             onSuccess?.();
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Error al registrarse');
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { data?: { detail?: string } } };
+            setError(axiosErr.response?.data?.detail || 'Error al registrarse');
         } finally {
             setIsLoading(false);
         }
