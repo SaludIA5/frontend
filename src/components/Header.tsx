@@ -1,14 +1,14 @@
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../context/AuthContext';
 
 type HeaderProps = {
     onLogout?: () => void
 }
 
 export default function Header({ onLogout }: HeaderProps) {
-    const { logout } = useAuth0();
+    const { logout } = useAuth();
 
     const handleLogout = () => {
-        logout({ logoutParams: { returnTo: window.location.origin } });
+        logout();
         onLogout?.();
     };
     return (
