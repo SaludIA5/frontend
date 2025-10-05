@@ -1,5 +1,5 @@
 import LoginModal from './LoginModal';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContextBase';
 
 type AuthGuardProps = {
     children: React.ReactNode;
