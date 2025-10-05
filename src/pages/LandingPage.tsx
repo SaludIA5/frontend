@@ -18,7 +18,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <Header onLogout={() => { }} />
+      <Header />
 
       <div className="flex justify-center my-4">
         <button

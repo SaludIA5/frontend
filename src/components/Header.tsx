@@ -1,8 +1,16 @@
+import { useAuth0 } from '@auth0/auth0-react';
+
 type HeaderProps = {
-    onLogout: () => void
+    onLogout?: () => void
 }
 
 export default function Header({ onLogout }: HeaderProps) {
+    const { logout } = useAuth0();
+
+    const handleLogout = () => {
+        logout({ logoutParams: { returnTo: window.location.origin } });
+        onLogout?.();
+    };
     return (
         <header className="bg-blue-600 text-white shadow-md mb-2">
             <div className="max-w-7xl mx-auto">
@@ -10,7 +18,7 @@ export default function Header({ onLogout }: HeaderProps) {
                     <h1 className="col-start-2 text-xl text-white font-bold text-center">SaludIA</h1>
 
                     <button
-                        onClick={onLogout}
+                        onClick={handleLogout}
                         className="col-start-3 h-full w-full text-center px-4 bg-blue-600
             border-none rounded-none hover:bg-blue-700 transition text-white"
                     >
