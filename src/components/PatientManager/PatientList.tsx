@@ -1,59 +1,11 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { usePatients } from "../../hooks/usePatients";
+import type { User } from "../../types/user";
 
 interface PatientListProps {
+  patients: User[];
   onProcessPatient: (patientRut: string) => void;
 }
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: true,
-});
-
-export default function PatientList({ onProcessPatient }: PatientListProps) {
-  const { patients, setPatientList } = usePatients(); 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const fetchPatients = async () => {
-      if (!import.meta.env.VITE_BACKEND_URL) {
-        setError(true);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await api.get("/patients");
-        const patientsData = res.data?.items || res.data || [];
-        const list = Array.isArray(patientsData) ? patientsData : [];
-        setPatientList(list); 
-        setError(false);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPatients();
-  }, [setPatientList]);
-
-  if (loading) return <p>Cargando pacientes...</p>;
-
-  if (!patients || patients.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">
-          {error
-            ? "No se pudo cargar la lista de pacientes."
-            : "No hay pacientes disponibles."}
-        </p>
-      </div>
-    );
-  }
+export default function PatientList({ onProcessPatient, patients }: PatientListProps) {
 
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">

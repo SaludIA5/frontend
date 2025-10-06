@@ -10,8 +10,7 @@ const api = axios.create({
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<User>({
-    firstName: "",
-    lastName: "",
+    name: "",
     isEligible: false,
     rut: "",
     sex: "",
@@ -22,8 +21,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const resetForm = () => {
     setNewPatient({
-      firstName: "",
-      lastName: "",
+      name: "",
       isEligible: false,
       rut: "",
       sex: "",
@@ -44,25 +42,23 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       ...newPatient,
       oxygenSaturation: Number(newPatient.oxygenSaturation)
     });
-
     resetForm();
     onClose();
   };
 
   const handleSubmit = async () => {
-    const fullName = `${newPatient.firstName} ${newPatient.lastName} ${newPatient.secondLastname}`;
     const age = Number(newPatient.age);
 
     try {
       await api.post('/patients/', {
-        name: fullName,
+        name: newPatient.name,
         age: age,
         rut: newPatient.rut,
       });
       handleSave();
     } catch (error) {
       console.error("Error adding patient:", error);
-    }
+    } 
   };
 
   const handleClose = () => {
@@ -93,28 +89,9 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           type="text"
           placeholder="Nombre"
           className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.firstName}
+          value={newPatient.name}
           onChange={(e) =>
-            setNewPatient({ ...newPatient, firstName: e.target.value })
-          }
-        />
-
-        <input
-          type="text"
-          placeholder="Primer Apellido"
-          className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.lastName}
-          onChange={(e) =>
-            setNewPatient({ ...newPatient, lastName: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Segundo Apellido"
-          className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.secondLastname}
-          onChange={(e) =>
-            setNewPatient({ ...newPatient, secondLastname: e.target.value })
+            setNewPatient({ ...newPatient, name: e.target.value })
           }
         />
 
