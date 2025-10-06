@@ -4,6 +4,7 @@ import type { User } from "../types/user";
 type PatientsContextType = {
   patients: User[];
   addPatient: (patient: User) => void;
+  setPatientList: (patients: User[]) => void;
   updatePatient: (rut: string, updated: User) => void;
 };
 

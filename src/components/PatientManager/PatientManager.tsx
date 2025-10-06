@@ -17,8 +17,7 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
 
   // const filteredPatients = patients
   //   .filter((p) => {
-  //     const fullName = `${p.firstName} ${p.lastName} ${p.secondLastname ?? ""}`;
-  //     return fullName.toLowerCase().includes(search.toLowerCase());
+  //     return p.name.toLowerCase().includes(search.toLowerCase());
   //   })
   //   .filter((p) => {
   //     if (filterEligible === "yes") return p.isEligible;
@@ -29,7 +28,7 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
   //     return filterGender !== "all" ? p.sex === filterGender : true;
   //   })
   //   .sort((a, b) => {
-  //     if (sortBy === "name") return a.firstName.localeCompare(b.firstName);
+  //     if (sortBy === "name") return a.name.localeCompare(b.name);
   //     if (sortBy === "rut") return a.rut.localeCompare(b.rut);
   //     return 0;
   //   });

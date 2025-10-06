@@ -15,8 +15,7 @@ interface ProcessPatientProps {
 
 export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessPatientProps) {
   const [newPatient, setNewPatient] = useState<User>({
-    firstName: "",
-    lastName: "",
+    name: "",
     isEligible: false,
     rut: "",
     sex: "",
@@ -31,7 +30,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     age: ""
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory">("personal");
+  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory" | "procedures">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,12 +40,12 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     if (patientRut && isOpen) {
       setIsLoading(true);
       const foundPatient = patients.find((p) => p.rut === patientRut);
+      console.log(foundPatient)
       if (foundPatient) setNewPatient(foundPatient);
       setIsLoading(false);
     } else if (!isOpen) {
       setNewPatient({
-        firstName: "",
-        lastName: "",
+        name: "",
         isEligible: false,
         rut: "",
         sex: "",
@@ -70,7 +69,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   };
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab as "personal" | "exams" | "vitals" | "medhistory");
+    setActiveTab(tab as "personal" | "exams" | "vitals" | "medhistory" | "procedures");
   };
 
   if (!isOpen) return null;

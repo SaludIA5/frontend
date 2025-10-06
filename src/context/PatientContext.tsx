@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import type { User } from "../types/user";
 import { PatientsContext } from "./PatientsContext";
 import { mockPatients } from "../types/user";
@@ -9,6 +9,11 @@ export const PatientsProvider = ({ children }: { children: ReactNode }) => {
   const addPatient = (patient: User) => {
     setPatients((prev) => [...prev, patient]);
   };
+  
+  const setPatientList = useCallback((patients: User[]) => {
+    setPatients(patients);
+  }, []);
+
 
   const updatePatient = (rut: string, updated: User) => {
     setPatients((prev) =>
@@ -16,8 +21,9 @@ export const PatientsProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+
   return (
-    <PatientsContext.Provider value={{ patients, addPatient, updatePatient }}>
+    <PatientsContext.Provider value={{ patients, addPatient, setPatientList, updatePatient }}>
       {children}
     </PatientsContext.Provider>
   );
