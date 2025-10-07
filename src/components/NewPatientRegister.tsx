@@ -113,7 +113,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           maxLength={3}
         />
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-center space-x-3">
           <button
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
             onClick={handleClose}
@@ -121,7 +121,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
             Cancelar
           </button>
           <button
-            className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="rounded-xl px-4 py-2 text-white"
             onClick={handleSubmit}
           >
             Guardar
