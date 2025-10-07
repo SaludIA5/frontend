@@ -28,6 +28,21 @@ export default function ConditionsTab({ newPatient, setNewPatient }: Props){
                     setNewPatient((prev) => updateNestedField(prev, "hospitalizationConditions", "bedType", e.target.value)
                 )}
             />
+            <p>Puntaje Glasgow:</p>
+            <input
+                type="number"
+                min={3}
+                max={15}
+                className="w-full mb-3 rounded border border-gray-300 p-2"
+                value={newPatient.hospitalizationConditions?.glasgowScore ?? ""}
+                onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const score = inputValue === "" ? "" : Math.max(3, Math.min(Number(inputValue), 15));
+                    setNewPatient((prev) =>
+                        updateNestedField(prev, "hospitalizationConditions", "glasgowScore", score)
+                    );
+                }}
+            />
         </div>
     )
 }

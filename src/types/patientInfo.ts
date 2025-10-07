@@ -16,17 +16,25 @@ export interface Procedures {
     trombolysisSameDay: boolean
     pcr: boolean
     rnmStrokeProtocol: boolean
+    bloodTransfusions: boolean
+    ecg: boolean
+    alteredEcg: boolean
+    troponine: boolean
+    alteredTroponine: boolean
 }
 
 export interface HospitalizationConditions {
     mechanicalVentilation : boolean
     bedType: string
+    glasgowScore: number
 }
 
-export interface VitalSigns {
+export interface PatientState {
     temperature: string | number | readonly string[] | undefined
     oxygenSaturation: string | number | readonly string[] | undefined
+    fio2: string | number | readonly string[] | undefined
     heartRate: string | number | readonly string[] | undefined
+    compromisedConsiousness: boolean
 }
 
 export interface Levels {

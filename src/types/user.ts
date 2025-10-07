@@ -1,4 +1,4 @@
-import type { BloodPressure, Procedures, HospitalizationConditions, VitalSigns, Levels } from "./patientInfo"
+import type { BloodPressure, Procedures, HospitalizationConditions, PatientState, Levels } from "./patientInfo"
 
 export interface Patient {
     name: string
@@ -6,7 +6,7 @@ export interface Patient {
     sex: string
     isEligible: boolean
     examPerformed?: string | number | readonly string[] | undefined
-    vitalSigns?: VitalSigns 
+    patientState?: PatientState 
     bloodPressure?: BloodPressure
     cardiacHistory?: boolean
     diabetesHistory?: boolean

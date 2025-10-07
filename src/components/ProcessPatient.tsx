@@ -3,7 +3,7 @@ import type { Patient } from "../types/user";
 import { usePatients } from "../hooks/usePatients";
 import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
 import ExamDataTab from "./PatientFormTabs/ExamDataTab";
-import VitalSignsDataTab from "./PatientFormTabs/VitalSignsDataTab";
+import PatientStateTab from "./PatientFormTabs/PatientStateTab";
 import TabButton from "./PatientFormTabs/TabButton";
 import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
 import ProceduresTab from "./PatientFormTabs/ProceduresTab";
@@ -21,10 +21,12 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     isEligible: false,
     rut: "",
     sex: "",
-    vitalSigns: {
+    patientState: {
       temperature: "",
       oxygenSaturation: "",
-      heartRate: ""
+      fio2: "",
+      heartRate: "",
+      compromisedConsiousness: false
     },
     bloodPressure: {
       mediumBloodPressure: "",
@@ -46,7 +48,6 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     if (patientRut && isOpen) {
       setIsLoading(true);
       const foundPatient = patients.find((p) => p.rut === patientRut);
-      console.log(foundPatient)
       if (foundPatient) setNewPatient(foundPatient);
       setIsLoading(false);
     } else if (!isOpen) {
@@ -55,10 +56,12 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         isEligible: false,
         rut: "",
         sex: "",
-        vitalSigns: {
+        patientState: {
           temperature: "",
           oxygenSaturation: "",
-          heartRate: ""
+          fio2: "",
+          heartRate: "",
+          compromisedConsiousness: false
         },
         bloodPressure: {
           mediumBloodPressure: "",
@@ -89,8 +92,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         {/* Tabs */}
         <div className="flex rounded-t-2xl overflow-x-auto">
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
-          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Exámenes" code="exams" />
-          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Signos Vitales" code="vitals" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Estado del Paciente" code="vitals" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Condiciones Hospitalización" code="conditions" />
@@ -107,7 +109,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             ) : activeTab === "exams" ? (
               <ExamDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "vitals" ? (
-              <VitalSignsDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <PatientStateTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "medhistory"? (
               <MedHistoryTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "procedures"? (
