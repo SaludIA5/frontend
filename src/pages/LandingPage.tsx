@@ -20,10 +20,10 @@ export default function LandingPage() {
     <>
       <Header />
 
-      <div className="flex justify-center my-4">
+      <div className="flex justify-end my-4 mx-6 px-6">
         <button
           onClick={handleModalToggle}
-          className="rounded-xl bg-blue-600 px-6 py-2 text-white shadow hover:bg-blue-700"
+          className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
         >
           Agregar Paciente
         </button>
