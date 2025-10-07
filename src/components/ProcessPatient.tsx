@@ -7,6 +7,8 @@ import VitalSignsDataTab from "./PatientFormTabs/VitalSignsDataTab";
 import TabButton from "./PatientFormTabs/TabButton";
 import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
 import ProceduresTab from "./PatientFormTabs/ProceduresTab";
+import ConditionsTab from "./PatientFormTabs/ConditionsTab";
+import LevelsTab from "./PatientFormTabs/LevelsTab";
 interface ProcessPatientProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,8 +21,11 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     isEligible: false,
     rut: "",
     sex: "",
-    oxygenSaturation: "",
-    heartRate: "",
+    vitalSigns: {
+      temperature: "",
+      oxygenSaturation: "",
+      heartRate: ""
+    },
     bloodPressure: {
       mediumBloodPressure: "",
       sistolicBloodPressure: "",
@@ -30,7 +35,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     age: ""
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory" | "procedures">("personal");
+  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" 
+  | "medhistory" | "procedures" | "conditions" | "levels">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,8 +55,11 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         isEligible: false,
         rut: "",
         sex: "",
-        oxygenSaturation: "",
-        heartRate: "",
+        vitalSigns: {
+          temperature: "",
+          oxygenSaturation: "",
+          heartRate: ""
+        },
         bloodPressure: {
           mediumBloodPressure: "",
           sistolicBloodPressure: "",
@@ -78,12 +87,14 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <div className="bg-white rounded-2xl shadow-lg text-black max-h-screen flex flex-col w-[40rem] min-h-[32rem]">
         {/* Tabs */}
-        <div className="flex rounded-t-2xl">
+        <div className="flex rounded-t-2xl overflow-x-auto">
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Exámenes" code="exams" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Signos Vitales" code="vitals" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Condiciones Hospitalización" code="conditions" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Niveles" code="levels" />
         </div>
 
         {/* Form content */}
@@ -99,8 +110,12 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
               <VitalSignsDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "medhistory"? (
               <MedHistoryTab newPatient={newPatient} setNewPatient={setNewPatient} />
-            ) : (
+            ) : activeTab === "procedures"? (
               <ProceduresTab newPatient={newPatient} setNewPatient={setNewPatient} />
+            ) : activeTab === "conditions"? (
+              <ConditionsTab newPatient={newPatient} setNewPatient={setNewPatient} />
+            ) : (
+              <LevelsTab newPatient={newPatient} setNewPatient={setNewPatient} />
             )}
           </fieldset>
         </div>

@@ -15,16 +15,36 @@ export default function VitalsSignsDataTab({ newPatient, setNewPatient }: Props)
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.oxygenSaturation || ""}
-        onChange={(e) => setNewPatient({ ...newPatient, oxygenSaturation: e.target.value })}
+        value={newPatient.vitalSigns?.oxygenSaturation || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "vitalSigns", "oxygenSaturation", e.target.value)
+          )
+        }
       />
 
       <p>Frecuencia Cardíaca:</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.heartRate || ""}
-        onChange={(e) => setNewPatient({ ...newPatient, heartRate: e.target.value })}
+        value={newPatient.vitalSigns?.heartRate || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "vitalSigns", "heartRate", e.target.value)
+          )
+        }
+      />
+
+      <p>Temperatura:</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.vitalSigns?.temperature || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "vitalSigns", "temperature", e.target.value)
+          )
+        }
       />
 
      {/* Subgrupo de presión arterial */}

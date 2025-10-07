@@ -16,11 +16,13 @@ interface Procedure {
 }
 
 const PROCEDURES: Procedure[] = [
+  { code: "surgery", label: "Cirugía", sameDayKey: "surgerySameDay", sameDayLabel: "¿Mismo día?" },
   { code: "hemoDinamia", label: "Hemo Dinamia", sameDayKey: "hemoDinamiaSameDay", sameDayLabel: "¿Mismo día?" },
   { code: "endoscopy", label: "Endoscopía", sameDayKey: "endoscopySameDay", sameDayLabel: "¿Mismo día?" },
   { code: "dialysis", label: "Diálisis" },
   { code: "trombolysis", label: "Trombolisis", sameDayKey: "trombolysisSameDay", sameDayLabel: "¿Mismo día?" },
   { code: "pcr", label: "PCR" },
+  { code: "rnmStrokeProtocol", label: "Resonancia Magnética con protocolo de ACV" }
 ];
 
 export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
