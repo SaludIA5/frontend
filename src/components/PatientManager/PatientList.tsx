@@ -1,7 +1,7 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 
 interface PatientListProps {
-  patients: User[];
+  patients: Patient[];
   onProcessPatient: (patientRut: string) => void;
 }
 

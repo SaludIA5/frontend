@@ -1,7 +1,7 @@
-import type { User } from "../types/user";
+import type { Patient } from "../types/user";
 import type { Procedures } from "../types/patientInfo";
 
-export function resetProcedure(prev: User, code: keyof Procedures): User {
+export function resetProcedure(prev: Patient, code: keyof Procedures): Patient {
   return {
     ...prev,
     proceduresDone: {

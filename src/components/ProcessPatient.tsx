@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { User } from "../types/user";
+import type { Patient } from "../types/user";
 import { usePatients } from "../hooks/usePatients";
 import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
 import ExamDataTab from "./PatientFormTabs/ExamDataTab";
@@ -14,7 +14,7 @@ interface ProcessPatientProps {
 }
 
 export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessPatientProps) {
-  const [newPatient, setNewPatient] = useState<User>({
+  const [newPatient, setNewPatient] = useState<Patient>({
     name: "",
     isEligible: false,
     rut: "",

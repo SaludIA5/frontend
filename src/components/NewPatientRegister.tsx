@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { User } from "../types/user";
+import type { Patient } from "../types/user";
 import { usePatients } from "../hooks/usePatients";
 import axios from 'axios';
 
@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [newPatient, setNewPatient] = useState<User>({
+  const [newPatient, setNewPatient] = useState<Patient>({
     name: "",
     isEligible: false,
     rut: "",

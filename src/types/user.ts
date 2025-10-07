@@ -1,6 +1,6 @@
 import type { BloodPressure, Procedures } from "./patientInfo"
 
-export interface User {
+export interface Patient {
     name: string
     rut: string
     sex: string
@@ -16,7 +16,7 @@ export interface User {
     age: string
 }
 
-export const mockPatients: User[] = [
+export const mockPatients: Patient[] = [
     { name: "Juan Pérez González", isEligible: true, rut: "12.345.678-9", sex: "M", age: "30" },
     { name: "María Rodríguez López", isEligible: false, rut: "9.876.543-2", sex: "F", age: "25" },
     { name: "Carlos Soto Ramírez", isEligible: true, rut: "15.234.567-8", sex: "M", age: "40" },
