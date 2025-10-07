@@ -1,8 +1,8 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 
 interface Props {
-  newPatient: User;
-  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+  newPatient: Patient;
+  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
 }
 
 export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
@@ -13,26 +13,8 @@ export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
         <input
           type="text"
           className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.firstName}
-          onChange={(e) => setNewPatient({ ...newPatient, firstName: e.target.value })}
-        />
-      </div>
-      <div>
-        Primer Apellido:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.lastName}
-          onChange={(e) => setNewPatient({ ...newPatient, lastName: e.target.value })}
-        />
-      </div>
-      <div>
-        Segundo Apellido:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.secondLastname || ""}
-          onChange={(e) => setNewPatient({ ...newPatient, secondLastname: e.target.value })}
+          value={newPatient.name}
+          onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
         />
       </div>
       <div>

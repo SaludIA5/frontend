@@ -1,8 +1,8 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 
 interface Props {
-  newPatient: User;
-  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+  newPatient: Patient;
+  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
 }
 
 export default function ExamsForm({ newPatient, setNewPatient }: Props) {

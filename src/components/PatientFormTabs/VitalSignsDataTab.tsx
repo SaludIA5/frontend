@@ -1,10 +1,10 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 import { updateNestedField } from "../../utils/updateNestedField";
 import { useState } from "react";
 
 interface Props {
-  newPatient: User;
-  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+  newPatient: Patient;
+  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
 }
 
 export default function VitalsSignsDataTab({ newPatient, setNewPatient }: Props) {
