@@ -60,13 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [token]);
 
     const login = async (email: string, password: string) => {
-        const url = baseURL ? `${baseURL}/auth/login` : '/auth/login';
+        const url = baseURL ? `${baseURL}auth/login` : '/auth/login';
         const res = await axios.post(url, { email, password });
         setToken(res.data.access_token);
     };
 
     const signup = async (name: string, rut: string, email: string, password: string, opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }) => {
-        const url = baseURL ? `${baseURL}/users` : '/users';
+        const url = baseURL ? `${baseURL}users` : '/users';
         await axios.post(url, {
             name,
             rut,

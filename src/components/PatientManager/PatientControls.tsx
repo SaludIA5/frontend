@@ -26,13 +26,13 @@ export default function PatientControls({
                 placeholder="Buscar paciente..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="rounded border p-2 w-64"
+                className="rounded-lg bg-white p-2 w-64"
             />
 
             <select
                 value={filterEligible}
                 onChange={(e) => setFilterEligible(e.target.value as "all" | "yes" | "no")}
-                className="rounded border p-2"
+                className="rounded-lg bg-white p-2"
             >
                 <option value="all">Todos</option>
                 <option value="yes">Solo aplica</option>
@@ -42,7 +42,7 @@ export default function PatientControls({
             <select
                 value={filterGender}
                 onChange={(e) => setFilterGender(e.target.value as "all" | "M" | "F" | "ND")}
-                className="rounded border p-2"
+                className="rounded-lg bg-white p-2"
             >
                 <option value="all">Todos</option>
                 <option value="M">Masculino</option>
@@ -53,7 +53,7 @@ export default function PatientControls({
             <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "name" | "rut")}
-                className="rounded border p-2"
+                className="rounded-lg bg-white p-2"
             >
                 <option value="name">Ordenar por Nombre</option>
                 <option value="rut">Ordenar por RUT</option>

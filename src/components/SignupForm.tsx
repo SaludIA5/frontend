@@ -96,7 +96,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
                 {onCancel && (
                     <button type="button" onClick={onCancel} className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">Cancelar</button>
                 )}
-                <button type="submit" disabled={isLoading} className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-2 px-4 rounded-md transition-colors">
+                <button type="submit" disabled={isLoading} className="flex-1 disabled:bg-blue-400 text-white font-bold py-2 px-4 rounded-md transition-colors">
                     {isLoading ? 'Creando...' : 'Registrarse'}
                 </button>
             </div>

@@ -48,7 +48,7 @@ export default function PatientList({ onProcessPatient, patients }: PatientListP
           })()}
 
           <button
-            className="rounded-xl bg-blue-600 px-2 py-2 text-white select-none shadow hover:bg-blue-700"
+            className="rounded-xl text-white p-2 text-sm select-none shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
             onClick={() => onProcessPatient(patient.rut)}
           >
             Procesar Paciente

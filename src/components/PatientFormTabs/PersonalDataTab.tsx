@@ -7,8 +7,8 @@ interface Props {
 
 export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
   return (
-    <div className="grid grid-cols-3 gap-3 mb-3">
-      <div>
+    <div className="flex-auto flex-col mb-3">
+      <div className="mb-3">
         Nombre:
         <input
           type="text"
@@ -17,7 +17,7 @@ export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
           onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
         />
       </div>
-      <div>
+      <div className="mb-3">
         RUT:
         <input
           type="text"
@@ -26,7 +26,7 @@ export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
           onChange={(e) => setNewPatient({ ...newPatient, rut: e.target.value })}
         />
       </div>
-      <div>
+      <div className="mb-3">
         Sexo:
         <select
           value={newPatient.sex}
