@@ -1,13 +1,13 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 import { updateNestedField } from "../../utils/updateNestedField";
 import { useState } from "react";
 
 interface Props {
-  newPatient: User;
-  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+  newPatient: Patient;
+  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
 }
 
-export default function VitalsSignsDataTab({ newPatient, setNewPatient }: Props) {
+export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
   const [showBP, setShowBP] = useState(false)
   return (
     <div>
@@ -15,16 +15,48 @@ export default function VitalsSignsDataTab({ newPatient, setNewPatient }: Props)
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.oxygenSaturation || ""}
-        onChange={(e) => setNewPatient({ ...newPatient, oxygenSaturation: e.target.value })}
+        value={newPatient.patientState?.oxygenSaturation || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "oxygenSaturation", e.target.value)
+          )
+        }
+      />
+
+      <p>FiO2 (Fracción Inspirada de Oxigeno):</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.patientState?.fio2 || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "fio2", e.target.value)
+          )
+        }
       />
 
       <p>Frecuencia Cardíaca:</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.heartRate || ""}
-        onChange={(e) => setNewPatient({ ...newPatient, heartRate: e.target.value })}
+        value={newPatient.patientState?.heartRate || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "heartRate", e.target.value)
+          )
+        }
+      />
+
+      <p>Temperatura:</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.patientState?.temperature || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "temperature", e.target.value)
+          )
+        }
       />
 
      {/* Subgrupo de presión arterial */}
@@ -80,6 +112,17 @@ export default function VitalsSignsDataTab({ newPatient, setNewPatient }: Props)
           </div>
         </div>
       )}
+      <div className="flex gap-3 items-center">
+        <input
+          type="checkbox"
+          id="conciousness"
+          checked={!!newPatient.patientState?.compromisedConsiousness}
+          onChange={(e) =>
+            setNewPatient((prev) => updateNestedField(prev, "patientState", "compromisedConsiousness", e.target.checked)
+          )}
+        />
+        <label htmlFor="conciousness">Compromiso de Conciencia</label>
+    </div>
     </div>
   );
 }

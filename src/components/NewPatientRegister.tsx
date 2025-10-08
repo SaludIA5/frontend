@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { User } from "../types/user";
+import type { Patient } from "../types/user";
 import { usePatients } from "../hooks/usePatients";
 import axios from 'axios';
 
@@ -9,9 +9,8 @@ const api = axios.create({
 });
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [newPatient, setNewPatient] = useState<User>({
-    firstName: "",
-    lastName: "",
+  const [newPatient, setNewPatient] = useState<Patient>({
+    name: "",
     isEligible: false,
     rut: "",
     sex: "",
@@ -22,15 +21,19 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const resetForm = () => {
     setNewPatient({
-      firstName: "",
-      lastName: "",
+      name: "",
       isEligible: false,
       rut: "",
       sex: "",
       age: "",
       examPerformed: "",
-      oxygenSaturation: 0,
-      heartRate: 0,
+      patientState: {
+        temperature: "",
+        oxygenSaturation: "",
+        fio2: "",
+        heartRate: "",
+        compromisedConsiousness: false
+      },
       bloodPressure: {
         mediumBloodPressure: "0/0",
         sistolicBloodPressure: "0/0",
@@ -41,28 +44,25 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const handleSave = () => {
     addPatient({
-      ...newPatient,
-      oxygenSaturation: Number(newPatient.oxygenSaturation)
+      ...newPatient
     });
-
     resetForm();
     onClose();
   };
 
   const handleSubmit = async () => {
-    const fullName = `${newPatient.firstName} ${newPatient.lastName} ${newPatient.secondLastname}`;
     const age = Number(newPatient.age);
 
     try {
       await api.post('/patients/', {
-        name: fullName,
+        name: newPatient.name,
         age: age,
         rut: newPatient.rut,
       });
       handleSave();
     } catch (error) {
       console.error("Error adding patient:", error);
-    }
+    } 
   };
 
   const handleClose = () => {
@@ -93,28 +93,9 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           type="text"
           placeholder="Nombre"
           className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.firstName}
+          value={newPatient.name}
           onChange={(e) =>
-            setNewPatient({ ...newPatient, firstName: e.target.value })
-          }
-        />
-
-        <input
-          type="text"
-          placeholder="Primer Apellido"
-          className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.lastName}
-          onChange={(e) =>
-            setNewPatient({ ...newPatient, lastName: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Segundo Apellido"
-          className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.secondLastname}
-          onChange={(e) =>
-            setNewPatient({ ...newPatient, secondLastname: e.target.value })
+            setNewPatient({ ...newPatient, name: e.target.value })
           }
         />
 
@@ -136,7 +117,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           maxLength={3}
         />
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-center space-x-3">
           <button
             className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"
             onClick={handleClose}
@@ -144,7 +125,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
             Cancelar
           </button>
           <button
-            className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="rounded-xl px-4 py-2 text-white"
             onClick={handleSubmit}
           >
             Guardar

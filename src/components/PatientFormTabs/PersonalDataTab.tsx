@@ -1,41 +1,23 @@
-import type { User } from "../../types/user";
+import type { Patient } from "../../types/user";
 
 interface Props {
-  newPatient: User;
-  setNewPatient: React.Dispatch<React.SetStateAction<User>>;
+  newPatient: Patient;
+  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
 }
 
 export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
   return (
-    <div className="grid grid-cols-3 gap-3 mb-3">
-      <div>
+    <div className="flex-auto flex-col mb-3">
+      <div className="mb-3">
         Nombre:
         <input
           type="text"
           className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.firstName}
-          onChange={(e) => setNewPatient({ ...newPatient, firstName: e.target.value })}
+          value={newPatient.name}
+          onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
         />
       </div>
-      <div>
-        Primer Apellido:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.lastName}
-          onChange={(e) => setNewPatient({ ...newPatient, lastName: e.target.value })}
-        />
-      </div>
-      <div>
-        Segundo Apellido:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.secondLastname || ""}
-          onChange={(e) => setNewPatient({ ...newPatient, secondLastname: e.target.value })}
-        />
-      </div>
-      <div>
+      <div className="mb-3">
         RUT:
         <input
           type="text"
@@ -44,7 +26,7 @@ export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
           onChange={(e) => setNewPatient({ ...newPatient, rut: e.target.value })}
         />
       </div>
-      <div>
+      <div className="mb-3">
         Sexo:
         <select
           value={newPatient.sex}
