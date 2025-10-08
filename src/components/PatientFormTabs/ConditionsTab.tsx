@@ -28,7 +28,7 @@ export default function ConditionsTab({ newPatient, setNewPatient }: Props){
                     setNewPatient((prev) => updateNestedField(prev, "hospitalizationConditions", "bedType", e.target.value)
                 )}
             />
-            <p>Puntaje Glasgow:</p>
+            <p>Puntaje Glasgow (entre 3-15):</p>
             <input
                 type="number"
                 min={3}

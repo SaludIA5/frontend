@@ -13,6 +13,28 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const handleRutChange = (value: string) => {
+        let clean = value.replace(/[^0-9kK]/g, '');
+        if (clean.length > 1) {
+          let body = clean.slice(0, -1)
+          const dv = clean.slice(-1)
+          body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          clean = body + "-" + dv
+        }
+    
+        setRut(clean);
+    };
+
+    const setRutToNumeric = (formattedRut: string): string => {
+        if (!formattedRut) return "";
+      
+        let clean = formattedRut.replace(/[.-]/g, "");
+        clean = clean.toUpperCase();
+        clean = clean.trim();
+      
+        return clean;
+    }
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -26,7 +48,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
         }
         setIsLoading(true);
         try {
-            await signup(name, rut, email, password, { isDoctor, isChiefDoctor });
+            await signup(name, setRutToNumeric(rut), email, password, { isDoctor, isChiefDoctor });
             onSuccess?.();
         } catch (err: unknown) {
             const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -47,7 +69,10 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">RUT</label>
-                <input type="text" value={rut} onChange={(e) => setRut(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="12.345.678-9" />
+                <input type="text" value={rut} onChange={(e) => handleRutChange(e.target.value)} required 
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                maxLength={12}
+                placeholder="12.345.678-9" />
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -94,7 +119,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
             </div>
             <div className="flex space-x-2">
                 {onCancel && (
-                    <button type="button" onClick={onCancel} className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">Cancelar</button>
+                    <button type="button" onClick={onCancel} className="flex-1 px-4 py-2 bg-gray-300 border border-gray-300 text-gray-500 rounded-md hover:bg-gray-100 transition-colors">Cancelar</button>
                 )}
                 <button type="submit" disabled={isLoading} className="flex-1 disabled:bg-blue-400 text-white font-bold py-2 px-4 rounded-md transition-colors">
                     {isLoading ? 'Creando...' : 'Registrarse'}

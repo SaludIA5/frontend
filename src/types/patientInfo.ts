@@ -14,7 +14,6 @@ export interface Procedures {
     dialysis: boolean
     trombolysis: boolean
     trombolysisSameDay: boolean
-    pcr: boolean
     rnmStrokeProtocol: boolean
     bloodTransfusions: boolean
     ecg: boolean
@@ -33,6 +32,7 @@ export interface PatientState {
     temperature: string | number | readonly string[] | undefined
     oxygenSaturation: string | number | readonly string[] | undefined
     fio2: string | number | readonly string[] | undefined
+    respirationRate: string | number | readonly string[] | undefined
     heartRate: string | number | readonly string[] | undefined
     compromisedConsiousness: boolean
 }
@@ -43,4 +43,5 @@ export interface Levels {
     ureic_nitro: string | number | readonly string[] | undefined
     sodium: string | number | readonly string[] | undefined
     potassium: string | number | readonly string[] | undefined
+    pcr: string | number | readonly string[] | undefined
 }

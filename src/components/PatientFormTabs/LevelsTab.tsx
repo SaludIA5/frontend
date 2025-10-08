@@ -8,7 +8,7 @@ interface Props {
 export default function LevelsTab({ newPatient, setNewPatient }: Props) {
   return (
     <div>
-      <p>Hemoglobina:</p>
+      <p>Hemoglobina (g/dL):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -20,7 +20,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         }
       />
 
-      <p>Creatinina:</p>
+      <p>Creatinina (mg/dL):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -32,7 +32,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         }
       />
 
-      <p>Nitrógeno Ureico:</p>
+      <p>Nitrógeno Ureico (mg/dL):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -44,7 +44,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         }
       />
 
-    <p>Sodio:</p>
+      <p>Sodio (mEq/L):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -55,7 +55,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
           )
         }
       />
-    <p>Potasio:</p>
+      <p>Proteína C Reactiva (mg/L):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -63,6 +63,17 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         onChange={(e) =>
           setNewPatient((prev) =>
             updateNestedField(prev, "levels", "potassium", e.target.value)
+          )
+        }
+      />
+      <p>Potasio (mEq/L):</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.levels?.pcr || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "levels", "pcr", e.target.value)
           )
         }
       />

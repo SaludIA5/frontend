@@ -26,6 +26,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       temperature: "",
       oxygenSaturation: "",
       fio2: "",
+      respirationRate: "",
       heartRate: "",
       compromisedConsiousness: false
     },
@@ -64,6 +65,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           temperature: "",
           oxygenSaturation: "",
           fio2: "",
+          respirationRate: "",
           heartRate: "",
           compromisedConsiousness: false
         },
@@ -157,11 +159,11 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <div className="bg-white rounded-2xl shadow-lg text-black max-h-screen flex flex-col w-[40rem] min-h-[32rem]">
-        {/* Tabs */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={onClose} className="hover:cursor-pointer self-end m-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={onClose} className="hover:cursor-pointer self-end mx-3 my-2">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
           </svg>
-          <div className="flex rounded-t-2xl">
+          {/* Tabs */}
+          <div className="flex overflow-x-auto">
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Estado del Paciente" code="vitals" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />

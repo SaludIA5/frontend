@@ -21,7 +21,6 @@ const PROCEDURES: Procedure[] = [
   { code: "endoscopy", label: "Endoscopía", subKey: "endoscopySameDay", subLabel: "¿Mismo día?" },
   { code: "dialysis", label: "Diálisis" },
   { code: "trombolysis", label: "Trombolisis", subKey: "trombolysisSameDay", subLabel: "¿Mismo día?" },
-  { code: "pcr", label: "PCR" },
   { code: "rnmStrokeProtocol", label: "Resonancia Magnética con protocolo de ACV" },
   { code: "bloodTransfusions", label: "Transfusiones de sangre" },
   { code: "ecg", label: "Electro Cardiograma", subKey: "alteredEcg", subLabel: "¿Resultados Alterados?" },
@@ -47,7 +46,7 @@ export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
                 onChange={(e) =>
                     setNewPatient((prev) =>
                     e.target.checked || !procedure.subKey
-                        ? updateNestedField(prev, "proceduresDone", procedure.code, true)
+                        ? updateNestedField(prev, "proceduresDone", procedure.code, e.target.checked)
                         : resetProcedure(prev, procedure.code, procedure.subKey)
                     )
                 }

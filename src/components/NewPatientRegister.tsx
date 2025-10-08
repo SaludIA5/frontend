@@ -31,6 +31,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
         temperature: "",
         oxygenSaturation: "",
         fio2: "",
+        respirationRate: "",
         heartRate: "",
         compromisedConsiousness: false
       },
