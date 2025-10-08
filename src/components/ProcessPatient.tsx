@@ -26,6 +26,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       temperature: "",
       oxygenSaturation: "",
       fio2: "",
+      respirationRate: "",
       heartRate: "",
       compromisedConsiousness: false
     },
@@ -64,6 +65,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           temperature: "",
           oxygenSaturation: "",
           fio2: "",
+          respirationRate: "",
           heartRate: "",
           compromisedConsiousness: false
         },
@@ -97,50 +99,49 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       });
 
       const payload = {
-        antecedentes_cardiaco: true,
-        antecedentes_diabetes: false,
-        antecedentes_hipertension: true,
-        creatinina: 0.92,
-        fio2: 0.21,
-        fio2_ge_50: false,
-        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || 0,
-        frecuencia_respiratoria: 27,
-        glasgow_score: 14,
-        hemoglobina: 13.1,
+        antecedentes_cardiaco: newPatient.cardiacHistory || false,
+        antecedentes_diabetes: newPatient.diabetesHistory || false,
+        antecedentes_hipertension: newPatient.hypertensionHistory || false,
+        creatinina: newPatient.levels?.creatinin || null,
+        fio2: Number(newPatient.patientState?.fio2) || null,
+        fio2_ge_50: Number(newPatient.patientState?.fio2) >= 50 || null,
+        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || null,
+        frecuencia_respiratoria: Number(newPatient.patientState?.respirationRate) || null,
+        glasgow_score: Number(newPatient.hospitalizationConditions?.glasgowScore) || null,
+        hemoglobina: Number(newPatient.levels?.hemoglobin) || null,
         model_type: "xgboost",
-        nitrogeno_ureico: 31,
-        pcr: 17.51,
-        potasio: 4.5,
-        presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || 0,
-        presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || 0,
-        presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || 0,
-        saturacion_o2: Number(newPatient.patientState?.heartRate) || 0,
-        sodio: 139,
-        temperatura_c: 36.5,
+        nitrogeno_ureico: Number(newPatient.levels?.ureic_nitro) || null,
+        pcr: Number(newPatient.levels?.pcr) || null,
+        potasio: Number(newPatient.levels?.potassium) || null,
+        presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || null,
+        presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || null,
+        presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || null,
+        saturacion_o2: Number(newPatient.patientState?.oxygenSaturation) || null,
+        sodio: Number(newPatient.levels?.sodium) || null,
+        temperatura_c: Number(newPatient.patientState?.temperature) || null,
         tipo: "SIN ALERTA",
         tipo_alerta_ugcc: "SIN ALERTA",
-        tipo_cama: "UCI",
+        tipo_cama: newPatient.hospitalizationConditions?.bedType,
         triage: 3,
-        ventilacion_mecanica: false,
+        ventilacion_mecanica: newPatient.hospitalizationConditions?.mechanicalVentilation || false,
 
-        cirugia_realizada: false,
-        cirugia_mismo_dia_ingreso: false,
-        hemodinamia: false,
-        hemodinamia_mismo_dia_ingreso: false,
-        endoscopia: false,
-        endoscopia_mismo_dia_ingreso: false,
-        dialisis: false,
-        trombolisis: false,
-        trombolisis_mismo_dia_ingreso: false,
+        cirugia_realizada: newPatient.proceduresDone?.surgery || false,
+        cirugia_mismo_dia_ingreso: newPatient.proceduresDone?.surgerySameDay || false,
+        hemodinamia: newPatient.proceduresDone?.hemoDinamia || false,
+        hemodinamia_mismo_dia_ingreso: newPatient.proceduresDone?.hemoDinamiaSameDay || false,
+        endoscopia: newPatient.proceduresDone?.endoscopy || false,
+        endoscopia_mismo_dia_ingreso: newPatient.proceduresDone?.endoscopySameDay || false,
+        dialisis: newPatient.proceduresDone?.dialysis || false,
+        trombolisis: newPatient.proceduresDone?.trombolysis || false,
+        trombolisis_mismo_dia_ingreso: newPatient.proceduresDone?.trombolysisSameDay || false,
         dreo: false,
-        troponinas_alteradas: false,
-        ecg_alterado: false,
-        rnm_protocolo_stroke: false,
+        troponinas_alteradas: newPatient.proceduresDone?.alteredTroponine || false,
+        ecg_alterado: newPatient.proceduresDone?.alteredEcg || false,
+        rnm_protocolo_stroke: newPatient.proceduresDone?.rnmStrokeProtocol || false,
         dva: false,
-        transfusiones: false,
-        compromiso_conciencia: false
+        transfusiones: newPatient.proceduresDone?.bloodTransfusions || false,
+        compromiso_conciencia: newPatient.patientState?.compromisedConsiousness || false,
       };
-
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
       setRecommendationResult(res.data);
@@ -157,11 +158,11 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
       <div className="bg-white rounded-2xl shadow-lg text-black max-h-screen flex flex-col w-[40rem] min-h-[32rem]">
-        {/* Tabs */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={onClose} className="hover:cursor-pointer self-end m-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={onClose} className="hover:cursor-pointer self-end mx-3 my-2">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
           </svg>
-          <div className="flex rounded-t-2xl">
+          {/* Tabs */}
+          <div className="flex overflow-x-auto">
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Estado del Paciente" code="vitals" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />

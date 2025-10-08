@@ -9,9 +9,43 @@ interface Props {
 
 export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
   const [showBP, setShowBP] = useState(false)
+  const [showCardioResp, setShowCardioResp] = useState(false)
   return (
     <div>
-      <p>Saturación de Oxígeno:</p>
+      <div className="flex gap-3 items-center">
+        <input
+          type="checkbox"
+          id="conciousness"
+          checked={!!newPatient.patientState?.compromisedConsiousness}
+          onChange={(e) =>
+            setNewPatient((prev) => updateNestedField(prev, "patientState", "compromisedConsiousness", e.target.checked)
+          )}
+        />
+        <label htmlFor="conciousness">Compromiso de Conciencia</label>
+      </div>
+      <p>Temperatura (°C):</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.patientState?.temperature || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "temperature", e.target.value)
+          )
+        }
+      />
+     {/* Subgrupo cardio respiratorio */}
+     <div
+        role="button"
+        className="w-full flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md mb-2"
+        onClick={() => setShowCardioResp(!showCardioResp)}
+      >
+        <span className="font-medium">Cardio Respiratorio</span>
+        <span>{showCardioResp ? "▲" : "▼"}</span>
+      </div>
+      {showCardioResp && (
+      <div className="ml-4 border-l pl-4 space-y-2">
+      <p>Saturación de Oxígeno (%):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -23,7 +57,7 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
         }
       />
 
-      <p>FiO2 (Fracción Inspirada de Oxigeno):</p>
+      <p>FiO2 (Fracción Inspirada de Oxigeno) (%):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -35,7 +69,19 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
         }
       />
 
-      <p>Frecuencia Cardíaca:</p>
+      <p>Frecuencia Respiratoria (rpm):</p>
+      <input
+        type="number"
+        className="w-full mb-3 rounded border border-gray-300 p-2"
+        value={newPatient.patientState?.respirationRate || ""}
+        onChange={(e) =>
+          setNewPatient((prev) =>
+            updateNestedField(prev, "patientState", "respirationRate", e.target.value)
+          )
+        }
+      />
+
+      <p>Frecuencia Cardíaca (lpm):</p>
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
@@ -46,18 +92,7 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
           )
         }
       />
-
-      <p>Temperatura:</p>
-      <input
-        type="number"
-        className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.temperature || ""}
-        onChange={(e) =>
-          setNewPatient((prev) =>
-            updateNestedField(prev, "patientState", "temperature", e.target.value)
-          )
-        }
-      />
+      </div>)}
 
      {/* Subgrupo de presión arterial */}
      <div
@@ -72,7 +107,7 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       {showBP && (
         <div className="ml-4 border-l pl-4 space-y-2">
           <div>
-            <p>Media:</p>
+            <p>Media (mmHg):</p>
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
@@ -85,7 +120,7 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
             />
           </div>
           <div>
-            <p>Sistólica:</p>
+            <p>Sistólica (mmHg):</p>
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
@@ -98,7 +133,7 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
             />
           </div>
           <div>
-            <p>Diastólica:</p>
+            <p>Diastólica (mmHg):</p>
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
@@ -112,17 +147,6 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
           </div>
         </div>
       )}
-      <div className="flex gap-3 items-center">
-        <input
-          type="checkbox"
-          id="conciousness"
-          checked={!!newPatient.patientState?.compromisedConsiousness}
-          onChange={(e) =>
-            setNewPatient((prev) => updateNestedField(prev, "patientState", "compromisedConsiousness", e.target.checked)
-          )}
-        />
-        <label htmlFor="conciousness">Compromiso de Conciencia</label>
-    </div>
     </div>
   );
 }

@@ -26,19 +26,6 @@ export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
           onChange={(e) => setNewPatient({ ...newPatient, rut: e.target.value })}
         />
       </div>
-      <div className="mb-3">
-        Sexo:
-        <select
-          value={newPatient.sex}
-          onChange={(e) => setNewPatient({ ...newPatient, sex: e.target.value })}
-          className="w-full rounded border border-gray-300 p-2"
-        >
-          <option value="" disabled>Sexo del paciente</option>
-          <option value="M">Masculino</option>
-          <option value="F">Femenino</option>
-          <option value="O">No Declarado</option>
-        </select>
-      </div>
     </div>
   );
 }
