@@ -4,10 +4,12 @@ import axios from 'axios';
 import { usePatients } from "../hooks/usePatients";
 import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
 import ExamDataTab from "./PatientFormTabs/ExamDataTab";
-import VitalSignsDataTab from "./PatientFormTabs/VitalSignsDataTab";
+import PatientStateTab from "./PatientFormTabs/PatientStateTab";
 import TabButton from "./PatientFormTabs/TabButton";
 import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
 import ProceduresTab from "./PatientFormTabs/ProceduresTab";
+import ConditionsTab from "./PatientFormTabs/ConditionsTab";
+import LevelsTab from "./PatientFormTabs/LevelsTab";
 interface ProcessPatientProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,8 +22,13 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     isEligible: false,
     rut: "",
     sex: "",
-    oxygenSaturation: "",
-    heartRate: "",
+    patientState: {
+      temperature: "",
+      oxygenSaturation: "",
+      fio2: "",
+      heartRate: "",
+      compromisedConsiousness: false
+    },
     bloodPressure: {
       mediumBloodPressure: "",
       sistolicBloodPressure: "",
@@ -31,7 +38,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     age: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" | "medhistory" | "procedures">("personal");
+  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" 
+  | "medhistory" | "procedures" | "conditions" | "levels">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,7 +52,6 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     if (patientRut && isOpen) {
       setIsLoading(true);
       const foundPatient = patients.find((p) => p.rut === patientRut);
-      // console.log(foundPatient)
       if (foundPatient) setNewPatient(foundPatient);
       setIsLoading(false);
     } else if (!isOpen) {
@@ -53,8 +60,13 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         isEligible: false,
         rut: "",
         sex: "",
-        oxygenSaturation: "",
-        heartRate: "",
+        patientState: {
+          temperature: "",
+          oxygenSaturation: "",
+          fio2: "",
+          heartRate: "",
+          compromisedConsiousness: false
+        },
         bloodPressure: {
           mediumBloodPressure: "",
           sistolicBloodPressure: "",
@@ -91,7 +103,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         creatinina: 0.92,
         fio2: 0.21,
         fio2_ge_50: false,
-        frecuencia_cardiaca: Number(newPatient.heartRate) || 0,
+        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || 0,
         frecuencia_respiratoria: 27,
         glasgow_score: 14,
         hemoglobina: 13.1,
@@ -102,7 +114,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || 0,
         presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || 0,
         presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || 0,
-        saturacion_o2: Number(newPatient.oxygenSaturation) || 0,
+        saturacion_o2: Number(newPatient.patientState?.heartRate) || 0,
         sodio: 139,
         temperatura_c: 36.5,
         tipo: "SIN ALERTA",
@@ -150,11 +162,12 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
           </svg>
           <div className="flex rounded-t-2xl">
-            <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal"/>
-            <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Exámenes" code="exams" />
-            <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Signos Vitales" code="vitals" />
-            <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />
-            <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Personal" code="personal" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Estado del Paciente" code="vitals" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Antecedentes Médicos" code="medhistory" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Condiciones Hospitalización" code="conditions" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Niveles" code="levels" />
           </div>
 
           {/* Form content */}
@@ -167,11 +180,15 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             ) : activeTab === "exams" ? (
               <ExamDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "vitals" ? (
-              <VitalSignsDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <PatientStateTab newPatient={newPatient} setNewPatient={setNewPatient} />
             ) : activeTab === "medhistory"? (
               <MedHistoryTab newPatient={newPatient} setNewPatient={setNewPatient} />
-            ) : (
+            ) : activeTab === "procedures"? (
               <ProceduresTab newPatient={newPatient} setNewPatient={setNewPatient} />
+            ) : activeTab === "conditions"? (
+              <ConditionsTab newPatient={newPatient} setNewPatient={setNewPatient} />
+            ) : (
+              <LevelsTab newPatient={newPatient} setNewPatient={setNewPatient} />
             )}
           </fieldset>
         </div>

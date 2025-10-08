@@ -27,8 +27,13 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       sex: "",
       age: "",
       examPerformed: "",
-      oxygenSaturation: 0,
-      heartRate: 0,
+      patientState: {
+        temperature: "",
+        oxygenSaturation: "",
+        fio2: "",
+        heartRate: "",
+        compromisedConsiousness: false
+      },
       bloodPressure: {
         mediumBloodPressure: "0/0",
         sistolicBloodPressure: "0/0",
@@ -39,8 +44,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const handleSave = () => {
     addPatient({
-      ...newPatient,
-      oxygenSaturation: Number(newPatient.oxygenSaturation)
+      ...newPatient
     });
     resetForm();
     onClose();
