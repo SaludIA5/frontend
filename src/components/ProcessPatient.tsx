@@ -141,7 +141,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         compromiso_conciencia: false
       };
 
-      const res = await api.post("predictions", payload);
+      const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
