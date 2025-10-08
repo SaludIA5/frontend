@@ -15,7 +15,6 @@ export function resetProcedure(prev: Patient, code: keyof Procedures, subKey: ke
       dialysis: prev.proceduresDone?.dialysis ?? false,
       trombolysis: prev.proceduresDone?.trombolysis ?? false,
       trombolysisSameDay: prev.proceduresDone?.trombolysisSameDay ?? false,
-      pcr: prev.proceduresDone?.pcr ?? false,
       bloodTransfusions: prev.proceduresDone?.bloodTransfusions ?? false,
       rnmStrokeProtocol: prev.proceduresDone?.rnmStrokeProtocol ?? false,
       ecg: prev.proceduresDone?.ecg ?? false,
