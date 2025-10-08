@@ -59,7 +59,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.levels?.potassium || ""}
+        value={newPatient.levels?.pcr || ""}
         onChange={(e) =>
           setNewPatient((prev) =>
             updateNestedField(prev, "levels", "potassium", e.target.value)
@@ -70,7 +70,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.levels?.pcr || ""}
+        value={newPatient.levels?.potassium || ""}
         onChange={(e) =>
           setNewPatient((prev) =>
             updateNestedField(prev, "levels", "pcr", e.target.value)

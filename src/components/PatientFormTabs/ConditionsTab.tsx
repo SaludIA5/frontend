@@ -21,13 +21,19 @@ export default function ConditionsTab({ newPatient, setNewPatient }: Props){
                 <label htmlFor="ventilation">Ventilación mecánica</label>
             </div>
             <p>Tipo de Cama:</p>
-            <input
+            <select
                 className="w-full mb-3 rounded border border-gray-300 p-2"
                 value={newPatient.hospitalizationConditions?.bedType || ""}
                 onChange={(e) =>
                     setNewPatient((prev) => updateNestedField(prev, "hospitalizationConditions", "bedType", e.target.value)
                 )}
-            />
+            >
+                <option value="" disabled>Seleccione</option>
+                <option value="Básica">Básica</option>
+                <option value="Urgencia">Urgencia</option>
+                <option value="UCI">UCI</option>
+                <option value="UTI">UTI</option>
+            </select>
             <p>Puntaje Glasgow (entre 3-15):</p>
             <input
                 type="number"

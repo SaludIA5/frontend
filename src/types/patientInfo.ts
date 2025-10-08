@@ -24,7 +24,7 @@ export interface Procedures {
 
 export interface HospitalizationConditions {
     mechanicalVentilation : boolean
-    bedType: string
+    bedType: "Básica" | "UCI" | "UTI" | "Urgencia"
     glasgowScore: number
 }
 
