@@ -53,8 +53,8 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
       return p.name.toLowerCase().includes(search.toLowerCase());
     })
     .filter((p) => {
-      if (filterEligible === "yes") return p.isEligible;
-      if (filterEligible === "no") return !p.isEligible;
+      if (filterEligible === "yes") return p.currentEpisode.isEligible;
+      if (filterEligible === "no") return !p.currentEpisode.isEligible;
       return true;
     })
     .filter((p) => {

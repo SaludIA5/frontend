@@ -33,7 +33,7 @@ export default function PatientList({ onProcessPatient, patients }: PatientListP
           </p>
 
           {(() => {
-            const isEligible = patient.isEligible;
+            const isEligible = patient.currentEpisode.isEligible;
             const statusConfig = isEligible
               ? { text: "Aplica", className: "bg-green-200 text-green-700" }
               : { text: "No Aplica", className: "bg-red-100 text-red-700" };

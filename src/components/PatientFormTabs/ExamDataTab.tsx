@@ -1,17 +1,17 @@
-import type { Patient } from "../../types/user";
+import type { Episode } from "../../types/episode";
 
 interface Props {
-  newPatient: Patient;
-  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+  episode: Episode;
+   setEpisode: React.Dispatch<React.SetStateAction<Episode>>;
 }
 
-export default function ExamsForm({ newPatient, setNewPatient }: Props) {
+export default function ExamsForm({ episode, setEpisode }: Props) {
   return (
     <div>
       Exámenes Realizados:
       <select
-        value={newPatient.examPerformed || ""}
-        onChange={(e) => setNewPatient({ ...newPatient, examPerformed: e.target.value })}
+        value={episode.examPerformed || ""}
+        onChange={(e) => setEpisode({ ...episode, examPerformed: e.target.value })}
         className="w-full mb-3 rounded border border-gray-300 p-2"
       >
         <option value="" disabled>Seleccione</option>
