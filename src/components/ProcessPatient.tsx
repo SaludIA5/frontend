@@ -98,30 +98,31 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         withCredentials: true
       });
 
+      
       const payload = {
         antecedentes_cardiaco: newPatient.cardiacHistory || false,
         antecedentes_diabetes: newPatient.diabetesHistory || false,
         antecedentes_hipertension: newPatient.hypertensionHistory || false,
-        creatinina: newPatient.levels?.creatinin || null,
-        fio2: Number(newPatient.patientState?.fio2) || null,
-        fio2_ge_50: Number(newPatient.patientState?.fio2) >= 50 || null,
-        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || null,
-        frecuencia_respiratoria: Number(newPatient.patientState?.respirationRate) || null,
-        glasgow_score: Number(newPatient.hospitalizationConditions?.glasgowScore) || null,
-        hemoglobina: Number(newPatient.levels?.hemoglobin) || null,
+        creatinina: newPatient.levels?.creatinin || "NR",
+        fio2: Number(newPatient.patientState?.fio2) || "NR",
+        fio2_ge_50: Number(newPatient.patientState?.fio2) >= 50 || 0,
+        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || "NR",
+        frecuencia_respiratoria: Number(newPatient.patientState?.respirationRate) || "NR",
+        glasgow_score: Number(newPatient.hospitalizationConditions?.glasgowScore) || "NR",
+        hemoglobina: Number(newPatient.levels?.hemoglobin) || "NR",
         model_type: "xgboost",
-        nitrogeno_ureico: Number(newPatient.levels?.ureic_nitro) || null,
-        pcr: Number(newPatient.levels?.pcr) || null,
-        potasio: Number(newPatient.levels?.potassium) || null,
-        presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || null,
-        presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || null,
-        presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || null,
-        saturacion_o2: Number(newPatient.patientState?.oxygenSaturation) || null,
-        sodio: Number(newPatient.levels?.sodium) || null,
-        temperatura_c: Number(newPatient.patientState?.temperature) || null,
+        nitrogeno_ureico: Number(newPatient.levels?.ureic_nitro) || "NR",
+        pcr: Number(newPatient.levels?.pcr) || "NR",
+        potasio: Number(newPatient.levels?.potassium) || "NR",
+        presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || "NR",
+        presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || "NR",
+        presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || "NR",
+        saturacion_o2: Number(newPatient.patientState?.oxygenSaturation) || "NR",
+        sodio: Number(newPatient.levels?.sodium) || "NR",
+        temperatura_c: Number(newPatient.patientState?.temperature) || "NR",
         tipo: "SIN ALERTA",
         tipo_alerta_ugcc: "SIN ALERTA",
-        tipo_cama: newPatient.hospitalizationConditions?.bedType,
+        tipo_cama: newPatient.hospitalizationConditions?.bedType || "Básica",
         triage: 3,
         ventilacion_mecanica: newPatient.hospitalizationConditions?.mechanicalVentilation || false,
 
@@ -142,6 +143,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         transfusiones: newPatient.proceduresDone?.bloodTransfusions || false,
         compromiso_conciencia: newPatient.patientState?.compromisedConsiousness || false,
       };
+      console.log("REQUEST PAYLOAD KEYS", Object.keys(payload));
+      console.log("REQUEST PAYLOAD JSON", JSON.stringify(payload));
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
       setRecommendationResult(res.data);

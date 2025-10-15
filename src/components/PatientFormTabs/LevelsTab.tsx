@@ -62,7 +62,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         value={newPatient.levels?.pcr || ""}
         onChange={(e) =>
           setNewPatient((prev) =>
-            updateNestedField(prev, "levels", "potassium", e.target.value)
+            updateNestedField(prev, "levels", "pcr", e.target.value)
           )
         }
       />
@@ -73,7 +73,7 @@ export default function LevelsTab({ newPatient, setNewPatient }: Props) {
         value={newPatient.levels?.potassium || ""}
         onChange={(e) =>
           setNewPatient((prev) =>
-            updateNestedField(prev, "levels", "pcr", e.target.value)
+            updateNestedField(prev, "levels", "potassium", e.target.value)
           )
         }
       />
