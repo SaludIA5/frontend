@@ -1,13 +1,13 @@
-import type { Patient } from "../../types/user";
+import type { Episode } from "../../types/episode";
 import { updateNestedField } from "../../utils/updateNestedField";
 import { useState } from "react";
 
 interface Props {
-  newPatient: Patient;
-  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+  episode: Episode;
+   setEpisode: React.Dispatch<React.SetStateAction<Episode>>;
 }
 
-export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
+export default function PatientStateTab({ episode, setEpisode }: Props) {
   const [showBP, setShowBP] = useState(false)
   const [showCardioResp, setShowCardioResp] = useState(false)
   return (
@@ -16,9 +16,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
         <input
           type="checkbox"
           id="conciousness"
-          checked={!!newPatient.patientState?.compromisedConsiousness}
+          checked={!!episode.patientState?.compromisedConsiousness}
           onChange={(e) =>
-            setNewPatient((prev) => updateNestedField(prev, "patientState", "compromisedConsiousness", e.target.checked)
+            setEpisode((prev) => updateNestedField(prev, "patientState", "compromisedConsiousness", e.target.checked)
           )}
         />
         <label htmlFor="conciousness">Compromiso de Conciencia</label>
@@ -27,9 +27,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.temperature || ""}
+        value={episode.patientState?.temperature || ""}
         onChange={(e) =>
-          setNewPatient((prev) =>
+          setEpisode((prev) =>
             updateNestedField(prev, "patientState", "temperature", e.target.value)
           )
         }
@@ -49,9 +49,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.oxygenSaturation || ""}
+        value={episode.patientState?.oxygenSaturation || ""}
         onChange={(e) =>
-          setNewPatient((prev) =>
+          setEpisode((prev) =>
             updateNestedField(prev, "patientState", "oxygenSaturation", e.target.value)
           )
         }
@@ -61,9 +61,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.fio2 || ""}
+        value={episode.patientState?.fio2 || ""}
         onChange={(e) =>
-          setNewPatient((prev) =>
+          setEpisode((prev) =>
             updateNestedField(prev, "patientState", "fio2", e.target.value)
           )
         }
@@ -73,9 +73,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.respirationRate || ""}
+        value={episode.patientState?.respirationRate || ""}
         onChange={(e) =>
-          setNewPatient((prev) =>
+          setEpisode((prev) =>
             updateNestedField(prev, "patientState", "respirationRate", e.target.value)
           )
         }
@@ -85,9 +85,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
       <input
         type="number"
         className="w-full mb-3 rounded border border-gray-300 p-2"
-        value={newPatient.patientState?.heartRate || ""}
+        value={episode.patientState?.heartRate || ""}
         onChange={(e) =>
-          setNewPatient((prev) =>
+          setEpisode((prev) =>
             updateNestedField(prev, "patientState", "heartRate", e.target.value)
           )
         }
@@ -111,9 +111,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
-              value={newPatient.bloodPressure?.mediumBloodPressure || ""}
+              value={episode.bloodPressure?.mediumBloodPressure || ""}
               onChange={(e) =>
-                setNewPatient((prev) =>
+                setEpisode((prev) =>
                   updateNestedField(prev, "bloodPressure", "mediumBloodPressure", e.target.value)
                 )
               }
@@ -124,9 +124,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
-              value={newPatient.bloodPressure?.sistolicBloodPressure || ""}
+              value={episode.bloodPressure?.sistolicBloodPressure || ""}
               onChange={(e) =>
-                setNewPatient((prev) =>
+                setEpisode((prev) =>
                   updateNestedField(prev, "bloodPressure", "sistolicBloodPressure", e.target.value)
                 )
               }
@@ -137,9 +137,9 @@ export default function PatientStateTab({ newPatient, setNewPatient }: Props) {
             <input
               type="text"
               className="w-full rounded border border-gray-300 p-2"
-              value={newPatient.bloodPressure?.diastolicBloodPressure || ""}
+              value={episode.bloodPressure?.diastolicBloodPressure || ""}
               onChange={(e) =>
-                setNewPatient((prev) =>
+                setEpisode((prev) =>
                   updateNestedField(prev, "bloodPressure", "diastolicBloodPressure", e.target.value)
                 )
               }

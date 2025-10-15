@@ -1,11 +1,11 @@
-import type { Patient } from "../../types/user";
+import type { Episode } from "../../types/episode";
 import type { Procedures } from "../../types/patientInfo";
 import { updateNestedField } from "../../utils/updateNestedField";
 import { resetProcedure } from "../../utils/resetProcedure";
 
 interface Props {
-  newPatient: Patient;
-  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+  episode: Episode;
+   setEpisode: React.Dispatch<React.SetStateAction<Episode>>;
 }
 
 interface Procedure {
@@ -27,13 +27,13 @@ const PROCEDURES: Procedure[] = [
   { code: "troponine", label: "Prueba de Troponina", subKey: "alteredTroponine", subLabel: "¿Resultados Alterados?" }
 ];
 
-export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
+export default function ProceduresTab({ episode, setEpisode }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <h2>Se han realizado:</h2>
 
       {PROCEDURES.map((procedure) => {
-        const isChecked = !!newPatient.proceduresDone?.[procedure.code];
+        const isChecked = !!episode.proceduresDone?.[procedure.code];
 
         return (
           <div className="flex flex-col gap-1" key={procedure.code}>
@@ -42,9 +42,9 @@ export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
             <input
                 type="checkbox"
                 id={procedure.code}
-                checked={!!newPatient.proceduresDone?.[procedure.code]}
+                checked={!!episode.proceduresDone?.[procedure.code]}
                 onChange={(e) =>
-                    setNewPatient((prev) =>
+                    setEpisode((prev) =>
                     e.target.checked || !procedure.subKey
                         ? updateNestedField(prev, "proceduresDone", procedure.code, e.target.checked)
                         : resetProcedure(prev, procedure.code, procedure.subKey)
@@ -60,9 +60,9 @@ export default function ProceduresTab({ newPatient, setNewPatient }: Props) {
                 <input
                   type="checkbox"
                   id={`${procedure.code}-subComponent`}
-                  checked={!!newPatient.proceduresDone?.[procedure.subKey]}
+                  checked={!!episode.proceduresDone?.[procedure.subKey]}
                   onChange={(e) =>
-                    setNewPatient((prev) =>
+                    setEpisode((prev) =>
                       updateNestedField(prev, "proceduresDone", procedure.subKey!, e.target.checked)
                     )
                   }

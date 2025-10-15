@@ -1,11 +1,11 @@
-import type { Patient } from "../types/user";
+import type { Episode } from "../types/episode";
 
-export function updateNestedField<T extends keyof Patient>(
-  prev: Patient,
+export function updateNestedField<T extends keyof Episode>(
+  prev: Episode,
   section: T,
-  key: keyof NonNullable<Patient[T]>,
+  key: keyof NonNullable<Episode[T]>,
   value: unknown
-): Patient {
+): Episode {
   return {
     ...prev,
     [section]: {

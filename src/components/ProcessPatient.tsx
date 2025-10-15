@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import type { Patient } from "../types/user";
+import type { Episode } from "../types/episode";
 import axios from 'axios';
 import { usePatients } from "../hooks/usePatients";
 import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
-import ExamDataTab from "./PatientFormTabs/ExamDataTab";
 import PatientStateTab from "./PatientFormTabs/PatientStateTab";
 import TabButton from "./PatientFormTabs/TabButton";
 import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
@@ -17,11 +17,17 @@ interface ProcessPatientProps {
 }
 
 export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessPatientProps) {
-  const [newPatient, setNewPatient] = useState<Patient>({
+  const [patient, setPatient] = useState<Patient>({
     name: "",
-    isEligible: false,
     rut: "",
+    age:"",
     sex: "",
+    currentEpisode: {
+      isEligible: false
+    }
+  })
+  const [episode, setEpisode] = useState<Episode>({
+    isEligible: false,
     patientState: {
       temperature: "",
       oxygenSaturation: "",
@@ -35,11 +41,9 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       sistolicBloodPressure: "",
       diastolicBloodPressure: ""
     },
-    examPerformed: "",
-    age: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" 
+  const [activeTab, setActiveTab] = useState<"personal" | "vitals" 
   | "medhistory" | "procedures" | "conditions" | "levels">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,14 +57,14 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     if (patientRut && isOpen) {
       setIsLoading(true);
       const foundPatient = patients.find((p) => p.rut === patientRut);
-      if (foundPatient) setNewPatient(foundPatient);
+      if (foundPatient){ 
+        setPatient(foundPatient)
+        setEpisode(foundPatient.currentEpisode);
+      }
       setIsLoading(false);
     } else if (!isOpen) {
-      setNewPatient({
-        name: "",
+      setEpisode({
         isEligible: false,
-        rut: "",
-        sex: "",
         patientState: {
           temperature: "",
           oxygenSaturation: "",
@@ -74,15 +78,14 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           sistolicBloodPressure: "",
           diastolicBloodPressure: ""
         },
-        examPerformed: "",
-        age: ""
       });
       setIsEditing(false);
     }
   }, [patientRut, patients, isOpen]);
 
+
   const handleSave = () => {
-    if (patientRut) updatePatient(patientRut, newPatient);
+    if (patientRut) updatePatient(patientRut, {...patient, currentEpisode: episode});
     setIsEditing(false);
   };
 
@@ -99,54 +102,55 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       });
 
       const payload = {
-        antecedentes_cardiaco: newPatient.cardiacHistory || false,
-        antecedentes_diabetes: newPatient.diabetesHistory || false,
-        antecedentes_hipertension: newPatient.hypertensionHistory || false,
-        creatinina: newPatient.levels?.creatinin || null,
-        fio2: Number(newPatient.patientState?.fio2) || null,
-        fio2_ge_50: Number(newPatient.patientState?.fio2) >= 50 || null,
-        frecuencia_cardiaca: Number(newPatient.patientState?.heartRate) || null,
-        frecuencia_respiratoria: Number(newPatient.patientState?.respirationRate) || null,
-        glasgow_score: Number(newPatient.hospitalizationConditions?.glasgowScore) || null,
-        hemoglobina: Number(newPatient.levels?.hemoglobin) || null,
+        antecedentes_cardiaco: episode.cardiacHistory || false,
+        antecedentes_diabetes: episode.diabetesHistory || false,
+        antecedentes_hipertension: episode.hypertensionHistory || false,
+        creatinina: episode.levels?.creatinin || null,
+        fio2: Number(episode.patientState?.fio2) || null,
+        fio2_ge_50: Number(episode.patientState?.fio2) >= 50 || null,
+        frecuencia_cardiaca: Number(episode.patientState?.heartRate) || null,
+        frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
+        glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
+        hemoglobina: Number(episode.levels?.hemoglobin) || null,
         model_type: "xgboost",
-        nitrogeno_ureico: Number(newPatient.levels?.ureic_nitro) || null,
-        pcr: Number(newPatient.levels?.pcr) || null,
-        potasio: Number(newPatient.levels?.potassium) || null,
-        presion_diastolica: Number(newPatient.bloodPressure?.diastolicBloodPressure) || null,
-        presion_media: Number(newPatient.bloodPressure?.mediumBloodPressure) || null,
-        presion_sistolica: Number(newPatient.bloodPressure?.sistolicBloodPressure) || null,
-        saturacion_o2: Number(newPatient.patientState?.oxygenSaturation) || null,
-        sodio: Number(newPatient.levels?.sodium) || null,
-        temperatura_c: Number(newPatient.patientState?.temperature) || null,
+        nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
+        pcr: Number(episode.levels?.pcr) || null,
+        potasio: Number(episode.levels?.potassium) || null,
+        presion_diastolica: Number(episode.bloodPressure?.diastolicBloodPressure) || null,
+        presion_media: Number(episode.bloodPressure?.mediumBloodPressure) || null,
+        presion_sistolica: Number(episode.bloodPressure?.sistolicBloodPressure) || null,
+        saturacion_o2: Number(episode.patientState?.oxygenSaturation) || null,
+        sodio: Number(episode.levels?.sodium) || null,
+        temperatura_c: Number(episode.patientState?.temperature) || null,
         tipo: "SIN ALERTA",
         tipo_alerta_ugcc: "SIN ALERTA",
-        tipo_cama: newPatient.hospitalizationConditions?.bedType,
+        tipo_cama: episode.hospitalizationConditions?.bedType,
         triage: 3,
-        ventilacion_mecanica: newPatient.hospitalizationConditions?.mechanicalVentilation || false,
+        ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || false,
 
-        cirugia_realizada: newPatient.proceduresDone?.surgery || false,
-        cirugia_mismo_dia_ingreso: newPatient.proceduresDone?.surgerySameDay || false,
-        hemodinamia: newPatient.proceduresDone?.hemoDinamia || false,
-        hemodinamia_mismo_dia_ingreso: newPatient.proceduresDone?.hemoDinamiaSameDay || false,
-        endoscopia: newPatient.proceduresDone?.endoscopy || false,
-        endoscopia_mismo_dia_ingreso: newPatient.proceduresDone?.endoscopySameDay || false,
-        dialisis: newPatient.proceduresDone?.dialysis || false,
-        trombolisis: newPatient.proceduresDone?.trombolysis || false,
-        trombolisis_mismo_dia_ingreso: newPatient.proceduresDone?.trombolysisSameDay || false,
+        cirugia_realizada: episode.proceduresDone?.surgery || false,
+        cirugia_mismo_dia_ingreso: episode.proceduresDone?.surgerySameDay || false,
+        hemodinamia: episode.proceduresDone?.hemoDinamia || false,
+        hemodinamia_mismo_dia_ingreso: episode.proceduresDone?.hemoDinamiaSameDay || false,
+        endoscopia: episode.proceduresDone?.endoscopy || false,
+        endoscopia_mismo_dia_ingreso: episode.proceduresDone?.endoscopySameDay || false,
+        dialisis: episode.proceduresDone?.dialysis || false,
+        trombolisis: episode.proceduresDone?.trombolysis || false,
+        trombolisis_mismo_dia_ingreso: episode.proceduresDone?.trombolysisSameDay || false,
         dreo: false,
-        troponinas_alteradas: newPatient.proceduresDone?.alteredTroponine || false,
-        ecg_alterado: newPatient.proceduresDone?.alteredEcg || false,
-        rnm_protocolo_stroke: newPatient.proceduresDone?.rnmStrokeProtocol || false,
+        troponinas_alteradas: episode.proceduresDone?.alteredTroponine || false,
+        ecg_alterado: episode.proceduresDone?.alteredEcg || false,
+        rnm_protocolo_stroke: episode.proceduresDone?.rnmStrokeProtocol || false,
         dva: false,
-        transfusiones: newPatient.proceduresDone?.bloodTransfusions || false,
-        compromiso_conciencia: newPatient.patientState?.compromisedConsiousness || false,
+        transfusiones: episode.proceduresDone?.bloodTransfusions || false,
+        compromiso_conciencia: episode.patientState?.compromisedConsiousness || false,
       };
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
-      updatePatient(patientRut!, { ...newPatient, isEligible: prediction === 1 });
+      setEpisode({...episode, isEligible: prediction === 1})
+      updatePatient(patientRut!, { ...patient, currentEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
       alert("Ocurrió un error al generar la recomendación.");
@@ -177,19 +181,18 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             {isLoading ? (
               <div className="text-gray-500">Cargando...</div>
             ) : activeTab === "personal" ? (
-              <PersonalDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
-            ) : activeTab === "exams" ? (
-              <ExamDataTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              // Personal Data es distinta a las otras porque cambia el paciente, no el episodio
+              <PersonalDataTab patient={patient} setPatient={setPatient} />
             ) : activeTab === "vitals" ? (
-              <PatientStateTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <PatientStateTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "medhistory"? (
-              <MedHistoryTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <MedHistoryTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "procedures"? (
-              <ProceduresTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <ProceduresTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "conditions"? (
-              <ConditionsTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <ConditionsTab episode={episode} setEpisode={setEpisode} />
             ) : (
-              <LevelsTab newPatient={newPatient} setNewPatient={setNewPatient} />
+              <LevelsTab episode={episode} setEpisode={setEpisode} />
             )}
           </fieldset>
         </div>

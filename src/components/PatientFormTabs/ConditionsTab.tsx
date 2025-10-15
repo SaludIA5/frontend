@@ -1,21 +1,22 @@
-import type { Patient } from "../../types/user";
+import type { Episode } from "../../types/episode";
 import { updateNestedField } from "../../utils/updateNestedField";
 
 interface Props {
-    newPatient: Patient;
-    setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+    episode: Episode;
+    setEpisode: React.Dispatch<React.SetStateAction<Episode>>;
 }
 
-export default function ConditionsTab({ newPatient, setNewPatient }: Props){
+export default function ConditionsTab({ episode, setEpisode }: Props){
+    
     return (
         <div className="flex flex-col gap-2">
             <div className="flex gap-3 items-center">
                 <input
                     type="checkbox"
                     id="ventilation"
-                    checked={!!newPatient.hospitalizationConditions?.mechanicalVentilation}
+                    checked={!!episode.hospitalizationConditions?.mechanicalVentilation}
                     onChange={(e) =>
-                        setNewPatient((prev) => updateNestedField(prev, "hospitalizationConditions", "mechanicalVentilation", e.target.checked)
+                        setEpisode((prev) => updateNestedField(prev, "hospitalizationConditions", "mechanicalVentilation", e.target.checked)
                     )}
                     />
                 <label htmlFor="ventilation">Ventilación mecánica</label>
@@ -23,9 +24,9 @@ export default function ConditionsTab({ newPatient, setNewPatient }: Props){
             <p>Tipo de Cama:</p>
             <select
                 className="w-full mb-3 rounded border border-gray-300 p-2"
-                value={newPatient.hospitalizationConditions?.bedType || ""}
+                value={episode.hospitalizationConditions?.bedType || ""}
                 onChange={(e) =>
-                    setNewPatient((prev) => updateNestedField(prev, "hospitalizationConditions", "bedType", e.target.value)
+                    setEpisode((prev) => updateNestedField(prev, "hospitalizationConditions", "bedType", e.target.value)
                 )}
             >
                 <option value="" disabled>Seleccione</option>
@@ -40,11 +41,11 @@ export default function ConditionsTab({ newPatient, setNewPatient }: Props){
                 min={3}
                 max={15}
                 className="w-full mb-3 rounded border border-gray-300 p-2"
-                value={newPatient.hospitalizationConditions?.glasgowScore ?? ""}
+                value={episode.hospitalizationConditions?.glasgowScore ?? ""}
                 onChange={(e) => {
                     const inputValue = e.target.value;
                     const score = inputValue === "" ? "" : Math.max(3, Math.min(Number(inputValue), 15));
-                    setNewPatient((prev) =>
+                    setEpisode((prev) =>
                         updateNestedField(prev, "hospitalizationConditions", "glasgowScore", score)
                     );
                 }}

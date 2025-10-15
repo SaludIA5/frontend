@@ -1,11 +1,12 @@
-import type { Patient } from "../../types/user";
+import type React from "react";
+import type { Episode } from "../../types/episode";
 
 interface Props {
-  newPatient: Patient;
-  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+  episode: Episode;
+  setEpisode: React.Dispatch<React.SetStateAction<Episode>>;
 }
 
-export default function MedHistoryTab({ newPatient, setNewPatient }: Props) {
+export default function MedHistoryTab({ episode, setEpisode }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <h2>El paciente tiene:</h2>
@@ -13,9 +14,9 @@ export default function MedHistoryTab({ newPatient, setNewPatient }: Props) {
         <input
             type="checkbox"
             id="cardiacHistory"
-            checked={!!newPatient.cardiacHistory}
+            checked={!!episode.cardiacHistory}
             onChange={(e) =>
-            setNewPatient({ ...newPatient, cardiacHistory: e.target.checked })
+            setEpisode({ ...episode, cardiacHistory: e.target.checked })
             }
         />
         <label htmlFor="cardiacHistory">Antecedentes Cardiacos</label>
@@ -24,9 +25,9 @@ export default function MedHistoryTab({ newPatient, setNewPatient }: Props) {
       <input
         type="checkbox"
         id="diabetesHistory"
-        checked={!!newPatient.diabetesHistory}
+        checked={!!episode.diabetesHistory}
         onChange={(e) =>
-          setNewPatient({ ...newPatient, diabetesHistory: e.target.checked })
+          setEpisode({ ...episode, diabetesHistory: e.target.checked })
         }
       />
       <label htmlFor="diabetesHistory">Antecedentes Diabetes</label>
@@ -35,9 +36,9 @@ export default function MedHistoryTab({ newPatient, setNewPatient }: Props) {
       <input
         type="checkbox"
         id="hypertensionHistory"
-        checked={!!newPatient.hypertensionHistory}
+        checked={!!episode.hypertensionHistory}
         onChange={(e) =>
-          setNewPatient({ ...newPatient, hypertensionHistory: e.target.checked })
+          setEpisode({ ...episode, hypertensionHistory: e.target.checked })
         }
         />
         <label htmlFor="hypertensionHistory">Antecedentes Hipertensión Arterial</label>

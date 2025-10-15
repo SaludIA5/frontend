@@ -11,10 +11,10 @@ const api = axios.create({
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<Patient>({
     name: "",
-    isEligible: false,
     rut: "",
     sex: "",
     age: "",
+    currentEpisode: {isEligible: false},
   });
 
   const { addPatient } = usePatients();
@@ -22,24 +22,10 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   const resetForm = () => {
     setNewPatient({
       name: "",
-      isEligible: false,
+      currentEpisode: {isEligible: false},
       rut: "",
       sex: "",
       age: "",
-      examPerformed: "",
-      patientState: {
-        temperature: "",
-        oxygenSaturation: "",
-        fio2: "",
-        respirationRate: "",
-        heartRate: "",
-        compromisedConsiousness: false
-      },
-      bloodPressure: {
-        mediumBloodPressure: "0/0",
-        sistolicBloodPressure: "0/0",
-        diastolicBloodPressure: "0/0"
-      }
     });
   };
 
