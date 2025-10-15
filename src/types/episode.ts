@@ -2,7 +2,6 @@ import type { BloodPressure, Procedures, HospitalizationConditions, PatientState
 
 export interface Episode {
     isEligible: boolean
-    examPerformed?: string | number | readonly string[] | undefined
     patientState?: PatientState 
     bloodPressure?: BloodPressure
     cardiacHistory?: boolean

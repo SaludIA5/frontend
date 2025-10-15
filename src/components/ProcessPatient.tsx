@@ -4,7 +4,6 @@ import type { Episode } from "../types/episode";
 import axios from 'axios';
 import { usePatients } from "../hooks/usePatients";
 import PersonalDataTab from "./PatientFormTabs/PersonalDataTab";
-import ExamDataTab from "./PatientFormTabs/ExamDataTab";
 import PatientStateTab from "./PatientFormTabs/PatientStateTab";
 import TabButton from "./PatientFormTabs/TabButton";
 import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
@@ -42,10 +41,9 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       sistolicBloodPressure: "",
       diastolicBloodPressure: ""
     },
-    examPerformed: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"personal" | "exams" | "vitals" 
+  const [activeTab, setActiveTab] = useState<"personal" | "vitals" 
   | "medhistory" | "procedures" | "conditions" | "levels">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,14 +78,14 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           sistolicBloodPressure: "",
           diastolicBloodPressure: ""
         },
-        examPerformed: "",
       });
       setIsEditing(false);
     }
   }, [patientRut, patients, isOpen]);
 
+
   const handleSave = () => {
-    if (patientRut) updatePatient(patientRut, patient);
+    if (patientRut) updatePatient(patientRut, {...patient, currentEpisode: episode});
     setIsEditing(false);
   };
 
@@ -185,18 +183,16 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
             ) : activeTab === "personal" ? (
               // Personal Data es distinta a las otras porque cambia el paciente, no el episodio
               <PersonalDataTab patient={patient} setPatient={setPatient} />
-            ) : activeTab === "exams" ? (
-              <ExamDataTab episode={patient.currentEpisode} setEpisode={setEpisode} />
             ) : activeTab === "vitals" ? (
-              <PatientStateTab episode={patient.currentEpisode} setEpisode={setEpisode} />
+              <PatientStateTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "medhistory"? (
-              <MedHistoryTab episode={patient.currentEpisode} setEpisode={setEpisode} />
+              <MedHistoryTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "procedures"? (
-              <ProceduresTab episode={patient.currentEpisode} setEpisode={setEpisode} />
+              <ProceduresTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "conditions"? (
-              <ConditionsTab episode={patient.currentEpisode} setEpisode={setEpisode} />
+              <ConditionsTab episode={episode} setEpisode={setEpisode} />
             ) : (
-              <LevelsTab episode={patient.currentEpisode} setEpisode={setEpisode} />
+              <LevelsTab episode={episode} setEpisode={setEpisode} />
             )}
           </fieldset>
         </div>

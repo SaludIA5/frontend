@@ -3,6 +3,7 @@ import PatientList from './PatientList';
 import PatientControls from './PatientControls';
 import { usePatients } from '../../hooks/usePatients';
 import axios from 'axios';
+import type { Patient } from '../../types/user';
 
 interface PatientManagerProps {
   onProcessPatient: (patientRut: string) => void;
@@ -24,6 +25,21 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
   const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all");
 
   useEffect(() => {
+    //Parche para poder recibir pacientes en formato antiguo
+    const normalizePatient = (patient: Patient): Patient => {
+      const newPatient: Patient = {
+        name: patient.name,
+        rut: patient.rut,
+        age: patient.age,
+        sex: patient.sex,
+        currentEpisode: {
+          isEligible: false 
+        }
+      } 
+      // Migrar estructura antigua a la nueva
+      return newPatient;
+    }
+    
     const fetchPatients = async () => {
       if (!import.meta.env.VITE_BACKEND_URL) {
         setError(true);
@@ -35,7 +51,8 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
         const res = await api.get("/patients");
         const patientsData = res.data?.items || res.data || [];
         const list = Array.isArray(patientsData) ? patientsData : [];
-        setPatientList(list); 
+        const normalizedList: Patient[] = list.map((patient) => normalizePatient(patient));
+        setPatientList(normalizedList);
         setError(false);
       } catch (error) {
         console.error("Error fetching patients:", error);
