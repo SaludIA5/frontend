@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Patient } from "../types/user";
-import { usePatients } from "../hooks/usePatients";
+import type { Patient } from "../../types/user";
+import { usePatients } from "../../hooks/usePatients";
 import axios from 'axios';
 
 const api = axios.create({

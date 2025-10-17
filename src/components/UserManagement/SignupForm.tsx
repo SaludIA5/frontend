@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContextBase';
+import { useAuth } from '../../context/AuthContextBase';
 
 export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => void; onCancel?: () => void }) {
     const { signup } = useAuth();
