@@ -5,6 +5,7 @@ import { usePatients } from '../hooks/usePatients';
 import axios from 'axios';
 import ClosedPatientsList from '../components/Metrics/ClosedPatientsList';
 import { useNavigate } from 'react-router-dom';
+import { mockPatients } from '../types/user'; //Para mockear, quitar despues
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -14,6 +15,7 @@ const api = axios.create({
 export default function MetricsPage() {
     const navigate = useNavigate()
     const { patients, setPatientList } = usePatients();
+    const [allPatients, setAllPatients] = useState<Patient[]>(mockPatients); //Para mockear, quitar despues
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -58,6 +60,18 @@ export default function MetricsPage() {
         fetchPatients();
     }, [setPatientList]);
 
+    useEffect(() => {
+      if (patients.length > 0) {
+        const merged = [
+          ...patients,
+          ...mockPatients.filter(mock => !patients.some(p => p.rut === mock.rut))
+        ];
+        setAllPatients(merged);
+      } else {
+        setAllPatients(mockPatients);
+      }
+    }, [patients]);
+
     if (!patients || patients.length === 0) {
         return (
           <div className="text-center py-8">
@@ -79,7 +93,7 @@ export default function MetricsPage() {
                     Volver a Pacientes Activos
                 </button>
             </div>
-            <ClosedPatientsList patients={patients} />
+            <ClosedPatientsList patients={allPatients} /> {/*Mock, despues cambiar a patients*/}
         </>
     )
 }

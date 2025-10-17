@@ -21,7 +21,7 @@ export default function ClosedPatientsList({ patients }: Props) {
     <ul className="mx-auto max-w-5xl space-y-3">
       {patients.map((patient, i) => {
         const isOpen = openIndexes.includes(i);
-
+        if (!patient.episodes || patient.episodes.length == 0) return;
         return (
           <li
             key={i}

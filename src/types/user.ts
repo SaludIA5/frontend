@@ -1,28 +1,233 @@
-import type { Episode } from "./episode";
+import type { ClosedEpisode, Episode } from "./episode";
 
 export interface Patient {
     name: string
     rut: string
     sex: string
     age: string
-    episodes?: Episode[]
+    episodes?: ClosedEpisode[]
     currentEpisode: Episode
 }
 
 export const mockPatients: Patient[] = [
-    { name: "Juan Pérez González", rut: "12.345.678-9", sex: "M", age: "30", currentEpisode: {isEligible: false} },
-    { name: "María Rodríguez López", rut: "9.876.543-2", sex: "F", age: "25", currentEpisode: {isEligible: false} },
-    { name: "Carlos Soto Ramírez", rut: "15.234.567-8", sex: "M", age: "40", currentEpisode: {isEligible: false} },
-    { name: "Ana Torres", rut: "7.654.321-K", sex: "F", age: "28", currentEpisode: {isEligible: false} },
-    { name: "Pedro Muñoz Aravena", rut: "18.765.432-1", sex: "M", age: "35", currentEpisode: {isEligible: false} },
-    { name: "Sofía Hernández Vega", rut: "11.223.344-5", sex: "F", age: "22", currentEpisode: {isEligible: false} },
-    { name: "Andrés Fuentes", rut: "6.543.210-9", sex: "M", age: "33", currentEpisode: {isEligible: false} },
-    { name: "Camila Navarro Pizarro", rut: "13.579.246-8", sex: "F", age: "27", currentEpisode: {isEligible: false} },
-    { name: "Felipe Morales", rut: "22.334.455-6", sex: "M", age: "31", currentEpisode: {isEligible: false} },
-    { name: "Valentina Reyes", rut: "10.987.654-3", sex: "F", age: "29", currentEpisode: {isEligible: false} },
-    { name: "Diego Castillo Figueroa", rut: "14.321.987-0", sex: "M", age: "36", currentEpisode: {isEligible: false} },
-    { name: "Constanza Silva", rut: "8.765.432-1", sex: "F", age: "24", currentEpisode: {isEligible: false} },
-    { name: "José Cárdenas Ortiz", rut: "19.876.543-2", sex: "M", age: "38", currentEpisode: {isEligible: false} },
-    { name: "Francisca Rojas Martínez", rut: "16.543.219-K", sex: "F", age: "26", currentEpisode: {isEligible: false} },
-    { name: "Matías Vargas Contreras", rut: "21.234.567-8", sex: "ND", age: "32", currentEpisode: {isEligible: false} },
-]
+  {
+    name: "Andrés Arriagada",
+    rut: "15.646.548-4",
+    sex: "Masculino",
+    age: "45",
+    currentEpisode: {
+      isEligible: true,
+      isActive: true,
+      dateOfEntry: new Date("2025-10-10"),
+      patientState: {
+        temperature: 37.8,
+        oxygenSaturation: 95,
+        fio2: 21,
+        respirationRate: 18,
+        heartRate: 85,
+        compromisedConsiousness: false,
+      },
+      bloodPressure: {
+        sistolicBloodPressure: 125,
+        diastolicBloodPressure: 80,
+        mediumBloodPressure: 95,
+      },
+      cardiacHistory: true,
+      diabetesHistory: false,
+      hypertensionHistory: true,
+      proceduresDone: {
+        surgery: false,
+        surgerySameDay: false,
+        hemoDinamia: false,
+        hemoDinamiaSameDay: false,
+        endoscopy: false,
+        endoscopySameDay: false,
+        dialysis: false,
+        trombolysis: false,
+        trombolysisSameDay: false,
+        rnmStrokeProtocol: false,
+        bloodTransfusions: false,
+        ecg: true,
+        alteredEcg: false,
+        troponine: true,
+        alteredTroponine: false,
+      },
+      hospitalizationConditions: {
+        mechanicalVentilation: false,
+        bedType: "Básica",
+        glasgowScore: 15,
+      },
+      levels: {
+        hemoglobin: 13.4,
+        creatinin: 0.9,
+        ureic_nitro: 28,
+        sodium: 140,
+        potassium: 4.3,
+        pcr: 5.1,
+      },
+    },
+    episodes: [
+      {
+        isEligible: false,
+        wasLawApplied: false,
+        isActive: false,
+        dateOfEntry: new Date("2025-04-12"),
+        dateOfExit: new Date("2025-04-14"),
+        patientState: {
+          temperature: 38.5,
+          oxygenSaturation: 90,
+          fio2: 30,
+          respirationRate: 22,
+          heartRate: 110,
+          compromisedConsiousness: false,
+        },
+        hospitalizationConditions: {
+          mechanicalVentilation: false,
+          bedType: "UCI",
+          glasgowScore: 15,
+        },
+      },
+      {
+        isEligible: true,
+        wasLawApplied: true,
+        isActive: false,
+        dateOfEntry: new Date("2024-09-21"),
+        dateOfExit: new Date("2024-09-24"),
+        patientState: {
+          temperature: 39.2,
+          oxygenSaturation: 88,
+          fio2: 40,
+          respirationRate: 25,
+          heartRate: 120,
+          compromisedConsiousness: true,
+        },
+        hospitalizationConditions: {
+          mechanicalVentilation: true,
+          bedType: "UTI",
+          glasgowScore: 11,
+        },
+      },
+    ],
+  },
+  {
+    name: "Barbara Hanna",
+    rut: "18.945.673-2",
+    sex: "Femenino",
+    age: "52",
+    currentEpisode: {
+      isEligible: false,
+      isActive: true,
+      dateOfEntry: new Date("2025-09-25"),
+      patientState: {
+        temperature: 36.7,
+        oxygenSaturation: 97,
+        fio2: 21,
+        respirationRate: 16,
+        heartRate: 78,
+        compromisedConsiousness: false,
+      },
+      bloodPressure: {
+        sistolicBloodPressure: 120,
+        diastolicBloodPressure: 75,
+        mediumBloodPressure: 90,
+      },
+      hypertensionHistory: true,
+      cardiacHistory: false,
+      diabetesHistory: false,
+      proceduresDone: {
+        surgery: true,
+        surgerySameDay: true,
+        hemoDinamia: false,
+        hemoDinamiaSameDay: false,
+        endoscopy: false,
+        endoscopySameDay: false,
+        dialysis: false,
+        trombolysis: false,
+        trombolysisSameDay: false,
+        rnmStrokeProtocol: false,
+        bloodTransfusions: false,
+        ecg: true,
+        alteredEcg: false,
+        troponine: false,
+        alteredTroponine: false,
+      },
+      hospitalizationConditions: {
+        mechanicalVentilation: false,
+        bedType: "Básica",
+        glasgowScore: 15,
+      },
+      levels: {
+        hemoglobin: 12.8,
+        creatinin: 1.0,
+        ureic_nitro: 20,
+        sodium: 139,
+        potassium: 4.0,
+        pcr: 3.2,
+      },
+    },
+    episodes: [
+      {
+        isEligible: false,
+        wasLawApplied: true,
+        isActive: false,
+        dateOfEntry: new Date("2025-01-10"),
+        dateOfExit: new Date("2025-01-15"),
+        hospitalizationConditions: {
+          mechanicalVentilation: false,
+          bedType: "Básica",
+          glasgowScore: 15,
+        },
+      },
+    ],
+  },
+  {
+    name: "Cristian Bale",
+    rut: "9.876.543-2",
+    sex: "Masculino",
+    age: "60",
+    currentEpisode: {
+      isEligible: false,
+      isActive: true,
+      dateOfEntry: new Date("2025-10-08"),
+      hospitalizationConditions: {
+        mechanicalVentilation: true,
+        bedType: "UCI",
+        glasgowScore: 13,
+      },
+      patientState: {
+        temperature: 38.0,
+        oxygenSaturation: 91,
+        fio2: 50,
+        respirationRate: 24,
+        heartRate: 105,
+        compromisedConsiousness: true,
+      },
+    },
+    episodes: [
+      {
+        isEligible: true,
+        wasLawApplied: false,
+        isActive: false,
+        dateOfEntry: new Date("2024-11-05"),
+        dateOfExit: new Date("2024-11-20"),
+        hospitalizationConditions: {
+          mechanicalVentilation: true,
+          bedType: "UTI",
+          glasgowScore: 9,
+        },
+      },
+      {
+        isEligible: false,
+        wasLawApplied: false,
+        isActive: false,
+        dateOfEntry: new Date("2023-06-10"),
+        dateOfExit: new Date("2023-06-14"),
+        hospitalizationConditions: {
+          mechanicalVentilation: false,
+          bedType: "Urgencia",
+          glasgowScore: 15,
+        },
+      },
+    ],
+  },
+];
