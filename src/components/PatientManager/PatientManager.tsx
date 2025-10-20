@@ -3,7 +3,7 @@ import PatientList from './PatientList';
 import PatientControls from './PatientControls';
 import { usePatients } from '../../hooks/usePatients';
 import axios from 'axios';
-import type { Patient } from '../../types/user';
+import type { Patient } from '../../types/patient';
 
 interface PatientManagerProps {
   onProcessPatient: (patientRut: string) => void;
@@ -32,7 +32,7 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
         rut: patient.rut,
         age: patient.age,
         sex: patient.sex,
-        currentEpisode: {
+        openEpisode: {
           isEligible: false 
         }
       } 
@@ -70,8 +70,8 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
       return p.name.toLowerCase().includes(search.toLowerCase());
     })
     .filter((p) => {
-      if (filterEligible === "yes") return p.currentEpisode.isEligible;
-      if (filterEligible === "no") return !p.currentEpisode.isEligible;
+      if (filterEligible === "yes") return p.openEpisode.isEligible;
+      if (filterEligible === "no") return !p.openEpisode.isEligible;
       return true;
     })
     .filter((p) => {

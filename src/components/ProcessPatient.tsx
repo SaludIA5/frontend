@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Patient } from "../types/user";
+import type { Patient } from "../types/patient";
 import type { Episode } from "../types/episode";
 import axios from 'axios';
 import { usePatients } from "../hooks/usePatients";
@@ -10,6 +10,7 @@ import MedHistoryTab from "./PatientFormTabs/MedHistoryTab";
 import ProceduresTab from "./PatientFormTabs/ProceduresTab";
 import ConditionsTab from "./PatientFormTabs/ConditionsTab";
 import LevelsTab from "./PatientFormTabs/LevelsTab";
+import { emptyEpisode } from "../utils/emptyEpisode";
 interface ProcessPatientProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,26 +23,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     rut: "",
     age:"",
     sex: "",
-    currentEpisode: {
-      isEligible: false
-    }
   })
-  const [episode, setEpisode] = useState<Episode>({
-    isEligible: false,
-    patientState: {
-      temperature: "",
-      oxygenSaturation: "",
-      fio2: "",
-      respirationRate: "",
-      heartRate: "",
-      compromisedConsiousness: false
-    },
-    bloodPressure: {
-      mediumBloodPressure: "",
-      sistolicBloodPressure: "",
-      diastolicBloodPressure: ""
-    },
-  });
+  const [episode, setEpisode] = useState<Episode>(emptyEpisode);
 
   const [activeTab, setActiveTab] = useState<"personal" | "vitals" 
   | "medhistory" | "procedures" | "conditions" | "levels">("personal");
@@ -59,33 +42,18 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       const foundPatient = patients.find((p) => p.rut === patientRut);
       if (foundPatient){ 
         setPatient(foundPatient)
-        setEpisode(foundPatient.currentEpisode);
+        if (foundPatient.openEpisode) setEpisode(foundPatient.openEpisode);
       }
       setIsLoading(false);
     } else if (!isOpen) {
-      setEpisode({
-        isEligible: false,
-        patientState: {
-          temperature: "",
-          oxygenSaturation: "",
-          fio2: "",
-          respirationRate: "",
-          heartRate: "",
-          compromisedConsiousness: false
-        },
-        bloodPressure: {
-          mediumBloodPressure: "",
-          sistolicBloodPressure: "",
-          diastolicBloodPressure: ""
-        },
-      });
+      setEpisode(emptyEpisode);
       setIsEditing(false);
     }
   }, [patientRut, patients, isOpen]);
 
 
   const handleSave = () => {
-    if (patientRut) updatePatient(patientRut, {...patient, currentEpisode: episode});
+    if (patientRut) updatePatient(patientRut, {...patient, openEpisode: episode});
     setIsEditing(false);
   };
 
@@ -102,9 +70,9 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       });
 
       const payload = {
-        antecedentes_cardiaco: episode.cardiacHistory || false,
-        antecedentes_diabetes: episode.diabetesHistory || false,
-        antecedentes_hipertension: episode.hypertensionHistory || false,
+        antecedentes_cardiaco: episode.cardiacHistory || null,
+        antecedentes_diabetes: episode.diabetesHistory || null,
+        antecedentes_hipertension: episode.hypertensionHistory || null,
         creatinina: episode.levels?.creatinin || null,
         fio2: Number(episode.patientState?.fio2) || null,
         fio2_ge_50: Number(episode.patientState?.fio2) >= 50 || null,
@@ -112,7 +80,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
         glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
         hemoglobina: Number(episode.levels?.hemoglobin) || null,
-        model_type: "xgboost",
+        model_type: "random_forest",
         nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
         pcr: Number(episode.levels?.pcr) || null,
         potasio: Number(episode.levels?.potassium) || null,
@@ -126,31 +94,31 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         tipo_alerta_ugcc: "SIN ALERTA",
         tipo_cama: episode.hospitalizationConditions?.bedType,
         triage: 3,
-        ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || false,
+        ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || null,
 
-        cirugia_realizada: episode.proceduresDone?.surgery || false,
-        cirugia_mismo_dia_ingreso: episode.proceduresDone?.surgerySameDay || false,
-        hemodinamia: episode.proceduresDone?.hemoDinamia || false,
-        hemodinamia_mismo_dia_ingreso: episode.proceduresDone?.hemoDinamiaSameDay || false,
-        endoscopia: episode.proceduresDone?.endoscopy || false,
-        endoscopia_mismo_dia_ingreso: episode.proceduresDone?.endoscopySameDay || false,
-        dialisis: episode.proceduresDone?.dialysis || false,
-        trombolisis: episode.proceduresDone?.trombolysis || false,
-        trombolisis_mismo_dia_ingreso: episode.proceduresDone?.trombolysisSameDay || false,
+        cirugia_realizada: episode.proceduresDone?.surgery || null,
+        cirugia_mismo_dia_ingreso: episode.proceduresDone?.surgerySameDay || null,
+        hemodinamia: episode.proceduresDone?.hemoDinamia || null,
+        hemodinamia_mismo_dia_ingreso: episode.proceduresDone?.hemoDinamiaSameDay || null,
+        endoscopia: episode.proceduresDone?.endoscopy || null,
+        endoscopia_mismo_dia_ingreso: episode.proceduresDone?.endoscopySameDay || null,
+        dialisis: episode.proceduresDone?.dialysis || null,
+        trombolisis: episode.proceduresDone?.trombolysis || null,
+        trombolisis_mismo_dia_ingreso: episode.proceduresDone?.trombolysisSameDay || null,
         dreo: false,
-        troponinas_alteradas: episode.proceduresDone?.alteredTroponine || false,
-        ecg_alterado: episode.proceduresDone?.alteredEcg || false,
-        rnm_protocolo_stroke: episode.proceduresDone?.rnmStrokeProtocol || false,
+        troponinas_alteradas: episode.proceduresDone?.alteredTroponine || null,
+        ecg_alterado: episode.proceduresDone?.alteredEcg || null,
+        rnm_protocolo_stroke: episode.proceduresDone?.rnmStrokeProtocol || null,
         dva: false,
-        transfusiones: episode.proceduresDone?.bloodTransfusions || false,
-        compromiso_conciencia: episode.patientState?.compromisedConsiousness || false,
+        transfusiones: episode.proceduresDone?.bloodTransfusions || null,
+        compromiso_conciencia: episode.patientState?.compromisedConsiousness || null,
       };
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
       setEpisode({...episode, isEligible: prediction === 1})
-      updatePatient(patientRut!, { ...patient, currentEpisode: episode });
+      updatePatient(patientRut!, { ...patient, openEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
       alert("Ocurrió un error al generar la recomendación.");

@@ -1,4 +1,4 @@
-import type { Patient } from "../../types/user";
+import type { Patient } from "../../types/patient";
 
 interface PatientListProps {
   patients: Patient[];
@@ -33,7 +33,7 @@ export default function PatientList({ onProcessPatient, patients }: PatientListP
           </p>
 
           {(() => {
-            const isEligible = patient.currentEpisode.isEligible;
+            const isEligible = patient.openEpisode.isEligible;
             const statusConfig = isEligible
               ? { text: "Aplica", className: "bg-green-200 text-green-700" }
               : { text: "No Aplica", className: "bg-red-100 text-red-700" };

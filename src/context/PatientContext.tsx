@@ -1,5 +1,5 @@
 import { useCallback, useState, type ReactNode } from "react";
-import type { Patient } from "../types/user";
+import type { Patient } from "../types/patient";
 import { PatientsContext } from "./PatientsContext";
 
 export const PatientsProvider = ({ children }: { children: ReactNode }) => {

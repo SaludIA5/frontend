@@ -1,90 +1,14 @@
-import { useState, useEffect } from 'react';
-import type { Patient } from "../types/user"
+import { useState } from 'react';
 import Header from '../components/Header';
-import { usePatients } from '../hooks/usePatients';
-import axios from 'axios';
-import ClosedPatientsList from '../components/Metrics/ClosedPatientsList';
+import DoctorMetricsList from '../components/Metrics/DoctorMetricsList';
 import { useNavigate } from 'react-router-dom';
-import { mockPatients } from '../types/user'; //Para mockear, quitar despues
-
-const api = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL,
-    withCredentials: true,
-});  
+import { mockDoctors } from '../types/doctor';
+import type { Doctor } from '../types/doctor';
 
 export default function MetricsPage() {
     const navigate = useNavigate()
-    const { patients, setPatientList } = usePatients();
-    const [allPatients, setAllPatients] = useState<Patient[]>(mockPatients); //Para mockear, quitar despues
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [doctors] = useState<Doctor[]>(mockDoctors);
 
-    useEffect(() => {
-        //Parche para poder recibir pacientes en formato antiguo
-        const normalizePatient = (patient: Patient): Patient => {
-          const newPatient: Patient = {
-            name: patient.name,
-            rut: patient.rut,
-            age: patient.age,
-            sex: patient.sex,
-            currentEpisode: {
-              isEligible: false 
-            }
-          } 
-          // Migrar estructura antigua a la nueva
-          return newPatient;
-        }
-        
-        const fetchPatients = async () => {
-          if (!import.meta.env.VITE_BACKEND_URL) {
-            setError(true);
-            setLoading(false);
-            return;
-          }
-    
-          try {
-            const res = await api.get("/patients");
-            const patientsData = res.data?.items || res.data || [];
-            const list = Array.isArray(patientsData) ? patientsData : [];
-            const normalizedList: Patient[] = list.map((patient) => normalizePatient(patient));
-            setPatientList(normalizedList);
-            setError(false);
-          } catch (error) {
-            console.error("Error fetching patients:", error);
-            setError(true);
-          } finally {
-            setLoading(false);
-          }
-        };
-    
-        fetchPatients();
-    }, [setPatientList]);
-
-    useEffect(() => {
-      if (patients.length > 0) {
-        const merged = [
-          ...patients,
-          ...mockPatients.filter(mock => !patients.some(p => p.rut === mock.rut))
-        ];
-        setAllPatients(merged);
-      } else {
-        setAllPatients(mockPatients);
-      }
-    }, [patients]);
-
-    if (!patients || patients.length === 0) {
-        return (
-          <div className="text-center py-8">
-            <p className="text-gray-500">
-              {error
-                ? "No se pudo cargar la lista de pacientes."
-                : "No hay pacientes disponibles."}
-            </p>
-          </div>
-        );
-    }
-
-    if (loading) return <>Cargando...</>
     return(
         <>
             <Header />
@@ -93,7 +17,7 @@ export default function MetricsPage() {
                     Volver a Pacientes Activos
                 </button>
             </div>
-            <ClosedPatientsList patients={allPatients} /> {/*Mock, despues cambiar a patients*/}
+            <DoctorMetricsList doctors={doctors} />
         </>
     )
 }

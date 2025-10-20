@@ -1,7 +1,8 @@
 import { useState } from "react";
-import type { Patient } from "../../types/user";
+import type { Patient } from "../../types/patient";
 import { usePatients } from "../../hooks/usePatients";
 import axios from 'axios';
+import { emptyEpisode } from "../../utils/emptyEpisode";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -14,7 +15,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     rut: "",
     sex: "",
     age: "",
-    currentEpisode: {isEligible: false},
+    openEpisode: emptyEpisode(),
   });
 
   const { addPatient } = usePatients();
@@ -22,10 +23,10 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   const resetForm = () => {
     setNewPatient({
       name: "",
-      currentEpisode: {isEligible: false},
       rut: "",
       sex: "",
       age: "",
+      openEpisode: emptyEpisode(),
     });
   };
 
