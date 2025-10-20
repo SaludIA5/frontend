@@ -1,4 +1,4 @@
-import type { Patient } from "../../types/user";
+import type { Patient } from "../../types/patient";
 
 // Personal Data es distinta a las otras porque cambia el paciente, no el episodio
 interface Props {

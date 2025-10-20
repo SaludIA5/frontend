@@ -1,7 +1,8 @@
 import { useState } from "react";
-import type { Patient } from "../types/user";
-import { usePatients } from "../hooks/usePatients";
+import type { Patient } from "../../types/patient";
+import { usePatients } from "../../hooks/usePatients";
 import axios from 'axios';
+import { emptyEpisode } from "../../utils/emptyEpisode";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -10,22 +11,24 @@ const api = axios.create({
 
 export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [newPatient, setNewPatient] = useState<Patient>({
+    id: -1,
     name: "",
     rut: "",
     sex: "",
-    age: "",
-    currentEpisode: {isEligible: false},
+    age: 0,
+    openEpisode: emptyEpisode(),
   });
 
   const { addPatient } = usePatients();
 
   const resetForm = () => {
     setNewPatient({
+      id: -1,
       name: "",
-      currentEpisode: {isEligible: false},
       rut: "",
       sex: "",
-      age: "",
+      age: 0,
+      openEpisode: emptyEpisode(),
     });
   };
 
@@ -100,7 +103,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           placeholder="Edad del paciente"
           className="w-full mb-3 rounded border border-gray-300 p-2"
           value={newPatient.age}
-          onChange={(e) => setNewPatient({ ...newPatient, age: e.target.value })}
+          onChange={(e) => setNewPatient({ ...newPatient, age: Number(e.target.value) })}
           maxLength={3}
         />
 

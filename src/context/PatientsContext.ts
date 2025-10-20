@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { Patient } from "../types/user";
+import type { Patient } from "../types/patient";
 
 type PatientsContextType = {
   patients: Patient[];
