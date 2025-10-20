@@ -19,9 +19,10 @@ interface ProcessPatientProps {
 
 export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessPatientProps) {
   const [patient, setPatient] = useState<Patient>({
+    id: -1,
     name: "",
     rut: "",
-    age:"",
+    age: 0,
     sex: "",
   })
   const [episode, setEpisode] = useState<Episode>(emptyEpisode);
