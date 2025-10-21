@@ -71,6 +71,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       });
 
       const payload = {
+        numero_episodio: "0",
+        diagnostics: null,
         antecedentes_cardiaco: episode.cardiacHistory || null,
         antecedentes_diabetes: episode.diabetesHistory || null,
         antecedentes_hipertension: episode.hypertensionHistory || null,
@@ -93,7 +95,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         temperatura_c: Number(episode.patientState?.temperature) || null,
         tipo: "SIN ALERTA",
         tipo_alerta_ugcc: "SIN ALERTA",
-        tipo_cama: episode.hospitalizationConditions?.bedType,
+        tipo_cama: episode.hospitalizationConditions?.bedType || "Básica",
         triage: 3,
         ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || null,
 
@@ -118,7 +120,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       const { prediction } = res.data;
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
-      setEpisode({...episode, isEligible: prediction === 1})
+      setEpisode({...episode, aiValidation: prediction === 1})
       updatePatient(patientRut!, { ...patient, openEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
