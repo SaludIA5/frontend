@@ -38,9 +38,9 @@ export default function DoctorMetricsList({ doctors }: Props) {
             className="border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4"
           >
             <div className="grid grid-cols-[3fr_3fr_3fr_2fr] gap-4 items-center">
-              <p className="text-lg text-left font-medium truncate">
+              <h1 className="text-lg text-left font-medium truncate">
                 {doctor.name}
-              </p>
+              </h1>
 
               <p className="text-center text-green-600 font-semibold">
                 Aprobados: {approvedCount}
