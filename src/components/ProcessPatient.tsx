@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Patient } from "../types/patient";
 import type { Episode } from "../types/episode";
 import axios from 'axios';
@@ -26,6 +26,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
     sex: "",
   })
   const [episode, setEpisode] = useState<Episode>(emptyEpisode);
+  const [isEligibleToGenerate, setIsEligibleToGenerate] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"personal" | "vitals" 
   | "medhistory" | "procedures" | "conditions" | "levels">("personal");
@@ -36,6 +37,51 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const { patients, updatePatient } = usePatients();
+
+  const payload = useMemo(() => ({
+    antecedentes_cardiaco: episode.cardiacHistory || null,
+    antecedentes_diabetes: episode.diabetesHistory || null,
+    antecedentes_hipertension: episode.hypertensionHistory || null,
+    creatinina: episode.levels?.creatinin || null,
+    fio2: Number(episode.patientState?.fio2) || null,
+    fio2_ge_50: Number(episode.patientState?.fio2) >= 50 || null,
+    frecuencia_cardiaca: Number(episode.patientState?.heartRate) || null,
+    frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
+    glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
+    hemoglobina: Number(episode.levels?.hemoglobin) || null,
+    model_type: "random_forest",
+    nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
+    pcr: Number(episode.levels?.pcr) || null,
+    potasio: Number(episode.levels?.potassium) || null,
+    presion_diastolica: Number(episode.bloodPressure?.diastolicBloodPressure) || null,
+    presion_media: Number(episode.bloodPressure?.mediumBloodPressure) || null,
+    presion_sistolica: Number(episode.bloodPressure?.sistolicBloodPressure) || null,
+    saturacion_o2: Number(episode.patientState?.oxygenSaturation) || null,
+    sodio: Number(episode.levels?.sodium) || null,
+    temperatura_c: Number(episode.patientState?.temperature) || null,
+    tipo: "SIN ALERTA",
+    tipo_alerta_ugcc: "SIN ALERTA",
+    tipo_cama: episode.hospitalizationConditions?.bedType,
+    triage: 3,
+    ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || null,
+  
+    cirugia_realizada: episode.proceduresDone?.surgery || null,
+    cirugia_mismo_dia_ingreso: episode.proceduresDone?.surgerySameDay || null,
+    hemodinamia: episode.proceduresDone?.hemoDinamia || null,
+    hemodinamia_mismo_dia_ingreso: episode.proceduresDone?.hemoDinamiaSameDay || null,
+    endoscopia: episode.proceduresDone?.endoscopy || null,
+    endoscopia_mismo_dia_ingreso: episode.proceduresDone?.endoscopySameDay || null,
+    dialisis: episode.proceduresDone?.dialysis || null,
+    trombolisis: episode.proceduresDone?.trombolysis || null,
+    trombolisis_mismo_dia_ingreso: episode.proceduresDone?.trombolysisSameDay || null,
+    dreo: false,
+    troponinas_alteradas: episode.proceduresDone?.alteredTroponine || null,
+    ecg_alterado: episode.proceduresDone?.alteredEcg || null,
+    rnm_protocolo_stroke: episode.proceduresDone?.rnmStrokeProtocol || null,
+    dva: false,
+    transfusiones: episode.proceduresDone?.bloodTransfusions || null,
+    compromiso_conciencia: episode.patientState?.compromisedConsiousness || null,
+  }), [episode]);  
 
   useEffect(() => {
     if (patientRut && isOpen) {
@@ -51,6 +97,13 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       setIsEditing(false);
     }
   }, [patientRut, patients, isOpen]);
+
+  useEffect(() => {
+    const filledFields = Object.values(payload).filter(
+      (v) => v !== null && v !== undefined && v !== ""
+    ).length;
+    setIsEligibleToGenerate(filledFields >= 14);
+  }, [payload]);   
 
 
   const handleSave = () => {
@@ -69,62 +122,19 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         baseURL: import.meta.env.VITE_BACKEND_URL,
         withCredentials: true
       });
-
-      const payload = {
-        antecedentes_cardiaco: episode.cardiacHistory || null,
-        antecedentes_diabetes: episode.diabetesHistory || null,
-        antecedentes_hipertension: episode.hypertensionHistory || null,
-        creatinina: episode.levels?.creatinin || null,
-        fio2: Number(episode.patientState?.fio2) || null,
-        fio2_ge_50: Number(episode.patientState?.fio2) >= 50 || null,
-        frecuencia_cardiaca: Number(episode.patientState?.heartRate) || null,
-        frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
-        glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
-        hemoglobina: Number(episode.levels?.hemoglobin) || null,
-        model_type: "random_forest",
-        nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
-        pcr: Number(episode.levels?.pcr) || null,
-        potasio: Number(episode.levels?.potassium) || null,
-        presion_diastolica: Number(episode.bloodPressure?.diastolicBloodPressure) || null,
-        presion_media: Number(episode.bloodPressure?.mediumBloodPressure) || null,
-        presion_sistolica: Number(episode.bloodPressure?.sistolicBloodPressure) || null,
-        saturacion_o2: Number(episode.patientState?.oxygenSaturation) || null,
-        sodio: Number(episode.levels?.sodium) || null,
-        temperatura_c: Number(episode.patientState?.temperature) || null,
-        tipo: "SIN ALERTA",
-        tipo_alerta_ugcc: "SIN ALERTA",
-        tipo_cama: episode.hospitalizationConditions?.bedType,
-        triage: 3,
-        ventilacion_mecanica: episode.hospitalizationConditions?.mechanicalVentilation || null,
-
-        cirugia_realizada: episode.proceduresDone?.surgery || null,
-        cirugia_mismo_dia_ingreso: episode.proceduresDone?.surgerySameDay || null,
-        hemodinamia: episode.proceduresDone?.hemoDinamia || null,
-        hemodinamia_mismo_dia_ingreso: episode.proceduresDone?.hemoDinamiaSameDay || null,
-        endoscopia: episode.proceduresDone?.endoscopy || null,
-        endoscopia_mismo_dia_ingreso: episode.proceduresDone?.endoscopySameDay || null,
-        dialisis: episode.proceduresDone?.dialysis || null,
-        trombolisis: episode.proceduresDone?.trombolysis || null,
-        trombolisis_mismo_dia_ingreso: episode.proceduresDone?.trombolysisSameDay || null,
-        dreo: false,
-        troponinas_alteradas: episode.proceduresDone?.alteredTroponine || null,
-        ecg_alterado: episode.proceduresDone?.alteredEcg || null,
-        rnm_protocolo_stroke: episode.proceduresDone?.rnmStrokeProtocol || null,
-        dva: false,
-        transfusiones: episode.proceduresDone?.bloodTransfusions || null,
-        compromiso_conciencia: episode.patientState?.compromisedConsiousness || null,
-      };
+  
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
+  
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
-      setEpisode({...episode, isEligible: prediction === 1})
+      setEpisode({ ...episode, isEligible: prediction === 1 });
       updatePatient(patientRut!, { ...patient, openEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
       alert("Ocurrió un error al generar la recomendación.");
     }
-  };
+  };  
 
   if (!isOpen) return null;
 
@@ -167,12 +177,25 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
         </div>
 
         <div className="flex justify-end space-x-3 p-3">
-          <button
-            className="rounded-xl px-4 py-2 text-white text-sm"
-            onClick={handleGenerateRecommendation}
-          >
-            Generar Recomendación
-          </button>
+          <div className="relative group">
+            <button
+              className={`rounded-xl px-4 py-2 text-white text-sm transition ${
+                isEligibleToGenerate
+                  ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] cursor-pointer"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+              disabled={!isEligibleToGenerate}
+              onClick={isEligibleToGenerate ? handleGenerateRecommendation : undefined}
+            >
+              Generar Recomendación
+            </button>
+
+            {!isEligibleToGenerate && (
+              <div className="absolute bg-[var(--color-primary)] bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-black text-white text-xs rounded-lg px-2 py-1 whitespace-nowrap">
+                Debes llenar al menos 10 campos para generar una recomendación
+              </div>
+            )}
+          </div>
           <button
             className={`rounded-xl px-4 py-2 text-white transition-colors duration-200 text-sm ${isEditing ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}`}
             onClick={() => setIsEditing(!isEditing)}
