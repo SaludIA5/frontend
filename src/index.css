@@ -3,6 +3,7 @@
 @layer base {
   :root {
     --color-primary: #c284c2;
+    --color-primary-hover: #ab5eab;
     --color-secondary: #2596be;
     --color-secondary-hover: #1e7898;
 
