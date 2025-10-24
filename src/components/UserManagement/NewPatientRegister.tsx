@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Patient } from "../../types/patient";
 import { usePatients } from "../../hooks/usePatients";
 import axios from 'axios';
@@ -18,6 +18,33 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     age: 0,
     openEpisode: emptyEpisode(),
   });
+
+  const [doctors, setDoctors] = useState<{ id: number; name: string }[]>([]);
+  const [selectedDoctors, setSelectedDoctors] = useState({
+    turnoA: "",
+    turnoB: "",
+    turnoC: "",
+  });
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        // const res = await api.get('/doctors'); FALTAAAA
+        // setDoctors(res.data);
+  
+        setDoctors([
+          { id: 1, name: "Dr. González" },
+          { id: 2, name: "Dra. Pérez" },
+          { id: 3, name: "Dr. Ramírez" },
+        ]);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+  
+    fetchDoctors();
+  }, []);
+  
 
   const { addPatient } = usePatients();
 
@@ -48,6 +75,11 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
         name: newPatient.name,
         age: age,
         rut: newPatient.rut,
+        // doctors: { FALTAAAAA
+        //   turnoA: selectedDoctors.turnoA,
+        //   turnoB: selectedDoctors.turnoB,
+        //   turnoC: selectedDoctors.turnoC,
+        // },
       });
       handleSave();
     } catch (error) {
@@ -98,6 +130,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           maxLength={12}
         />
 
+        <p className="text-lg mt-2">Edad del paciente</p>
         <input
           type="text"
           placeholder="Edad del paciente"
@@ -106,6 +139,50 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           onChange={(e) => setNewPatient({ ...newPatient, age: Number(e.target.value) })}
           maxLength={3}
         />
+
+        <p className="text-lg mt-2">Asignar doctores por turno</p>
+
+        <label className="block mt-2 text-sm">Doctor turno A</label>
+        <select
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={selectedDoctors.turnoA}
+          onChange={(e) =>
+            setSelectedDoctors({ ...selectedDoctors, turnoA: e.target.value })
+          }
+        >
+          <option value="">Seleccionar...</option>
+          {doctors.map((doc) => (
+            <option key={doc.id} value={doc.id}>{doc.name}</option>
+          ))}
+        </select>
+
+        <label className="block mt-2 text-sm">Doctor turno B</label>
+        <select
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={selectedDoctors.turnoB}
+          onChange={(e) =>
+            setSelectedDoctors({ ...selectedDoctors, turnoB: e.target.value })
+          }
+        >
+          <option value="">Seleccionar...</option>
+          {doctors.map((doc) => (
+            <option key={doc.id} value={doc.id}>{doc.name}</option>
+          ))}
+        </select>
+
+        <label className="block mt-2 text-sm">Doctor turno C</label>
+        <select
+          className="w-full mb-3 rounded border border-gray-300 p-2"
+          value={selectedDoctors.turnoC}
+          onChange={(e) =>
+            setSelectedDoctors({ ...selectedDoctors, turnoC: e.target.value })
+          }
+        >
+          <option value="">Seleccionar...</option>
+          {doctors.map((doc) => (
+            <option key={doc.id} value={doc.id}>{doc.name}</option>
+          ))}
+        </select>
 
         <div className="flex justify-center space-x-3">
           <button
