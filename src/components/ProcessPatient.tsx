@@ -129,7 +129,7 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
-      setEpisode({ ...episode, isEligible: prediction === 1 });
+      setEpisode({ ...episode, aiValidation: prediction === 1 });
       updatePatient(patientRut!, { ...patient, openEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
