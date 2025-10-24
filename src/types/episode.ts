@@ -3,8 +3,9 @@ import type { BloodPressure, Procedures, HospitalizationConditions, PatientState
 export interface Episode {
     episodeId: number
     patientId: number
-    isEligible: boolean
-    isValidatedByChief: boolean
+    aiValidation?: boolean
+    chiefValidation?: boolean
+    doctorValidation?: boolean
     medicalCenter?: string
     isActive?: boolean
     // Fechas
@@ -20,6 +21,7 @@ export interface Episode {
     proceduresDone?: Procedures
     hospitalizationConditions?: HospitalizationConditions
     levels?: Levels
+    wasLawApplied?: boolean
 }
 
 /*
@@ -33,9 +35,3 @@ patient_id: int
     # IDs de diagnósticos para asociar (muchos-a-muchos)
     diagnostics_ids: Optional[List[int]] = None
 */
-
-//Este es para cuando se cierra el episodio, es la decisión final
-export interface ClosedEpisode extends Episode {
-    wasLawApplied: boolean
-    signingDoctor: string 
-}

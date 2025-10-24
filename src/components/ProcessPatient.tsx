@@ -39,6 +39,8 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
   const { patients, updatePatient } = usePatients();
 
   const payload = useMemo(() => ({
+    numero_episodio: "0",
+    diagnostics: null,
     antecedentes_cardiaco: episode.cardiacHistory || null,
     antecedentes_diabetes: episode.diabetesHistory || null,
     antecedentes_hipertension: episode.hypertensionHistory || null,
@@ -121,14 +123,13 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
       const api = axios.create({
         baseURL: import.meta.env.VITE_BACKEND_URL,
         withCredentials: true
-      });
-  
+      });  
       const res = await api.post("/predictions", payload);
       const { prediction } = res.data;
   
       setRecommendationResult(res.data);
       setIsPopupVisible(true);
-      setEpisode({ ...episode, isEligible: prediction === 1 });
+      setEpisode({ ...episode, aiValidation: prediction === 1 });
       updatePatient(patientRut!, { ...patient, openEpisode: episode });
     } catch (error) {
       console.error("Error generando la recomendación:", error);
