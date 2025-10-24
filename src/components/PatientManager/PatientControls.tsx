@@ -3,8 +3,6 @@ type Props = {
     setSearch: (v: string) => void
     filterEligible: "all" | "yes" | "no"
     setFilterEligible: (v: "all" | "yes" | "no") => void
-    filterGender: "all" | "M" | "F" | "ND"
-    setFilterGender: (v: "all" | "M" | "F" | "ND") => void
     sortBy: "name" | "rut"
     setSortBy: (v: "name" | "rut") => void
 }
@@ -14,8 +12,6 @@ export default function PatientControls({
     setSearch,
     filterEligible,
     setFilterEligible,
-    filterGender,
-    setFilterGender,
     sortBy,
     setSortBy
 }: Props) {
@@ -37,17 +33,6 @@ export default function PatientControls({
                 <option value="all">Todos</option>
                 <option value="yes">Solo aplica</option>
                 <option value="no">No aplica</option>
-            </select>
-
-            <select
-                value={filterGender}
-                onChange={(e) => setFilterGender(e.target.value as "all" | "M" | "F" | "ND")}
-                className="rounded-lg bg-white p-2"
-            >
-                <option value="all">Todos</option>
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-                <option value="ND">No descrito</option>
             </select>
 
             <select

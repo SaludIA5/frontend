@@ -21,7 +21,6 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
   const [search, setSearch] = useState("");
   const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all");
   const [sortBy, setSortBy] = useState<"name" | "rut">("name");
-  const [filterGender, setFilterGender] = useState<"all" | "M" | "F" | "ND">("all");
 
   useEffect(() => {    
     const fetchPatients = async () => {
@@ -57,9 +56,6 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
       if (filterEligible === "no") return !p.openEpisode?.aiValidation;
       return true;
     })
-    .filter((p) => {
-      return filterGender !== "all" ? p.sex === filterGender : true;
-    })
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "rut") return a.rut.localeCompare(b.rut);
@@ -84,8 +80,6 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
         setSearch={setSearch}
         filterEligible={filterEligible}
         setFilterEligible={setFilterEligible}
-        filterGender={filterGender}
-        setFilterGender={setFilterGender}
         sortBy={sortBy}
         setSortBy={setSortBy}
       />

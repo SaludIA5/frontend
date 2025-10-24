@@ -6,7 +6,16 @@ interface PatientListProps {
 }
 
 export default function PatientList({ onProcessPatient, patients }: PatientListProps) {
-
+  const formatRut = (rut: string) : string => {
+    let formatted = rut.replace(/[^0-9kK]/g, '');
+    if (formatted.length > 1) {
+      let body = formatted.slice(0, -1)
+      const dv = formatted.slice(-1)
+      body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      formatted = body + "-" + dv
+    }
+    return formatted;
+  }
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
       <li className="grid grid-cols-[1.5fr_0.8fr_0.5fr_0.8fr_0.7fr] gap-4 items-center text-black text-center p-4">
@@ -26,7 +35,7 @@ export default function PatientList({ onProcessPatient, patients }: PatientListP
             {patient.name|| ""}
           </p>
 
-          <p className="text-lg text-center font-medium">{patient.rut}</p>
+          <p className="text-lg text-center font-medium">{formatRut(patient.rut)}</p>
 
           <p className="text-lg font-medium text-center">
             {patient.age || "-"}

@@ -10,8 +10,8 @@ export default function DoctorMetricsList({ doctors }: Props) {
   return (
     <ul className="mx-auto max-w-5xl space-y-3">
       <li>
-        <div className="grid grid-cols-[3fr_3fr_3fr_2fr] gap-4 items-center text-center">
-          <p>Nombre</p>
+        <div className="grid grid-cols-[3fr_3fr_3fr_2fr] gap-4 items-center text-center px-4">
+          <p className="text-left">Nombre</p>
           <p>Casos Aprobados <br /> para Ley de Urgencia</p>
           <p>Casos Rechazados <br /> para Ley de Urgencia</p>
         </div>
@@ -43,11 +43,11 @@ export default function DoctorMetricsList({ doctors }: Props) {
               </h1>
 
               <p className="text-center text-green-600 font-semibold">
-                Aprobados: {approvedCount}
+                {approvedCount}
               </p>
 
               <p className="text-center text-red-600 font-semibold">
-                Rechazados: {rejectedCount}
+                {rejectedCount}
               </p>
 
               <button
