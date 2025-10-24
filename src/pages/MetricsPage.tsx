@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // Deshabilitado por mientras que sigue mockeado.
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
@@ -60,7 +59,8 @@ export default function MetricsPage() {
                 setLoading(false)
             }
         }
-        //fetchAllDoctors();
+        // eslint-disable-next-line no-constant-condition
+        if (false) fetchAllDoctors();
     }, [])
 
     if (loading) return (<>Cargando...</>)
