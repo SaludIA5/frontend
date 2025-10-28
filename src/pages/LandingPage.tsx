@@ -19,7 +19,7 @@ export default function LandingPage() {
   return (
     <>
       <Header />
-      <div className='flex justify-center my-3 text-2xl font-bold'>
+      <div className='flex justify-center my-3 pt-6 text-3xl font-bold'>
         <p>Pacientes Activos</p>
       </div>
       <div className="flex justify-end my-4 mr-15 px-6">

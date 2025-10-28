@@ -69,7 +69,7 @@ export default function MetricsPage() {
     return(
         <>
             <Header />
-            <div className='flex justify-center my-3 text-3xl font-bold'>
+            <div className='flex justify-center my-3 p-6 text-3xl font-bold'>
                 <p> Metricas de Aprobación por Doctor </p>
             </div>
             <DoctorMetricsList doctors={doctors} />
