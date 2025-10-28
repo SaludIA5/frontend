@@ -29,16 +29,10 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        // const res = await api.get('/doctors'); FALTAAAA
-        // setDoctors(res.data);
-  
-        setDoctors([
-          { id: 1, name: "Dr. González" },
-          { id: 2, name: "Dra. Pérez" },
-          { id: 3, name: "Dr. Ramírez" },
-        ]);
+        const res = await api.get('/users/by-turn');
+        setDoctors(res.data);
       } catch (error) {
-        console.error("Error fetching doctors:", error);
+        console.error("Error al obtener doctores:", error);
       }
     };
   
