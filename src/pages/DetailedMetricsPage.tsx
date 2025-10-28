@@ -18,7 +18,7 @@ export default function DetailedMetricsPage(){
     const [loading, setLoading] = useState(false);
     const { patients, setPatientList } = usePatients();
     const [modalOpen, setModalOpen] = useState(false);
-    const doctor = mockDoctors.find((doctor) => doctor.id == Number(params.id)); //Reemplazar por doctores reales
+    const doctor = mockDoctors.find((doctor) => doctor.id == Number(params.id)); // Reemplazar por doctores reales
 
     useEffect(() => {    
         const fetchPatients = async () => {
