@@ -12,7 +12,6 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   withCredentials: true,
 });
-
 export default function PatientManager({ onProcessPatient }: PatientManagerProps) {
   const { patients, setPatientList } = usePatients();
   const [loading, setLoading] = useState(true);
@@ -31,7 +30,9 @@ export default function PatientManager({ onProcessPatient }: PatientManagerProps
       }
 
       try {
-        const res = await api.get("/patients");
+        const res = await api.get("/patients", {headers: {
+          Authorization: axios.defaults.headers.common.Authorization
+        }});
         const patientsData = res.data?.items || res.data || [];
         const list = Array.isArray(patientsData) ? patientsData : [];
         setPatientList(list);

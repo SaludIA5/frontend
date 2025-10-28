@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string) => {
         const url = baseURL ? `${baseURL}/auth/login` : '/auth/login';
-        const res = await axios.post(url, { email, password });
+        const res = await axios.post(url, { email, password }, {withCredentials: true});
         setToken(res.data.access_token);
     };
 
