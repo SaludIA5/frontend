@@ -1,12 +1,12 @@
 import type { Episode } from "./episode";
 
 export interface Patient {
-    id: number
-    name: string
-    rut: string
-    sex: string
-    age: number,
-    openEpisode?: Episode
+  id: number
+  name: string
+  rut: string
+  sex?: string
+  age: number,
+  openEpisode?: Episode
 }
 
 export const mockPatients: Patient[] = [
@@ -17,7 +17,7 @@ export const mockPatients: Patient[] = [
     sex: "Masculino",
     age: 45,
     openEpisode: {
-      episodeId: 101,
+      id: 101,
       patientId: 1,
       aiValidation: true,
       chiefValidation: true,
@@ -32,7 +32,7 @@ export const mockPatients: Patient[] = [
     sex: "Femenino",
     age: 52,
     openEpisode: {
-      episodeId: 201,
+      id: 201,
       patientId: 2,
       aiValidation: false,
       chiefValidation: false,
@@ -47,7 +47,7 @@ export const mockPatients: Patient[] = [
     sex: "Masculino",
     age: 60,
     openEpisode: {
-      episodeId: 301,
+      id: 301,
       patientId: 3,
       aiValidation: false,
       chiefValidation: false,
@@ -62,7 +62,7 @@ export const mockPatients: Patient[] = [
     sex: "Femenino",
     age: 34,
     openEpisode: {
-      episodeId: 401,
+      id: 401,
       patientId: 4,
       aiValidation: true,
       chiefValidation: true,
@@ -77,7 +77,7 @@ export const mockPatients: Patient[] = [
     sex: "Masculino",
     age: 29,
     openEpisode: {
-      episodeId: 501,
+      id: 501,
       patientId: 5,
       aiValidation: false,
       chiefValidation: false,

@@ -30,17 +30,19 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     const fetchDoctors = async () => {
       try {
         const res = await api.get('/users/by-turn');
-        setDoctors(res.data);
+        const doctorsByTurn = res.data;
+        const allDoctors = Object.values(doctorsByTurn).flat() as { id: number; name: string }[];
+        setDoctors(allDoctors);
       } catch (error) {
         console.error("Error al obtener doctores:", error);
       }
     };
-  
+
     fetchDoctors();
   }, []);
-  
 
-  const { addPatient } = usePatients();
+
+  const { addPatientWithEpisodes } = usePatients();
 
   const resetForm = () => {
     setNewPatient({
@@ -51,34 +53,35 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       age: 0,
       openEpisode: emptyEpisode(),
     });
+    setSelectedDoctors({ turnoA: "", turnoB: "", turnoC: "" });
   };
 
-  const handleSave = () => {
-    addPatient({
-      ...newPatient
-    });
-    resetForm();
-    onClose();
-  };
 
   const handleSubmit = async () => {
     const age = Number(newPatient.age);
 
+    const doctorsPayload = Object.entries(selectedDoctors)
+      .filter(([, doctorId]) => doctorId !== "")
+      .reduce((acc, [turn, doctorId]) => {
+        acc[turn.toLowerCase()] = Number(doctorId);
+        return acc;
+      }, {} as { [key: string]: number });
+
     try {
-      await api.post('/patients/', {
+      const res = await api.post('/patients/with-episode', {
         name: newPatient.name,
         age: age,
         rut: newPatient.rut,
-        // doctors: { FALTAAAAA
-        //   turnoA: selectedDoctors.turnoA,
-        //   turnoB: selectedDoctors.turnoB,
-        //   turnoC: selectedDoctors.turnoC,
-        // },
+        doctors: doctorsPayload,
       });
-      handleSave();
+
+      addPatientWithEpisodes(res.data);
+
+      resetForm();
+      onClose();
     } catch (error) {
-      console.error("Error adding patient:", error);
-    } 
+      console.error("Error adding patient with episode:", error);
+    }
   };
 
   const handleClose = () => {
@@ -145,7 +148,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
+          {Array.isArray(doctors) && doctors.map((doc) => (
             <option key={doc.id} value={doc.id}>{doc.name}</option>
           ))}
         </select>
@@ -159,7 +162,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
+          {Array.isArray(doctors) && doctors.map((doc) => (
             <option key={doc.id} value={doc.id}>{doc.name}</option>
           ))}
         </select>
@@ -173,7 +176,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
+          {Array.isArray(doctors) && doctors.map((doc) => (
             <option key={doc.id} value={doc.id}>{doc.name}</option>
           ))}
         </select>

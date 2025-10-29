@@ -8,3 +8,12 @@ export const formatDate = (date: Date) => {
     })
     return formattedDate;
 }
+
+export const formatDateShort = (date: Date) => {
+    const formattedDate = new Date(date).toLocaleString("es-CL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    })
+    return formattedDate;
+}

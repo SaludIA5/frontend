@@ -1,7 +1,7 @@
 import type { BloodPressure, Procedures, HospitalizationConditions, PatientState, Levels } from "./patientInfo"
 
 export interface Episode {
-    episodeId: number
+    id: number
     patientId: number
     aiValidation?: boolean
     chiefValidation?: boolean
@@ -10,10 +10,11 @@ export interface Episode {
     isActive?: boolean
     // Fechas
     dateOfEntry?: Date | string
+    fecha_ingreso?: Date | string
     dateOfStabilization?: Date | string
     dateOfExit?: Date | string
     // Datos medicos
-    patientState?: PatientState 
+    patientState?: PatientState
     bloodPressure?: BloodPressure
     cardiacHistory?: boolean
     diabetesHistory?: boolean
