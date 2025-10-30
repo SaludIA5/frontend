@@ -1,12 +1,12 @@
 import type { Episode } from "./episode"
 
 export interface Doctor {
-    name: string
-    id: number;
-    email: string;
-    isDoctor: boolean;
-    isChiefDoctor: boolean;
-    episodes?: Episode[] //Una llamada a back entrega episodios
+  name: string
+  id: number;
+  email: string;
+  isDoctor: boolean;
+  isChiefDoctor: boolean;
+  episodes?: Episode[] //Una llamada a back entrega episodios
 }
 
 export const mockDoctors: Doctor[] = [
@@ -19,7 +19,7 @@ export const mockDoctors: Doctor[] = [
     episodes: [
       // Andrés Arriagada
       {
-        episodeId: 101,
+        id: 101,
         patientId: 105,
         aiValidation: true,
         chiefValidation: true,
@@ -45,7 +45,7 @@ export const mockDoctors: Doctor[] = [
         diabetesHistory: false,
       },
       {
-        episodeId: 102,
+        id: 102,
         patientId: 105,
         aiValidation: false,
         chiefValidation: false,
@@ -57,7 +57,7 @@ export const mockDoctors: Doctor[] = [
       },
       // Bárbara Hanna
       {
-        episodeId: 201,
+        id: 201,
         patientId: 106,
         aiValidation: false,
         chiefValidation: false,
@@ -77,7 +77,7 @@ export const mockDoctors: Doctor[] = [
     episodes: [
       // Cristian Bale
       {
-        episodeId: 301,
+        id: 301,
         patientId: 107,
         aiValidation: false,
         chiefValidation: false,
@@ -87,7 +87,7 @@ export const mockDoctors: Doctor[] = [
         dateOfEntry: new Date("2025-10-08"),
       },
       {
-        episodeId: 302,
+        id: 302,
         patientId: 107,
         aiValidation: true,
         chiefValidation: true,
@@ -99,7 +99,7 @@ export const mockDoctors: Doctor[] = [
       },
       // Felipe Navarro
       {
-        episodeId: 501,
+        id: 501,
         patientId: 109,
         aiValidation: false,
         chiefValidation: false,
@@ -119,7 +119,7 @@ export const mockDoctors: Doctor[] = [
     episodes: [
       // Casos validados por jefe
       {
-        episodeId: 103,
+        id: 103,
         patientId: 105,
         aiValidation: true,
         chiefValidation: true,
@@ -130,7 +130,7 @@ export const mockDoctors: Doctor[] = [
         dateOfExit: new Date("2024-09-24"),
       },
       {
-        episodeId: 202,
+        id: 202,
         patientId: 106,
         aiValidation: true,
         chiefValidation: true,
@@ -141,7 +141,7 @@ export const mockDoctors: Doctor[] = [
         dateOfExit: new Date("2025-01-15"),
       },
       {
-        episodeId: 303,
+        id: 303,
         patientId: 107,
         aiValidation: false,
         chiefValidation: false,
@@ -152,7 +152,7 @@ export const mockDoctors: Doctor[] = [
         dateOfExit: new Date("2023-06-14"),
       },
       {
-        episodeId: 401,
+        id: 401,
         patientId: 108,
         aiValidation: true,
         chiefValidation: true,
@@ -162,7 +162,7 @@ export const mockDoctors: Doctor[] = [
         dateOfEntry: new Date("2025-10-11"),
       },
       {
-        episodeId: 402,
+        id: 402,
         patientId: 108,
         aiValidation: false,
         chiefValidation: true,
@@ -173,7 +173,7 @@ export const mockDoctors: Doctor[] = [
         dateOfExit: new Date("2024-03-27"),
       },
       {
-        episodeId: 502,
+        id: 502,
         patientId: 109,
         aiValidation: true,
         chiefValidation: true,
