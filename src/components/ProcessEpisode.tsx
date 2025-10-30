@@ -295,7 +295,6 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
           >
             Guardar
           </button>
-
         </div>
       </div>
 

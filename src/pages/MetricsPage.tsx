@@ -2,43 +2,38 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import DoctorMetricsList from '../components/Metrics/DoctorMetricsList';
-import { mockDoctors } from '../types/doctor';
-import type { Doctor } from '../types/doctor';
+import type { DoctorValidation, BackendValidationByDoctor, BackendMetricsSummary } from '../types/metrics';
 import axios from 'axios';
+import GeneralMetrics from '../components/Metrics/GeneralMetrics';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
     withCredentials: true,
 });
 
-interface BackendUser {
-    id: number;
-    name: string;
-    email: string;
-    rut: string;
-    is_chief_doctor: boolean;
-    is_doctor: boolean;
-    is_admin: boolean;
-    turn: string | null;
-}
-
 export default function MetricsPage() {
-    const [doctors, setDoctors] = useState<Doctor[]>(mockDoctors);
+    const [doctorValidations, setDoctorValidations] = useState<DoctorValidation[]>();
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [isChief, setIsChief] = useState(false); //Actualizar cuando se tenga forma de acceder a datos propios
+    const [generalMetrics, setGeneralMetrics] = useState<BackendMetricsSummary>();
 
-    function normalizeUsersToDoctors(users: BackendUser[]): Doctor[] {
-        return users.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          isDoctor: user.is_doctor,
-          isChiefDoctor: user.is_chief_doctor,
+    function normalizeValidations(data: BackendValidationByDoctor[]): DoctorValidation[] {
+        return data.map(doctor => ({
+            doctorId: doctor.doctor_id,
+            doctorName: doctor.doctor_name,
+            totalValidations: doctor.total_validations,
+            acceptedValidations: doctor.accepted_validations,
+            rejectedValidations: doctor.rejected_validations,
+            concordantValidations: doctor.concordant_validations,
+            discordantValidations: doctor.discordant_validations,
+            concordanceRate: doctor.concordance_rate,
+            acceptanceRate: doctor.acceptance_rate
         }));
       }
 
-    useEffect(()=>{
-        const fetchAllDoctors = async () => {
+    useEffect(() => {
+        const fetchValidationsByDoctor = async () => {
             if (!import.meta.env.VITE_BACKEND_URL) {
                 setError(true);
                 setLoading(false);
@@ -46,33 +41,72 @@ export default function MetricsPage() {
             }
 
             try {
-                const res = await api.get("/users");
-                const doctorsData = res.data?.items || res.data || [];
-                const list = Array.isArray(doctorsData) ? doctorsData : [];
-                const doctorList = normalizeUsersToDoctors(list).filter((doctor) => doctor.isDoctor || doctor.isChiefDoctor)
-                setDoctors(doctorList);
+                const userInfo = await api.get("/auth/me");
+                const userData = userInfo.data;
+                if(userData.is_chief_doctor || userData.is_admin){
+                    setIsChief(true);
+                }
+                const res = await api.get("/metrics/validation-by-doctor");
+                const validationsData = res.data?.items || res.data || [];
+                const list = Array.isArray(validationsData) ? validationsData : [];
+                let filteredList = [];
+                if(!isChief){
+                    filteredList = list.filter((item) => item.doctor_id == userData.id); //Poner id de doctor actual
+                }
+                const validationsList = isChief ? normalizeValidations(list) : normalizeValidations(filteredList);
+                setDoctorValidations(validationsList);
                 setError(false);
             } catch (error) {
-                console.error("Error fetching patients:", error);
+                console.error("Error fetching validations:", error);
                 setError(true);
             } finally {
                 setLoading(false)
             }
         }
-        // eslint-disable-next-line no-constant-condition
-        if (false) fetchAllDoctors();
-    }, [])
+        fetchValidationsByDoctor();
+    }, [isChief])
 
-    if (loading) return (<>Cargando...</>)
-    if (error) return (<>Ha habido un error...</>)
+    useEffect(() => {
+        const fetchGeneralMetrics = async () => {
+            if (!isChief) return;
+            if (!import.meta.env.VITE_BACKEND_URL) {
+                setError(true);
+                setLoading(false);
+                return;
+            }
+            try {
+                const res = await api.get("metrics/summary");
+                const recommendationMetrics = res.data;
+                setGeneralMetrics(recommendationMetrics);
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+        fetchGeneralMetrics();
+    }, [isChief])
+
+    if (loading) return (
+    <>
+        <Header />
+        Cargando...
+    </>)
+    if (error) return (
+    <>
+        <Header />
+        Ha habido un error...
+    </>)
 
     return(
         <>
             <Header />
-            <div className='flex justify-center my-3 p-6 text-3xl font-bold'>
-                <p> Metricas de Aprobación por Doctor </p>
+            <div className='flex justify-center my-4 text-2xl font-bold'>
+                <p> Métricas de Aprobación por Doctor </p>
             </div>
-            <DoctorMetricsList doctors={doctors} />
+            <DoctorMetricsList validations={doctorValidations ?? []} />
+            {isChief && generalMetrics && (
+                <GeneralMetrics metricsData={generalMetrics} />
+            )}
         </>
     )
 }

@@ -15,11 +15,11 @@ export default function ValidateAsChief({ isOpen, onClose, onChoice }: Props){
                 </svg>
                 <div className="flex flex-col items-center justify-center gap-2">
                     <h2>¿Acepta como Jefe de Turno la activación de Ley de Urgencia?</h2>
-                    <div className="flex items-center justify-center gap-2">
-                        <button className="bg-green-500 text-white" onClick={() => onChoice(true)}>
+                    <div className="flex items-center justify-center gap-5">
+                        <button className="bg-green-500 text-white hover:bg-green-700" onClick={() => onChoice(true)}>
                             Aceptar
                         </button>
-                        <button className="bg-red-500 text-white" onClick={() => onChoice(false)}>
+                        <button className="bg-red-500 text-white hover:bg-red-700" onClick={() => onChoice(false)}>
                             Rechazar
                         </button>
                     </div>
