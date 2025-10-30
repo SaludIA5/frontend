@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import DoctorMetricsList from '../components/Metrics/DoctorMetricsList';
-import type { DoctorValidation, BackendValidationByDoctor } from '../types/metrics';
+import type { DoctorValidation, BackendValidationByDoctor, BackendMetricsSummary } from '../types/metrics';
 import axios from 'axios';
+import GeneralMetrics from '../components/Metrics/GeneralMetrics';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -15,6 +16,7 @@ export default function MetricsPage() {
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isChief, setIsChief] = useState(false); //Actualizar cuando se tenga forma de acceder a datos propios
+    const [generalMetrics, setGeneralMetrics] = useState<BackendMetricsSummary>();
 
     function normalizeValidations(data: BackendValidationByDoctor[]): DoctorValidation[] {
         return data.map(doctor => ({
@@ -30,7 +32,7 @@ export default function MetricsPage() {
         }));
       }
 
-    useEffect(()=>{
+    useEffect(() => {
         const fetchValidationsByDoctor = async () => {
             if (!import.meta.env.VITE_BACKEND_URL) {
                 setError(true);
@@ -64,6 +66,26 @@ export default function MetricsPage() {
         fetchValidationsByDoctor();
     }, [isChief])
 
+    useEffect(() => {
+        const fetchGeneralMetrics = async () => {
+            if (!isChief) return;
+            if (!import.meta.env.VITE_BACKEND_URL) {
+                setError(true);
+                setLoading(false);
+                return;
+            }
+            try {
+                const res = await api.get("metrics/summary");
+                const recommendationMetrics = res.data;
+                setGeneralMetrics(recommendationMetrics);
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+        fetchGeneralMetrics();
+    }, [isChief])
+
     if (loading) return (
     <>
         <Header />
@@ -82,6 +104,9 @@ export default function MetricsPage() {
                 <p> Métricas de Aprobación por Doctor </p>
             </div>
             <DoctorMetricsList validations={doctorValidations ?? []} />
+            {isChief && generalMetrics && (
+                <GeneralMetrics metricsData={generalMetrics} />
+            )}
         </>
     )
 }

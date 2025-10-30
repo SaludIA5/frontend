@@ -145,8 +145,8 @@ export default function DetailedMetricsPage(){
             {validatedEpisodes && validatedEpisodes.length > 0 ? (
               <div className="w-full">
                 <li>
-                  <div className="grid grid-cols-4 text-center my-2 px-4 font-semibold">
-                    <p>Paciente</p>
+                  <div className="grid grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,10fr))] text-center my-2 px-4 font-semibold">
+                    <p className="col-start-2">Paciente</p>
                     <p>Decisión Doctor</p>
                     <p>Concordancia con IA</p>
                     <p>Decisión Jefe de Turno</p>
