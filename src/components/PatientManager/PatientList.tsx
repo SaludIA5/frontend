@@ -55,24 +55,24 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
           </button>
         </div>
       </li>
-      {isExpanded && (
-        <>
-          <li className="ml-8 my-2">
+      <li className="ml-0 p-0 border-0">
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="ml-8 my-2">
             <button
               onClick={() => onOpenCreateEpisodeModal(patient.id)}
               className="w-full text-center rounded-lg border-2 border-dashed border-gray-300 p-3 bg-gray-50 text-sm font-semibold text-gray-600 transition-all duration-200 hover:border-solid hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]"
             >
               + Crear Nuevo Episodio
             </button>
-          </li>
-          <li className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-4 items-center p-3 ml-8 text-xs font-semibold text-gray-500">
+          </div>
+          <div className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-4 items-center p-3 ml-8 text-xs font-semibold text-gray-500">
             <p className="text-left">ID Episodio</p>
             <p className="text-center">Fecha Ingreso</p>
             <p className="text-center">Ley Urgencia</p>
             <p></p>
-          </li>
+          </div>
           {patient.episodes.map(episode => (
-            <li
+            <div
               key={`episode-${episode.id}`}
               className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-4 items-center rounded-lg border border-gray-200 p-3 ml-8 bg-white"
             >
@@ -85,8 +85,8 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
               {(() => {
                 const aiValidation = episode.aiValidation;
                 const statusConfig = aiValidation
-                  ? { text: "Aplica", className: "bg-green-200 text-green-700" }
-                  : { text: "No Aplica", className: "bg-red-100 text-red-700" };
+                  ? { text: 'Aplica', className: 'bg-green-200 text-green-700' }
+                  : { text: 'No Aplica', className: 'bg-red-100 text-red-700' };
 
                 return (
                   <span
@@ -102,10 +102,10 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
               >
                 Procesar Episodio
               </button>
-            </li>
+            </div>
           ))}
-        </>
-      )}
+        </div>
+      </li>
     </React.Fragment>
   );
 };

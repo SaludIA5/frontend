@@ -26,4 +26,10 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'off',
     },
   },
+  {
+    files: ['src/utils/normalizeEpisode.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ])
