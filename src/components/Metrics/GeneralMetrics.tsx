@@ -30,14 +30,14 @@ export default function GeneralMetrics({ metricsData }: Props) {
         </div>
 
         <div className="p-4 bg-gray-50 rounded-xl shadow-sm hover:shadow transition-all duration-150">
-          <p className="text-sm text-gray-500">Sin Validación de Médico</p>
+          <p className="text-sm text-gray-500">Episodios Sin Validación de Médico</p>
           <p className="text-2xl font-bold text-gray-800">
             {metricsData.total_episodes - metricsData.episodes_with_doctor_validation}
           </p>
         </div>
 
         <div className="p-4 bg-gray-50 rounded-xl shadow-sm hover:shadow transition-all duration-150">
-          <p className="text-sm text-gray-500">Sin Validación de Jefe</p>
+          <p className="text-sm text-gray-500">Episodios Sin Validación de Jefe</p>
           <p className="text-2xl font-bold text-gray-800">
             {metricsData.total_episodes - metricsData.episodes_with_chief_validation}
           </p>

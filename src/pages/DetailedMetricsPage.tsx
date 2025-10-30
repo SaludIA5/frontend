@@ -106,13 +106,16 @@ export default function DetailedMetricsPage(){
     
     const handleValidation = async (choice: boolean) => {
         if (!episodeToValidate || !doctor) return;
+        const currentUser = await api.get("auth/me");
+        const userId = currentUser.data.id;
         const decision = choice ? "PERTINENTE" : "NO PERTINENTE"; 
         const body = {
-            "user_id": doctor.id,
+            "user_id": userId,
             "decision": decision
         }
         try {
-            await api.post(`validatedEpisodes/${episodeToValidate.episode_id}/chief-validate`, body)
+            const res = await api.post(`episodes/${episodeToValidate.episode_id}/chief-validate`, body)
+            console.log(res);
         } catch (error) {
             console.log(error)
         }
@@ -160,7 +163,7 @@ export default function DetailedMetricsPage(){
                     return (
                       <li
                         key={i}
-                        className="border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
+                        className="my-1.5 border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
                       >
                         <DetailedMetricEntry 
                         episodeValidation={validatedEpisode} 

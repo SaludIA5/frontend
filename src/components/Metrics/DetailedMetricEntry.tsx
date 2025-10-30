@@ -83,6 +83,7 @@ export default function DetailedMetricEntry({
   onValidate,
 }: Props) {
   const colorDoctor = episodeValidation.doctor_validation ? "green" : "red";
+  const colorChief = episodeValidation.chief_validation === "PERTINENTE" ? "green" : "red";
   const colorAI = episodeValidation.is_concordant ? "green" : "red";
   const [episodeData, setEpisodeData] = useState<EpisodeData>();
 
@@ -124,7 +125,7 @@ export default function DetailedMetricEntry({
         </p>
 
         <p>
-          {isChief ? (
+          {!episodeValidation.chief_validation ? (isChief ? (
             <button
               className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
               onClick={(e) => {
@@ -134,9 +135,13 @@ export default function DetailedMetricEntry({
             >
               Validar Decisión
             </button>
-          ) : (
-            "Solo un jefe de turno puede validar"
-          )}
+          ) : <span>Solo un jefe de turno puede validar</span>) : (
+            <span
+            className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorChief}-200 text-${colorChief}-700`}
+          >
+            {episodeValidation.chief_validation === "PERTINENTE" ? "" : "No "} Aplica Ley
+          </span>
+            )}
         </p>
       </div>
 
