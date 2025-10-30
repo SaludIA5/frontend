@@ -12,6 +12,8 @@ import ConditionsTab from "./PatientFormTabs/ConditionsTab";
 import LevelsTab from "./PatientFormTabs/LevelsTab";
 import { emptyEpisode } from "../utils/emptyEpisode";
 import type { EpisodeWithPatientData } from "../types/patient-episode";
+import { useAuth } from "../context/AuthContextBase";
+import { normalizeEpisode } from "../utils/normalizeEpisode";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -45,6 +47,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const { updatePatient } = usePatients();
+  const { user } = useAuth();
 
   const payload = useMemo(() => ({
     id_episodio: episode.id,
@@ -105,7 +108,8 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
           rut: episodeData.patient_rut,
           age: episodeData.patient_age,
         });
-        setEpisode(episodeProp);
+        const normalized = normalizeEpisode(episodeProp);
+        setEpisode(normalized);
       }
       setIsLoading(false);
     } else {
@@ -199,6 +203,28 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
     }
   };
 
+  const handleValidateDecision = async (decision: "PERTINENTE" | "NO PERTINENTE") => {
+    if (!episode?.id) {
+      alert("Episodio inválido.");
+      return;
+    }
+    if (!user?.id) {
+      alert("Usuario no autenticado.");
+      return;
+    }
+    try {
+      await api.post(`/episodes/${episode.id}/validate`, {
+        user_id: user.id,
+        decision,
+      });
+      alert(`Episodio ${decision === "PERTINENTE" ? "validado" : "descartado"}.`);
+      setIsPopupVisible(false);
+    } catch (error) {
+      console.error("Error validando episodio:", error);
+      alert("No se pudo validar el episodio.");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -275,7 +301,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
       {/* Popup Result */}
       {isPopupVisible && recommendationResult && (
-        <div className="absolute bg-white rounded-xl shadow-lg drop-shadow-lg shadow-inner p-4 text-center">
+        <div className="absolute bg-white rounded-xl border border-gray-300 shadow-2xl drop-shadow-2xl shadow-[0_20px_45px_rgba(0,0,0,0.25)] p-4 text-center">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={() => setIsPopupVisible(false)} className="hover:cursor-pointer justify-self-end">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
           </svg>
@@ -283,6 +309,20 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
           <span className={`px-4 py-2 m-2 rounded-full font-semibold ${recommendationResult.prediction === 1 ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}>
             {recommendationResult.prediction === 1 ? "Aplica Ley de Urgencia" : "No aplica Ley de Urgencia"}
           </span>
+          <div className="flex justify-center gap-3 mt-4">
+            <button
+              className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm text-white"
+              onClick={() => handleValidateDecision("PERTINENTE")}
+            >
+              Validar
+            </button>
+            <button
+              className="rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2 text-sm text-white"
+              onClick={() => handleValidateDecision("NO PERTINENTE")}
+            >
+              Descartar
+            </button>
+          </div>
           <p className="pt-5 italic text-xs">Esta recomendación es generada con IA, por lo que se recomienda su revisión.</p>
         </div>
       )}
