@@ -3,16 +3,22 @@ import axios from 'axios';
 import { AuthContext } from './AuthContextBase';
 import type { AuthContextValue, AuthUser } from './AuthContextBase';
 
-type JwtPayload = {
-    sub?: string | number;
-    email?: string;
-    is_doctor?: unknown;
-    is_chief_doctor?: unknown;
-};
-
 const STORAGE_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 const baseURL: string | undefined = import.meta.env.VITE_BACKEND_URL;
+
+function decodeJwt(token: string): { sub?: number; email?: string } | null {
+    try {
+        const part = token.split('.')[1];
+        if (!part) return null;
+        const decoded = atob(part);
+        const obj = JSON.parse(decoded) as { sub?: string | number; email?: string };
+        const subNum = typeof obj.sub === 'number' ? obj.sub : (typeof obj.sub === 'string' ? Number(obj.sub) : undefined);
+        return { sub: subNum, email: obj.email };
+    } catch {
+        return null;
+    }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
@@ -41,6 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (token) {
             localStorage.setItem(STORAGE_KEY, token);
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            if (!user) {
+                const payload = decodeJwt(token);
+                if (payload?.sub && payload.email) {
+                    setUser({ id: payload.sub, email: payload.email, isDoctor: false, isChiefDoctor: false, isAdmin: false });
+                }
+            }
         } else {
             localStorage.removeItem(STORAGE_KEY);
             delete axios.defaults.headers.common.Authorization;
@@ -64,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isDoctor: Boolean(data.is_doctor),
             isChiefDoctor: Boolean(data.is_chief_doctor),
             isAdmin: Boolean(data.is_admin),
+            email,
         };
         setUser(nextUser);
         localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
