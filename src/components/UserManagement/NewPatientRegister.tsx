@@ -30,9 +30,6 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     const fetchDoctors = async () => {
       try {
         const res = await api.get('/users/by-turn');
-        const doctorsByTurn = res.data;
-        const allDoctors = Object.values(doctorsByTurn).flat() as { id: number; name: string }[];
-        setDoctors(allDoctors);
         setDoctorsByTurn(res.data);
       } catch (error) {
         console.error("Error al obtener doctores:", error);
