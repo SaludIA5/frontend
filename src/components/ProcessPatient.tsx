@@ -11,7 +11,6 @@ import ProceduresTab from "./PatientFormTabs/ProceduresTab";
 import ConditionsTab from "./PatientFormTabs/ConditionsTab";
 import LevelsTab from "./PatientFormTabs/LevelsTab";
 import { emptyEpisode } from "../utils/emptyEpisode";
-import ValidateButtonTest from "./ValidateButtonTest";
 interface ProcessPatientProps {
   isOpen: boolean;
   onClose: () => void;
@@ -210,7 +209,6 @@ export default function ProcessPatient({ isOpen, onClose, patientRut }: ProcessP
           >
             Guardar
           </button>
-          <ValidateButtonTest episode={episode}/>
         </div>
       </div>
 

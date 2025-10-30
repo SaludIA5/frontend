@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import DoctorMetricsList from '../components/Metrics/DoctorMetricsList';
-import type { DoctorValidation } from '../types/metrics';
+import type { DoctorValidation, BackendValidationByDoctor } from '../types/metrics';
 import axios from 'axios';
 
 const api = axios.create({
@@ -10,24 +10,13 @@ const api = axios.create({
     withCredentials: true,
 });
 
-interface BackendValidations {
-    doctor_id: number
-    doctor_name: string
-    total_validations: number
-    accepted_validations: number
-    rejected_validations: number
-    concordant_validations: number
-    discordant_validations: number
-    concordance_rate: number
-    acceptance_rate: number
-}
-
 export default function MetricsPage() {
     const [doctorValidations, setDoctorValidations] = useState<DoctorValidation[]>();
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [isChief, setIsChief] = useState(false); //Actualizar cuando se tenga forma de acceder a datos propios
 
-    function normalizeValidations(data: BackendValidations[]): DoctorValidation[] {
+    function normalizeValidations(data: BackendValidationByDoctor[]): DoctorValidation[] {
         return data.map(doctor => ({
             doctorId: doctor.doctor_id,
             doctorName: doctor.doctor_name,
@@ -50,11 +39,19 @@ export default function MetricsPage() {
             }
 
             try {
+                const userInfo = await api.get("/auth/me");
+                const userData = userInfo.data;
+                if(userData.is_chief_doctor || userData.is_admin){
+                    setIsChief(true);
+                }
                 const res = await api.get("/metrics/validation-by-doctor");
-                console.log(res);
                 const validationsData = res.data?.items || res.data || [];
                 const list = Array.isArray(validationsData) ? validationsData : [];
-                const validationsList = normalizeValidations(list);
+                let filteredList = [];
+                if(!isChief){
+                    filteredList = list.filter((item) => item.doctor_id == userData.id); //Poner id de doctor actual
+                }
+                const validationsList = isChief ? normalizeValidations(list) : normalizeValidations(filteredList);
                 setDoctorValidations(validationsList);
                 setError(false);
             } catch (error) {
@@ -65,7 +62,7 @@ export default function MetricsPage() {
             }
         }
         fetchValidationsByDoctor();
-    }, [])
+    }, [isChief])
 
     if (loading) return (
     <>
@@ -82,7 +79,7 @@ export default function MetricsPage() {
         <>
             <Header />
             <div className='flex justify-center my-4 text-2xl font-bold'>
-                <p> Metricas de Aprobación por Doctor </p>
+                <p> Métricas de Aprobación por Doctor </p>
             </div>
             <DoctorMetricsList validations={doctorValidations ?? []} />
         </>

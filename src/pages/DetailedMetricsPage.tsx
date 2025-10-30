@@ -1,28 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom"
 import type { Doctor } from "../types/doctor"
 import Header from "../components/Header";
+import DetailedMetricEntry from "../components/Metrics/DetailedMetricEntry";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ValidateAsChief from "../components/Metrics/ValidateAsChief";
 import type { Patient } from "../types/patient";
+import type { BackendValidationByEpisode } from "../types/metrics";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
     withCredentials: true,
 }); 
-
-interface BackendValidations {
-    episode_id: number,
-    numero_episodio: string,
-    patient_id: number,
-    ai_recommendation: string,
-    doctor_validation: string,
-    chief_validation: string,
-    is_concordant: boolean,
-    is_accepted: boolean,
-    validation_date: Date | string,
-    validated_by_doctor: string
-}
 
 export default function DetailedMetricsPage(){
     const navigate = useNavigate();
@@ -31,8 +20,13 @@ export default function DetailedMetricsPage(){
     const [loading, setLoading] = useState(true);
     const [patients, setPatients] = useState<Patient[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
+    const [episodeToValidate, setEpisodeToValidate] = useState<BackendValidationByEpisode>();
     const [doctor, setDoctor] = useState<Doctor>();
-    const [episodes, setEpisodes] = useState<BackendValidations[]>();
+    const [validatedEpisodes, setValidatedEpisodes] = useState<BackendValidationByEpisode[]>();
+    const [isChief, setIsChief] = useState(false);
+    const [isAllowed, setIsAllowed] = useState(true);
+    const [openEpisodeIndex, setOpenEpisodeIndex] = useState<number | null>(null);
+
 
     useEffect(() => {
         const getDoctor = async () => {
@@ -44,20 +38,28 @@ export default function DetailedMetricsPage(){
         
             try {
                 const user = await api.get(`/users/${params.id}`, { headers: { Authorization: axios.defaults.headers.common.Authorization }});
-                const data = user.data?.items || user.data || {};
-                const episodes = await api.get("/metrics/episodes");
-                const episodeData = episodes.data?.items || episodes.data || [];
-                const userEpisodes = episodeData.filter((episode : BackendValidations) => episode.validated_by_doctor == data.name)
+                const userData = user.data?.items || user.data || {};
                 const newDoctor: Doctor = {
-                    name: data.name,
-                    id: data.id,
-                    email: data.email,
-                    isDoctor: data.is_doctor,
-                    isChiefDoctor: data.is_chief_doctor,
+                    name: userData.name,
+                    id: userData.id,
+                    email: userData.email,
+                    isDoctor: userData.is_doctor,
+                    isChiefDoctor: userData.is_chief_doctor,
                 }
                 setDoctor(newDoctor);
-                setEpisodes(userEpisodes);
+
+                const validatedEpisodes = await api.get("/metrics/episodes");
+                const episodeData = validatedEpisodes.data?.items || validatedEpisodes.data || [];
+                const userEpisodes = episodeData.filter((episode : BackendValidationByEpisode) => episode.validated_by_doctor == userData.name)
+                setValidatedEpisodes(userEpisodes);
                 setError(false);
+
+                const currentUser = await api.get("/auth/me");
+                if(currentUser.data.is_admin || currentUser.data.is_chief_doctor){ 
+                    setIsChief(true);
+                } else if (currentUser.data.id != params.id) {
+                    setIsAllowed(false);
+                }
             } catch (error) {
                 console.error("Error fetching doctor:", error);
                 setError(true);
@@ -88,73 +90,102 @@ export default function DetailedMetricsPage(){
             setLoading(false);
           }
         };
-        fetchPatient(1);
-      }, []);
+        if (!doctor || !validatedEpisodes) return;
+        for (let i = 0; i < validatedEpisodes.length; i++) {
+            if(validatedEpisodes){
+                const patientId = validatedEpisodes[i].patient_id;
+                fetchPatient(patientId);
+            }
+        }
+      }, [doctor, validatedEpisodes]);
 
     const findPatientFromID = (id: number) : string => {
         const patient = patients.find((patient) => patient.id === id);
         return patient?.name || "Nombre No Encontrado"
     }
     
-    const handleValidation = (choice: boolean) => {
-        console.log(choice) //TODO: Cambiar cuando se pasen datos de paciente 
+    const handleValidation = async (choice: boolean) => {
+        if (!episodeToValidate || !doctor) return;
+        const decision = choice ? "PERTINENTE" : "NO PERTINENTE"; 
+        const body = {
+            "user_id": doctor.id,
+            "decision": decision
+        }
+        try {
+            await api.post(`validatedEpisodes/${episodeToValidate.episode_id}/chief-validate`, body)
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+    const openValidationModal = (episode: BackendValidationByEpisode) => {
+        setEpisodeToValidate(episode);
+        setModalOpen(!modalOpen);
+    }
+
     if (error) return (<><Header /> Ha ocurrido un error.</>);
     if (loading) return (<><Header /> Cargando...</>); 
-    if (!doctor) return (<>Doctor no encontrado</>);
-    if (!episodes) return (<>No hay episodios para el doctor.</>);
-    return(
-    <>
-    <Header />
-    <div className="flex justify-between my-3 px-8 items-center">
-        <b>Doctor(a): {doctor.name}</b>
-        <button className='rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]' 
-        onClick={()=> navigate("/metrics")}>
-            Volver a Vista General
-        </button>
-    </div>
-    {episodes ? 
-    (<table className="w-full border-separate border-spacing-2">
-        <thead className="text-center">
-        <tr>
-            <th>Paciente</th>
-            <th>Decisión Doctor</th>
-            <th>Concordancia con IA</th>
-            <th>Decisión Jefe de Turno</th>
-        </tr>
-        </thead>
-        <tbody className="text-center">
-        {episodes.map((episode, i) => {
-            if (!episode.doctor_validation) return;
-            else return (<tr key={i}>
-                    <td>{findPatientFromID(episode.patient_id)}</td>
-                    <td> {(() => {
-                            const color = episode.doctor_validation ? "green" : "red";
-                            return (
-                            <span
-                                className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${color}-200 text-${color}-700`}
-                            >
-                                {episode.doctor_validation ? "" : "No "} Se Aplicó Ley
-                            </span>
-                        );})()}
-                    </td>
-                    <td> {(() => {
-                            const color = episode.is_concordant ? "green" : "red";
-                            return (
-                            <span
-                                className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${color}-200 text-${color}-700`}
-                            >
-                                {episode.is_concordant ? "" : "No "} Concuerda
-                            </span>
-                        );})()}
-                    </td>
-                    <td><button className='rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]' 
-                    onClick={()=> setModalOpen(!modalOpen)}>Validar Decisión</button></td>  
-            </tr>)
-        })}
-        </tbody>
-    </table>) : (<p>No hay episodios para este médico.</p>)}
-    <ValidateAsChief isOpen={modalOpen} onClose={()=>setModalOpen(!modalOpen)} onChoice={handleValidation}/>
-    </>
-    )
+    if (!doctor) return (<><Header /> Doctor no encontrado</>);
+    if (!validatedEpisodes) return (<><Header /> No hay episodios para el doctor.</>);
+    if (!isAllowed) return (<><Header /> No está permitido ver los datos de este doctor.</>);
+    return (
+        <>
+          <Header />
+          <div className="flex justify-between my-3 px-8 items-center">
+            <b>Doctor(a): {doctor.name}</b>
+            <button
+              className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+              onClick={() => navigate("/metrics")}
+            >
+              Volver a Vista General
+            </button>
+          </div>
+      
+          <ul className="mx-auto max-w-5xl space-y-3">
+            {validatedEpisodes && validatedEpisodes.length > 0 ? (
+              <div className="w-full">
+                <li>
+                  <div className="grid grid-cols-4 text-center my-2 px-4 font-semibold">
+                    <p>Paciente</p>
+                    <p>Decisión Doctor</p>
+                    <p>Concordancia con IA</p>
+                    <p>Decisión Jefe de Turno</p>
+                  </div>
+                </li>
+      
+                <div className="text-center">
+                  {validatedEpisodes.map((validatedEpisode, i) => {
+                    if (!validatedEpisode.doctor_validation) return null;
+      
+                    return (
+                      <li
+                        key={i}
+                        className="border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
+                      >
+                        <DetailedMetricEntry 
+                        episodeValidation={validatedEpisode} 
+                        patientName={findPatientFromID(validatedEpisode.patient_id)}
+                        isOpen={openEpisodeIndex === i}
+                        isChief={isChief}
+                        onToggle={() => setOpenEpisodeIndex(openEpisodeIndex === i ? null : i)}
+                        onValidate={openValidationModal}
+                        />
+                      </li>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p>No hay episodios para este médico.</p>
+            )}
+          </ul>
+      
+          <ValidateAsChief
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(!modalOpen)}
+            onChoice={handleValidation}
+          />
+        </>
+      );
+      
 }
