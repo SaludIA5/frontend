@@ -83,7 +83,7 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
                 {episode.fecha_ingreso ? formatDateShort(new Date(episode.fecha_ingreso)) : "-"}
               </p>
               {(() => {
-                const aiValidation = episode.aiValidation;
+                const aiValidation = episode.aiValidation ?? ((episode as unknown as { validacion?: string }).validacion === 'PERTINENTE');
                 const statusConfig = aiValidation
                   ? { text: 'Aplica', className: 'bg-green-200 text-green-700' }
                   : { text: 'No Aplica', className: 'bg-red-100 text-red-700' };

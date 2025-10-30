@@ -3,15 +3,22 @@ import axios from 'axios';
 import { AuthContext } from './AuthContextBase';
 import type { AuthContextValue, AuthUser } from './AuthContextBase';
 
-type JwtPayload = {
-    sub?: string | number;
-    email?: string;
-    is_doctor?: unknown;
-    is_chief_doctor?: unknown;
-};
-
 const STORAGE_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
 const baseURL: string | undefined = import.meta.env.VITE_BACKEND_URL;
+
+function decodeJwt(token: string): { sub?: number; email?: string } | null {
+    try {
+        const part = token.split('.')[1];
+        if (!part) return null;
+        const decoded = atob(part);
+        const obj = JSON.parse(decoded) as { sub?: string | number; email?: string };
+        const subNum = typeof obj.sub === 'number' ? obj.sub : (typeof obj.sub === 'string' ? Number(obj.sub) : undefined);
+        return { sub: subNum, email: obj.email };
+    } catch {
+        return null;
+    }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
@@ -22,9 +29,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (baseURL) {
             axios.defaults.baseURL = baseURL;
         }
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            setToken(saved);
+        const savedToken = localStorage.getItem(STORAGE_KEY);
+        const savedUser = localStorage.getItem(USER_KEY);
+        if (savedToken) setToken(savedToken);
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser) as AuthUser;
+                setUser(parsed);
+            } catch {
+                setUser(null);
+            }
         }
         setInitialized(true);
     }, []);
@@ -33,36 +47,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (token) {
             localStorage.setItem(STORAGE_KEY, token);
             axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-            try {
-                const base64 = token.split('.')[1] || '';
-                const decoded = base64 ? atob(base64) : '{}';
-                const payload = JSON.parse(decoded) as unknown as JwtPayload;
-                const idValue = typeof payload.sub === 'string' || typeof payload.sub === 'number' ? Number(payload.sub) : NaN;
-                const emailValue = typeof payload.email === 'string' ? payload.email : '';
-                if (!Number.isNaN(idValue) && emailValue) {
-                    setUser({
-                        id: idValue,
-                        email: emailValue,
-                        isDoctor: Boolean(payload.is_doctor),
-                        isChiefDoctor: Boolean(payload.is_chief_doctor),
-                    });
-                } else {
-                    setUser(null);
+            if (!user) {
+                const payload = decodeJwt(token);
+                if (payload?.sub && payload.email) {
+                    setUser({ id: payload.sub, email: payload.email, isDoctor: false, isChiefDoctor: false, isAdmin: false });
                 }
-            } catch {
-                setUser(null);
             }
         } else {
             localStorage.removeItem(STORAGE_KEY);
             delete axios.defaults.headers.common.Authorization;
-            setUser(null);
         }
     }, [token]);
 
     const login = async (email: string, password: string) => {
         const url = baseURL ? `${baseURL}/auth/login` : '/auth/login';
         const res = await axios.post(url, { email, password }, { withCredentials: true });
-        setToken(res.data.access_token);
+        const data = res.data as {
+            access_token: string;
+            token_type: string;
+            is_doctor: boolean;
+            is_chief_doctor: boolean;
+            is_admin: boolean;
+            user_id: number;
+        };
+        setToken(data.access_token);
+        const nextUser: AuthUser = {
+            id: data.user_id,
+            isDoctor: Boolean(data.is_doctor),
+            isChiefDoctor: Boolean(data.is_chief_doctor),
+            isAdmin: Boolean(data.is_admin),
+            email,
+        };
+        setUser(nextUser);
+        localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
     };
 
     const signup = async (name: string, rut: string, email: string, password: string, turn: string, opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }) => {
@@ -72,13 +89,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             rut,
             email,
             password,
+            turn,
             is_doctor: Boolean(opts?.isDoctor) || false,
             is_chief_doctor: Boolean(opts?.isChiefDoctor) || false,
-            turn
         });
     };
 
-    const logout = () => setToken(null);
+    const logout = () => {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem(USER_KEY);
+    };
 
     const value = useMemo<AuthContextValue>(() => ({
         isAuthenticated: Boolean(token),
