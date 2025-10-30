@@ -18,6 +18,7 @@ export type AuthContextValue = {
         rut: string,
         email: string,
         password: string,
+        turn: string,
         opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }
     ) => Promise<void>;
 };

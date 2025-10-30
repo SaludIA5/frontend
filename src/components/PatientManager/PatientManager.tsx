@@ -43,7 +43,6 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
           api.get("/episodes/assigned"),
           api.get("/users/by-turn")
         ]);
-
         const episodes: EpisodeWithPatientData[] = episodesRes.data || [];
         const doctorsByTurn = doctorsRes.data;
         const allDoctors = Object.values(doctorsByTurn).flat() as Doctor[];

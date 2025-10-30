@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(res.data.access_token);
     };
 
-    const signup = async (name: string, rut: string, email: string, password: string, opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }) => {
+    const signup = async (name: string, rut: string, email: string, password: string, turn: string, opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }) => {
         const url = baseURL ? `${baseURL}/users` : '/users';
         await axios.post(url, {
             name,
@@ -74,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password,
             is_doctor: Boolean(opts?.isDoctor) || false,
             is_chief_doctor: Boolean(opts?.isChiefDoctor) || false,
+            turn
         });
     };
 
