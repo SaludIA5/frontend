@@ -19,7 +19,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     openEpisode: emptyEpisode(),
   });
 
-  const [doctors, setDoctors] = useState<{ id: number; name: string }[]>([]);
+  const [doctorsByTurn, setDoctorsByTurn] = useState<Record<string, { id: number; name: string }[]>>({});
   const [selectedDoctors, setSelectedDoctors] = useState({
     turnoA: "",
     turnoB: "",
@@ -29,24 +29,18 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        // const res = await api.get('/doctors'); FALTAAAA
-        // setDoctors(res.data);
-  
-        setDoctors([
-          { id: 1, name: "Dr. González" },
-          { id: 2, name: "Dra. Pérez" },
-          { id: 3, name: "Dr. Ramírez" },
-        ]);
+        const res = await api.get('/users/by-turn');
+        setDoctorsByTurn(res.data);
       } catch (error) {
-        console.error("Error fetching doctors:", error);
+        console.error("Error al obtener doctores:", error);
       }
     };
-  
+
     fetchDoctors();
   }, []);
-  
 
-  const { addPatient } = usePatients();
+
+  const { addPatientWithEpisodes } = usePatients();
 
   const resetForm = () => {
     setNewPatient({
@@ -57,34 +51,35 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       age: 0,
       openEpisode: emptyEpisode(),
     });
+    setSelectedDoctors({ turnoA: "", turnoB: "", turnoC: "" });
   };
 
-  const handleSave = () => {
-    addPatient({
-      ...newPatient
-    });
-    resetForm();
-    onClose();
-  };
 
   const handleSubmit = async () => {
     const age = Number(newPatient.age);
 
+    const doctorsPayload = Object.entries(selectedDoctors)
+      .filter(([, doctorId]) => doctorId !== "")
+      .reduce((acc, [turn, doctorId]) => {
+        acc[turn.toLowerCase()] = Number(doctorId);
+        return acc;
+      }, {} as { [key: string]: number });
+
     try {
-      await api.post('/patients/', {
+      const res = await api.post('/patients/with-episode', {
         name: newPatient.name,
         age: age,
         rut: newPatient.rut,
-        // doctors: { FALTAAAAA
-        //   turnoA: selectedDoctors.turnoA,
-        //   turnoB: selectedDoctors.turnoB,
-        //   turnoC: selectedDoctors.turnoC,
-        // },
+        doctors: doctorsPayload,
       });
-      handleSave();
+
+      addPatientWithEpisodes(res.data);
+
+      resetForm();
+      onClose();
     } catch (error) {
-      console.error("Error adding patient:", error);
-    } 
+      console.error("Error adding patient with episode:", error);
+    }
   };
 
   const handleClose = () => {
@@ -139,7 +134,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           onChange={(e) => setNewPatient({ ...newPatient, age: Number(e.target.value) })}
           maxLength={3}
         />
-
+        
         <p className="text-lg mt-2">Asignar doctores por turno</p>
 
         <label className="block mt-2 text-sm">Doctor turno A</label>
@@ -151,9 +146,13 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
-            <option key={doc.id} value={doc.id}>{doc.name}</option>
-          ))}
+          {doctorsByTurn["A"] && doctorsByTurn["A"].length > 0 ? (
+            doctorsByTurn["A"].map((doc) => (
+              <option key={doc.id} value={doc.id}>{doc.name}</option>
+            ))
+          ) : (
+            <option value="" disabled>No hay doctores disponibles</option>
+          )}
         </select>
 
         <label className="block mt-2 text-sm">Doctor turno B</label>
@@ -165,9 +164,13 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
-            <option key={doc.id} value={doc.id}>{doc.name}</option>
-          ))}
+          {doctorsByTurn["B"] && doctorsByTurn["B"].length > 0 ? (
+            doctorsByTurn["B"].map((doc) => (
+              <option key={doc.id} value={doc.id}>{doc.name}</option>
+            ))
+          ) : (
+            <option value="" disabled>No hay doctores disponibles</option>
+          )}
         </select>
 
         <label className="block mt-2 text-sm">Doctor turno C</label>
@@ -179,9 +182,13 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         >
           <option value="">Seleccionar...</option>
-          {doctors.map((doc) => (
-            <option key={doc.id} value={doc.id}>{doc.name}</option>
-          ))}
+          {doctorsByTurn["C"] && doctorsByTurn["C"].length > 0 ? (
+            doctorsByTurn["C"].map((doc) => (
+              <option key={doc.id} value={doc.id}>{doc.name}</option>
+            ))
+          ) : (
+            <option value="" disabled>No hay doctores disponibles</option>
+          )}
         </select>
 
         <div className="flex justify-center space-x-3">

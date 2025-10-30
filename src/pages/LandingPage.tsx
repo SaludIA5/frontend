@@ -2,24 +2,44 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import PatientManager from '../components/PatientManager/PatientManager';
 import NewPatientRegister from '../components/UserManagement/NewPatientRegister';
-import ProcessPatient from '../components/ProcessPatient';
+import ProcessEpisode from '../components/ProcessEpisode';
+import type { Episode } from '../types/episode';
+import EditPatientModal from '../components/PatientManager/EditPatientModal';
+import type { Patient } from '../types/patient';
+import CreateEpisodeModal from '../components/PatientManager/CreateEpisodeModal';
+import type { Doctor } from '../types/doctor';
 
 export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [processModalOpen, setProcessModalOpen] = useState(false);
-  const [selectedPatientRut, setSelectedPatientRut] = useState<string>('');
+  const [editPatientModalOpen, setEditPatientModalOpen] = useState(false);
+  const [createEpisodeModalOpen, setCreateEpisodeModalOpen] = useState(false);
+  const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+  const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
+  const [patientForNewEpisode, setPatientForNewEpisode] = useState<number | null>(null);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   const handleModalToggle = () => setModalOpen(!modalOpen);
-  const handleProcessModalToggle = (patientRut?: string) => {
+
+  const handleProcessEpisode = (episode?: Episode) => {
     setProcessModalOpen(!processModalOpen);
-    setSelectedPatientRut(patientRut || '');
+    setSelectedEpisode(episode || null);
   };
 
+  const handleEditPatientModalToggle = (patient?: Patient) => {
+    setPatientToEdit(patient || null);
+    setEditPatientModalOpen(!editPatientModalOpen);
+  };
+
+  const handleCreateEpisodeModalToggle = (patientId?: number) => {
+    setPatientForNewEpisode(patientId || null);
+    setCreateEpisodeModalOpen(!createEpisodeModalOpen);
+  };
 
   return (
     <>
       <Header />
-      <div className='flex justify-center my-3 text-2xl font-bold'>
+      <div className='flex justify-center my-3 pt-6 text-3xl font-bold'>
         <p>Pacientes Activos</p>
       </div>
       <div className="flex justify-end my-4 mr-15 px-6">
@@ -31,17 +51,35 @@ export default function LandingPage() {
         </button>
       </div>
 
-      <PatientManager onProcessPatient={handleProcessModalToggle} />
+      <PatientManager
+        onProcessEpisode={handleProcessEpisode}
+        onEditPatient={handleEditPatientModalToggle}
+        onOpenCreateEpisodeModal={handleCreateEpisodeModalToggle}
+        setDoctors={setDoctors}
+      />
 
       <NewPatientRegister
         isOpen={modalOpen}
         onClose={handleModalToggle}
       />
 
-      <ProcessPatient
+      <ProcessEpisode
         isOpen={processModalOpen}
-        onClose={() => handleProcessModalToggle()}
-        patientRut={selectedPatientRut}
+        onClose={handleProcessEpisode}
+        episode={selectedEpisode}
+      />
+
+      <EditPatientModal
+        isOpen={editPatientModalOpen}
+        onClose={() => handleEditPatientModalToggle()}
+        patient={patientToEdit}
+      />
+
+      <CreateEpisodeModal
+        isOpen={createEpisodeModalOpen}
+        onClose={() => handleCreateEpisodeModalToggle()}
+        patientId={patientForNewEpisode}
+        doctors={doctors}
       />
     </>
   );
