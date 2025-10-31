@@ -114,8 +114,9 @@ export default function DetailedMetricsPage(){
             "decision": decision
         }
         try {
-            const res = await api.post(`episodes/${episodeToValidate.episode_id}/chief-validate`, body)
-            console.log(res);
+            await api.post(`episodes/${episodeToValidate.episode_id}/chief-validate`, body);
+            await api.patch(`episodes/${episodeToValidate.episode_id}`, {estado_del_caso: "Cerrado"})
+            window.location.reload();
         } catch (error) {
             console.log(error)
         }
