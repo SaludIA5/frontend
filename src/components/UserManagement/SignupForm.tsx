@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContextBase';
+import { useAuth } from '../../context/AuthContextBase';
 
 export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => void; onCancel?: () => void }) {
     const { signup } = useAuth();
@@ -10,6 +10,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isDoctor, setIsDoctor] = useState(false);
     const [isChiefDoctor, setIsChiefDoctor] = useState(false);
+    const [turn, setTurn] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -48,7 +49,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
         }
         setIsLoading(true);
         try {
-            await signup(name, setRutToNumeric(rut), email, password, { isDoctor, isChiefDoctor });
+            await signup(name, setRutToNumeric(rut), email, password, turn, { isDoctor, isChiefDoctor });
             onSuccess?.();
         } catch (err: unknown) {
             const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -85,6 +86,19 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
                 <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Turno</label>
+                <select
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                value={turn}
+                onChange={(e) => setTurn(e.target.value)}
+                required>
+                <option value="" disabled>Seleccione Turno</option>
+                <option value="A">Turno A</option>
+                <option value="B">Turno B</option>
+                <option value="C">Turno C</option>
+                </select>
             </div>
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Rol</label>

@@ -1,31 +1,24 @@
-import type { Patient } from "../../types/user";
+import type { Patient } from "../../types/patient";
 
 interface Props {
-  newPatient: Patient;
-  setNewPatient: React.Dispatch<React.SetStateAction<Patient>>;
+    patient: Patient;
 }
 
-export default function PersonalDataTab({ newPatient, setNewPatient }: Props) {
-  return (
-    <div className="flex-auto flex-col mb-3">
-      <div className="mb-3">
-        Nombre:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.name}
-          onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
-        />
-      </div>
-      <div className="mb-3">
-        RUT:
-        <input
-          type="text"
-          className="w-full rounded border border-gray-300 p-2"
-          value={newPatient.rut}
-          onChange={(e) => setNewPatient({ ...newPatient, rut: e.target.value })}
-        />
-      </div>
-    </div>
-  );
+export default function PersonalDataTab({ patient }: Props) {
+    return (
+        <div className="flex-auto flex-col mb-3">
+            <div className="mb-3">
+                <p className="font-semibold">Nombre:</p>
+                <p className="w-full rounded border border-gray-200 p-2 bg-gray-50">
+                    {patient.name}
+                </p>
+            </div>
+            <div className="mb-3">
+                <p className="font-semibold">RUT:</p>
+                <p className="w-full rounded border border-gray-200 p-2 bg-gray-50">
+                    {patient.rut}
+                </p>
+            </div>
+        </div>
+    );
 }

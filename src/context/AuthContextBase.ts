@@ -2,9 +2,10 @@ import { createContext, useContext } from 'react';
 
 export type AuthUser = {
     id: number;
-    email: string;
+    email?: string;
     isDoctor: boolean;
     isChiefDoctor: boolean;
+    isAdmin: boolean;
 };
 
 export type AuthContextValue = {
@@ -18,6 +19,7 @@ export type AuthContextValue = {
         rut: string,
         email: string,
         password: string,
+        turn: string,
         opts?: { isDoctor?: boolean; isChiefDoctor?: boolean }
     ) => Promise<void>;
 };
