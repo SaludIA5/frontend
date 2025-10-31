@@ -88,7 +88,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
     };
 
     fetchInitialData();
-  }, [setPatientList, setPatientsWithEpisodes, onProcessEpisode]);
+  }, [setPatientList, setPatientsWithEpisodes]);
 
   const filteredPatients = patientsWithEpisodes
     .filter((p) => {
