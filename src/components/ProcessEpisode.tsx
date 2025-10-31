@@ -219,14 +219,9 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
       });
       alert(`Episodio ${decision === "PERTINENTE" ? "validado" : "descartado"}.`);
       setIsPopupVisible(false);
-    } catch (error: unknown) {
-      const err = error as { response?: { status?: number } };
-      if (err?.response?.status === 409) {
-        alert("No se puede volver a enviar una validación.");
-      } else {
-        console.error("Error validando episodio:", error);
-        alert("No se pudo validar el episodio.");
-      }
+    } catch (error) {
+      console.error("Error validando episodio:", error);
+      alert("No se pudo validar el episodio.");
     }
   };
 

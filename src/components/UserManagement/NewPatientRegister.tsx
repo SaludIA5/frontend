@@ -79,6 +79,8 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
       onClose();
     } catch (error) {
       console.error("Error adding patient with episode:", error);
+    } finally{
+      window.location.reload();
     }
   };
 
