@@ -27,7 +27,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
   const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   const [search, setSearch] = useState("");
-  const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all");
+  const [filterEligible, setFilterEligible] = useState<"all" | "PERTINENTE" | "NO PERTINENTE">("all");
   const [sortBy, setSortBy] = useState<"name" | "rut">("name");
 
   useEffect(() => {
@@ -99,15 +99,16 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
       );
     })
     .filter((p) => {
-      if (filterEligible === "yes") return p.episodes.some(e => e.aiValidation);
-      if (filterEligible === "no") return p.episodes.some(e => !e.aiValidation);
-      return true;
+      return p.episodes.some(e => (e as unknown as { validacion?: string }).validacion === filterEligible 
+      || filterEligible === "all"
+      || (e as unknown as { validacion?: string }).validacion === null && filterEligible === "NO PERTINENTE");
     })
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "rut") return a.rut.localeCompare(b.rut);
       return 0;
     });
+  
   if (!patientsWithEpisodes || patientsWithEpisodes.length === 0) {
     return (
       <div className="text-center py-8">
@@ -131,7 +132,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
         setSortBy={setSortBy}
       />
       {!loading ?
-        <PatientList onProcessEpisode={onProcessEpisode} onEditPatient={onEditPatient} patients={filteredPatients} doctors={doctors} onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} /> :
+        <PatientList onProcessEpisode={onProcessEpisode} onEditPatient={onEditPatient} patients={filteredPatients} doctors={doctors} onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} filterEligible={filterEligible} /> :
         "Cargando..."}
     </div>
   );
