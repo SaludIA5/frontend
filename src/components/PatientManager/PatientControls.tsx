@@ -1,8 +1,8 @@
 type Props = {
     search: string
     setSearch: (v: string) => void
-    filterEligible: "all" | "yes" | "no"
-    setFilterEligible: (v: "all" | "yes" | "no") => void
+    filterEligible: "all" | "PERTINENTE" | "NO PERTINENTE"
+    setFilterEligible: (v: "all" | "PERTINENTE" | "NO PERTINENTE") => void
     sortBy: "name" | "rut"
     setSortBy: (v: "name" | "rut") => void
 }
@@ -27,12 +27,12 @@ export default function PatientControls({
 
             <select
                 value={filterEligible}
-                onChange={(e) => setFilterEligible(e.target.value as "all" | "yes" | "no")}
+                onChange={(e) => setFilterEligible(e.target.value as "all" | "PERTINENTE" | "NO PERTINENTE")}
                 className="rounded-lg bg-white p-2"
             >
                 <option value="all">Todos</option>
-                <option value="yes">Solo aplica</option>
-                <option value="no">No aplica</option>
+                <option value="PERTINENTE">Solo aplica</option>
+                <option value="NO PERTINENTE">No aplica</option>
             </select>
 
             <select

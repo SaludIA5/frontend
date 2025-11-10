@@ -7,6 +7,7 @@ export interface Doctor {
   isDoctor: boolean;
   isChiefDoctor: boolean;
   episodes?: Episode[] //Una llamada a back entrega episodios
+  turn?: string;
 }
 
 export const mockDoctors: Doctor[] = [

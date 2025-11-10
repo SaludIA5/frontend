@@ -7,6 +7,7 @@ import type { EpisodeWithPatientData, PatientWithEpisodes } from '../../types/pa
 import type { Patient } from '../../types/patient';
 import type { Episode } from '../../types/episode';
 import type { Doctor } from '../../types/doctor';
+import { normalizeEpisode } from '../../utils/normalizeEpisode';
 
 interface PatientManagerProps {
   onProcessEpisode: (episode: Episode) => void;
@@ -27,7 +28,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
   const [doctors, setDoctors] = useState<Doctor[]>([]);
 
   const [search, setSearch] = useState("");
-  const [filterEligible, setFilterEligible] = useState<"all" | "yes" | "no">("all");
+  const [filterEligible, setFilterEligible] = useState<"all" | "PERTINENTE" | "NO PERTINENTE">("all");
   const [sortBy, setSortBy] = useState<"name" | "rut">("name");
 
   useEffect(() => {
@@ -62,7 +63,24 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
                 episodes: [],
               });
             }
-            patientsMap.get(episode.patient_id)?.episodes.push(episode);
+            // Normalize the episode to ensure consistent format (same as when saving)
+            const normalizedEpisode = normalizeEpisode(episode);
+            // Preserve fields that might not be in normalizeEpisode but are in the API response
+            const rawEpisode = episode as EpisodeWithPatientData & { antecedentes_cardiaco?: boolean; antecedentes_diabetes?: boolean; antecedentes_hipertension?: boolean };
+            const episodeWithPatientData: EpisodeWithPatientData = {
+              ...normalizedEpisode,
+              patient_id: episode.patient_id,
+              patient_name: episode.patient_name,
+              patient_rut: episode.patient_rut,
+              patient_age: episode.patient_age,
+              // Preserve diagnostics if present in API response
+              diagnostics: rawEpisode.diagnostics || normalizedEpisode.diagnostics,
+              // Preserve medical history if present in API response
+              cardiacHistory: rawEpisode.antecedentes_cardiaco ?? normalizedEpisode.cardiacHistory,
+              diabetesHistory: rawEpisode.antecedentes_diabetes ?? normalizedEpisode.diabetesHistory,
+              hypertensionHistory: rawEpisode.antecedentes_hipertension ?? normalizedEpisode.hypertensionHistory,
+            };
+            patientsMap.get(episode.patient_id)?.episodes.push(episodeWithPatientData);
           }
         });
 
@@ -99,15 +117,16 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
       );
     })
     .filter((p) => {
-      if (filterEligible === "yes") return p.episodes.some(e => e.aiValidation);
-      if (filterEligible === "no") return p.episodes.some(e => !e.aiValidation);
-      return true;
+      return p.episodes.some(e => (e as unknown as { validacion?: string }).validacion === filterEligible 
+      || filterEligible === "all"
+      || (e as unknown as { validacion?: string }).validacion === null && filterEligible === "NO PERTINENTE");
     })
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "rut") return a.rut.localeCompare(b.rut);
       return 0;
     });
+  
   if (!patientsWithEpisodes || patientsWithEpisodes.length === 0) {
     return (
       <div className="text-center py-8">
@@ -131,7 +150,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
         setSortBy={setSortBy}
       />
       {!loading ?
-        <PatientList onProcessEpisode={onProcessEpisode} onEditPatient={onEditPatient} patients={filteredPatients} doctors={doctors} onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} /> :
+        <PatientList onProcessEpisode={onProcessEpisode} onEditPatient={onEditPatient} patients={filteredPatients} doctors={doctors} onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} filterEligible={filterEligible} /> :
         "Cargando..."}
     </div>
   );

@@ -11,9 +11,10 @@ interface PatientListProps {
   onEditPatient: (patient: Patient) => void;
   doctors: Doctor[];
   onOpenCreateEpisodeModal: (patientId: number) => void;
+  filterEligible: "all" | "PERTINENTE" | "NO PERTINENTE";
 }
 
-const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpisodeModal }: { patient: PatientWithEpisodes, onProcessEpisode: (episode: Episode) => void, onEditPatient: (patient: Patient) => void, doctors: Doctor[], onOpenCreateEpisodeModal: (patientId: number) => void }) => {
+const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpisodeModal, filterEligible }: { patient: PatientWithEpisodes, onProcessEpisode: (episode: Episode) => void, onEditPatient: (patient: Patient) => void, doctors: Doctor[], onOpenCreateEpisodeModal: (patientId: number) => void, filterEligible: "all" | "PERTINENTE" | "NO PERTINENTE" }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatRut = (rut: string): string => {
@@ -26,6 +27,12 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
     }
     return formatted;
   };
+
+  const filteredEpisodes = patient.episodes.filter(episode => 
+    (episode as unknown as { validacion?: string }).validacion === filterEligible 
+    || filterEligible === "all"
+    || (episode as unknown as { validacion?: string }).validacion === null && filterEligible === "NO PERTINENTE"
+  );
 
   return (
     <React.Fragment>
@@ -71,7 +78,7 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
             <p className="text-center">Ley Urgencia</p>
             <p></p>
           </div>
-          {patient.episodes.map(episode => (
+          {filteredEpisodes.map(episode => (
             <div
               key={`episode-${episode.id}`}
               className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-4 items-center rounded-lg border border-gray-200 p-3 ml-8 bg-white"
@@ -110,7 +117,7 @@ const PatientRow = ({ patient, onProcessEpisode, onEditPatient, onOpenCreateEpis
   );
 };
 
-export default function PatientList({ onProcessEpisode, onEditPatient, patients, doctors, onOpenCreateEpisodeModal }: PatientListProps) {
+export default function PatientList({ onProcessEpisode, onEditPatient, patients, doctors, onOpenCreateEpisodeModal, filterEligible }: PatientListProps) {
   return (
     <ul className="space-y-2 max-w-5xl mx-auto overflow-x-auto">
       <li className="grid grid-cols-[1.5fr_0.8fr_0.5fr_1fr] gap-4 items-center text-black text-center p-4">
@@ -121,7 +128,15 @@ export default function PatientList({ onProcessEpisode, onEditPatient, patients,
       </li>
 
       {patients.map((patient) => (
-        <PatientRow key={patient.id} patient={patient} onProcessEpisode={onProcessEpisode} onEditPatient={onEditPatient} doctors={doctors} onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} />
+        <PatientRow 
+        key={patient.id} 
+        patient={patient} 
+        onProcessEpisode={onProcessEpisode} 
+        onEditPatient={onEditPatient} 
+        doctors={doctors} 
+        onOpenCreateEpisodeModal={onOpenCreateEpisodeModal} 
+        filterEligible={filterEligible}
+        />
       ))}
     </ul>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Doctor } from '../../types/doctor';
 import axios from 'axios';
 import { usePatients } from '../../hooks/usePatients';
@@ -21,6 +21,13 @@ export default function CreateEpisodeModal({ isOpen, onClose, patientId, doctors
         turnoB: '',
         turnoC: '',
     });
+    const doctorsByTurn = useMemo(() => {
+        return doctors.reduce((acc, doctor) => {
+            acc[doctor.turn || ''] = [...(acc[doctor.turn || ''] || []), doctor];
+            return acc;
+        }, {} as { [key: string]: Doctor[] });
+    }, [doctors]);
+
     const { patientsWithEpisodes, setPatientsWithEpisodes } = usePatients();
 
     const handleCreateEpisode = async () => {
@@ -76,7 +83,7 @@ export default function CreateEpisodeModal({ isOpen, onClose, patientId, doctors
                     onChange={(e) => setSelectedDoctors({ ...selectedDoctors, turnoA: e.target.value })}
                 >
                     <option value="">Seleccionar...</option>
-                    {doctors.map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
+                    {doctorsByTurn["A"] && doctorsByTurn["A"].map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
                 </select>
 
                 <label className="block mt-2 text-sm">Doctor turno B</label>
@@ -86,7 +93,7 @@ export default function CreateEpisodeModal({ isOpen, onClose, patientId, doctors
                     onChange={(e) => setSelectedDoctors({ ...selectedDoctors, turnoB: e.target.value })}
                 >
                     <option value="">Seleccionar...</option>
-                    {doctors.map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
+                    {doctorsByTurn["B"] && doctorsByTurn["B"].map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
                 </select>
 
                 <label className="block mt-2 text-sm">Doctor turno C</label>
@@ -96,7 +103,7 @@ export default function CreateEpisodeModal({ isOpen, onClose, patientId, doctors
                     onChange={(e) => setSelectedDoctors({ ...selectedDoctors, turnoC: e.target.value })}
                 >
                     <option value="">Seleccionar...</option>
-                    {doctors.map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
+                    {doctorsByTurn["C"] && doctorsByTurn["C"].map(doc => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
                 </select>
 
                 <div className="flex justify-end space-x-3 mt-4">

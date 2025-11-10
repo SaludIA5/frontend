@@ -59,5 +59,11 @@ export function normalizeEpisode(apiEp: any): Episode {
             sodium: apiEp?.sodio ?? base.levels?.sodium,
         },
         wasLawApplied: apiEp?.wasLawApplied ?? base.wasLawApplied,
+        // Medical history fields
+        cardiacHistory: apiEp?.antecedentes_cardiaco ?? apiEp?.cardiacHistory ?? base.cardiacHistory,
+        diabetesHistory: apiEp?.antecedentes_diabetes ?? apiEp?.diabetesHistory ?? base.diabetesHistory,
+        hypertensionHistory: apiEp?.antecedentes_hipertension ?? apiEp?.hypertensionHistory ?? base.hypertensionHistory,
+        // Diagnostics - preserve if present in API response
+        diagnostics: apiEp?.diagnostics ?? base.diagnostics,
     };
 }
