@@ -7,6 +7,7 @@ import type { EpisodeWithPatientData, PatientWithEpisodes } from '../../types/pa
 import type { Patient } from '../../types/patient';
 import type { Episode } from '../../types/episode';
 import type { Doctor } from '../../types/doctor';
+import { normalizeEpisode } from '../../utils/normalizeEpisode';
 
 interface PatientManagerProps {
   onProcessEpisode: (episode: Episode) => void;
@@ -62,7 +63,24 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
                 episodes: [],
               });
             }
-            patientsMap.get(episode.patient_id)?.episodes.push(episode);
+            // Normalize the episode to ensure consistent format (same as when saving)
+            const normalizedEpisode = normalizeEpisode(episode);
+            // Preserve fields that might not be in normalizeEpisode but are in the API response
+            const rawEpisode = episode as EpisodeWithPatientData & { antecedentes_cardiaco?: boolean; antecedentes_diabetes?: boolean; antecedentes_hipertension?: boolean };
+            const episodeWithPatientData: EpisodeWithPatientData = {
+              ...normalizedEpisode,
+              patient_id: episode.patient_id,
+              patient_name: episode.patient_name,
+              patient_rut: episode.patient_rut,
+              patient_age: episode.patient_age,
+              // Preserve diagnostics if present in API response
+              diagnostics: rawEpisode.diagnostics || normalizedEpisode.diagnostics,
+              // Preserve medical history if present in API response
+              cardiacHistory: rawEpisode.antecedentes_cardiaco ?? normalizedEpisode.cardiacHistory,
+              diabetesHistory: rawEpisode.antecedentes_diabetes ?? normalizedEpisode.diabetesHistory,
+              hypertensionHistory: rawEpisode.antecedentes_hipertension ?? normalizedEpisode.hypertensionHistory,
+            };
+            patientsMap.get(episode.patient_id)?.episodes.push(episodeWithPatientData);
           }
         });
 

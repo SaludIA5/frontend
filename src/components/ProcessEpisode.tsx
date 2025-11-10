@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { Patient } from "../types/patient";
 import type { Episode } from "../types/episode";
 import axios from 'axios';
@@ -14,6 +14,7 @@ import { emptyEpisode } from "../utils/emptyEpisode";
 import type { EpisodeWithPatientData } from "../types/patient-episode";
 import { useAuth } from "../context/AuthContextBase";
 import { normalizeEpisode } from "../utils/normalizeEpisode";
+import DiagnosticsTab from "./PatientFormTabs/DiagnosticsTab";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -39,20 +40,23 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const [isEligibleToGenerate, setIsEligibleToGenerate] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"personal" | "vitals"
-    | "medhistory" | "procedures" | "conditions" | "levels">("personal");
+    | "medhistory" | "procedures" | "conditions" | "levels" | "diagnostics">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [recommendationResult, setRecommendationResult] = useState<null | { label: string; prediction: number; probability: number }>(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  
+  const currentEpisodeIdRef = useRef<number | null>(null);
+  const wasOpenRef = useRef(false);
 
-  const { updatePatient } = usePatients();
+  const { updatePatient, updateEpisode, patientsWithEpisodes } = usePatients();
   const { user } = useAuth();
 
   const payload = useMemo(() => ({
     id_episodio: episode.id,
     numero_episodio: "0",
-    diagnostics: null,
+    diagnostics_id: episode.diagnostics || null,
     antecedentes_cardiaco: episode.cardiacHistory || null,
     antecedentes_diabetes: episode.diabetesHistory || null,
     antecedentes_hipertension: episode.hypertensionHistory || null,
@@ -98,26 +102,69 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   }), [episode]);
 
   useEffect(() => {
+    const justOpened = isOpen && !wasOpenRef.current;
+    const episodeChanged = episodeProp && episodeProp.id !== currentEpisodeIdRef.current;
+    
     if (isOpen) {
-      setIsLoading(true);
-      if (episodeProp) {
-        const episodeData = episodeProp as EpisodeWithPatientData;
-        setPatient({
-          id: episodeData.patient_id,
-          name: episodeData.patient_name,
-          rut: episodeData.patient_rut,
-          age: episodeData.patient_age,
-        });
-        const normalized = normalizeEpisode(episodeProp);
-        setEpisode(normalized);
+      if (justOpened || episodeChanged) {
+        setIsLoading(true);
+        if (episodeProp) {
+          currentEpisodeIdRef.current = episodeProp.id;
+          
+          let latestEpisode: Episode | null = null;
+          let patientData: { id: number; name: string; rut: string; age: number } | null = null;
+          
+          for (const patient of patientsWithEpisodes) {
+            const foundEpisode = patient.episodes.find(ep => ep.id === episodeProp.id);
+            if (foundEpisode) {
+              latestEpisode = foundEpisode;
+              patientData = {
+                id: patient.id,
+                name: patient.name,
+                rut: patient.rut,
+                age: patient.age,
+              };
+              break;
+            }
+          }
+          
+          const episodeToUse = latestEpisode || episodeProp;
+          const episodeData = episodeToUse as EpisodeWithPatientData;
+          
+          if (patientData) {
+            setPatient({
+              id: patientData.id,
+              name: patientData.name,
+              rut: patientData.rut,
+              age: patientData.age,
+            });
+          } else {
+            setPatient({
+              id: episodeData.patient_id || episodeData.patientId || episodeToUse.patientId || -1,
+              name: episodeData.patient_name || "",
+              rut: episodeData.patient_rut || "",
+              age: episodeData.patient_age || 0,
+            });
+          }
+          
+          if (latestEpisode) {
+            setEpisode(latestEpisode);
+          } else {
+            const normalized = normalizeEpisode(episodeProp);
+            setEpisode(normalized);
+          }
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
+      wasOpenRef.current = true;
     } else {
       setEpisode(emptyEpisode);
       setIsEditing(false);
       setPatient({ id: -1, name: "", rut: "", age: 0 });
+      currentEpisodeIdRef.current = null;
+      wasOpenRef.current = false;
     }
-  }, [episodeProp, isOpen]);
+  }, [episodeProp, isOpen, patientsWithEpisodes]);
 
   useEffect(() => {
     const filledFields = Object.values(payload).filter(
@@ -130,7 +177,9 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const handleSave = async () => {
     if (!patient) return;
 
+    const diagnosticsIds = episode.diagnostics?.map((diagnostic) => diagnostic.id);
     const patchPayload = {
+      diagnostics_ids: diagnosticsIds,
       antecedentes_cardiaco: episode.cardiacHistory,
       antecedentes_diabetes: episode.diabetesHistory,
       antecedentes_hipertension: episode.hypertensionHistory,
@@ -176,7 +225,30 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
     try {
       const res = await api.patch(`/episodes/${episode.id}`, patchPayload);
-      updatePatient(patient.id, { ...patient, openEpisode: res.data });
+      const updatedEpisodeData = res.data;
+      const normalizedUpdatedEpisode = normalizeEpisode(updatedEpisodeData);
+      
+      const patientIdToUse = patient.id > 0 
+        ? patient.id 
+        : (normalizedUpdatedEpisode.patientId || episode.patientId || (updatedEpisodeData as EpisodeWithPatientData)?.patient_id) || -1;
+      
+      const mergedEpisode: Episode = {
+        ...normalizedUpdatedEpisode,
+        id: episode.id,
+        patientId: patientIdToUse,
+        diagnostics: episode.diagnostics ?? normalizedUpdatedEpisode.diagnostics,
+        cardiacHistory: episode.cardiacHistory ?? normalizedUpdatedEpisode.cardiacHistory,
+        diabetesHistory: episode.diabetesHistory ?? normalizedUpdatedEpisode.diabetesHistory,
+        hypertensionHistory: episode.hypertensionHistory ?? normalizedUpdatedEpisode.hypertensionHistory,
+      };
+      
+      if (patientIdToUse > 0 && episode.id > 0) {
+        updateEpisode(patientIdToUse, episode.id, mergedEpisode);
+      }
+      setEpisode(mergedEpisode);
+      if (patient.id > 0) {
+        updatePatient(patient.id, { ...patient, openEpisode: updatedEpisodeData });
+      }
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating episode:", error);
@@ -241,6 +313,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Condiciones Hospitalización" code="conditions" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Niveles" code="levels" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Diagnósticos" code="diagnostics" />
         </div>
 
         {/* Form content */}
@@ -258,8 +331,12 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
               <ProceduresTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "conditions" ? (
               <ConditionsTab episode={episode} setEpisode={setEpisode} />
-            ) : (
+            ) : activeTab === "diagnostics" ? (
+              <DiagnosticsTab episode={episode} setEpisode={setEpisode} />
+            ) : activeTab === "levels" ? (
               <LevelsTab episode={episode} setEpisode={setEpisode} />
+            ) : (
+              <div>Error: Pestaña no encontrada</div>
             )}
           </fieldset>
         </div>
