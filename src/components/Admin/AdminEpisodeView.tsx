@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { BackendValidationByEpisode } from "../../types/metrics";
 import axios from "axios";
+import type { Episode } from "../../types/episode";
 
 interface EpisodeData {
   id?: number;
@@ -61,8 +61,7 @@ interface EpisodeData {
 }
 
 interface Props {
-  episode: BackendValidationByEpisode;
-  patientName: string;
+  episode: Episode;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -74,18 +73,18 @@ const api = axios.create({
 
 export default function AdminEpisodeView({
   episode,
-  patientName,
   isOpen,
   onToggle,
 }: Props) {
-  const colorDoctor = episode.doctor_validation ? "green" : "red";
-  const colorAI = episode.is_concordant ? "green" : "red";
+  const colorDoctor = episode.doctorValidation ? "green" : "red";
+  const colorChief = episode.chiefValidation ? "green" : "red";
+  const colorAI = episode.aiValidation == episode.doctorValidation ? "green" : "red";
   const [episodeData, setEpisodeData] = useState<EpisodeData>();
 
   useEffect(() => {
     const fetchEpisodeData = async () => {
       try {
-        const res = await api.get(`episodes/${episode.episode_id}`);
+        const res = await api.get(`episodes/${episode.id}`);
         const data = res.data || {};
         setEpisodeData(data);
       } catch (error) {
@@ -98,16 +97,18 @@ export default function AdminEpisodeView({
   return (
     <>
       <div
-        className="grid grid-cols-[minmax(0,1fr)_repeat(3,minmax(0,10fr))] gap-4 items-center px-4"
+        className="grid grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,10fr))] gap-4 items-center px-4"
       >
         <span onClick={onToggle}>{isOpen ? "▲" : "▼"}</span>
-        <p className="font-medium">{patientName}</p>
+        <p className="font-medium">#{episode.id}</p>
+
+        <p className="font-medium">#{episode.patientId}</p>
 
         <p>
           <span
             className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorDoctor}-200 text-${colorDoctor}-700`}
           >
-            {episode.doctor_validation ? "" : "No "} Se Aplicó Ley
+            {episode.doctorValidation ? "" : "No "} Se Aplicó Ley
           </span>
         </p>
 
@@ -115,7 +116,15 @@ export default function AdminEpisodeView({
           <span
             className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorAI}-200 text-${colorAI}-700`}
           >
-            {episode.is_concordant ? "" : "No "} Concuerda
+            {episode.aiValidation == episode.doctorValidation ? "" : "No "} Concuerda
+          </span>
+        </p>
+
+        <p>
+          <span
+            className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorChief}-200 text-${colorChief}-700`}
+          >
+            {episode.chiefValidation ? "" : "No "} Se Aplicó Ley
           </span>
         </p>
       </div>
