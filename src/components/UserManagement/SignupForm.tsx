@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContextBase';
+import { validateRUT } from '../../utils/rutValidation';
 
 export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => void; onCancel?: () => void }) {
     const { signup } = useAuth();
@@ -13,6 +14,8 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
     const [turn, setTurn] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const isRutValid = validateRUT(rut) || !rut;
 
     const handleRutChange = (value: string) => {
         let clean = value.replace(/[^0-9kK]/g, '');
@@ -47,6 +50,16 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
             setError('Las contraseñas no coinciden');
             return;
         }
+
+        if (!isRutValid){
+            alert("Por favor ingresar RUT valido");
+            return;
+        }
+      
+        if (!rut){
+            alert("Por favor ingresar un RUT");
+            return;
+        }
         setIsLoading(true);
         try {
             await signup(name, setRutToNumeric(rut), email, password, turn, { isDoctor, isChiefDoctor });
@@ -71,7 +84,7 @@ export default function SignupForm({ onSuccess, onCancel }: { onSuccess?: () => 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">RUT</label>
                 <input type="text" value={rut} onChange={(e) => handleRutChange(e.target.value)} required 
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 ${isRutValid ? "border-gray-300 focus:border-black focus:ring-blue-500" : "border-red-500 focus:border-red-500 focus:ring-red-300"}`} 
                 maxLength={12}
                 placeholder="12.345.678-9" />
             </div>
