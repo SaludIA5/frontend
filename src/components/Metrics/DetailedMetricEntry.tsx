@@ -103,9 +103,10 @@ export default function DetailedMetricEntry({
   return (
     <>
       <div
-        className="grid grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,10fr))] gap-4 items-center px-4"
+        className="grid grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,10fr))] gap-4 items-center px-4 cursor-pointer"
+        onClick={onToggle}
       >
-        <span onClick={onToggle}>{isOpen ? "▲" : "▼"}</span>
+        <span onClick={(e) => { e.stopPropagation(); onToggle(); }}>{isOpen ? "▲" : "▼"}</span>
         <p className="font-medium">{patientName}</p>
 
         <p>
@@ -137,11 +138,11 @@ export default function DetailedMetricEntry({
             </button>
           ) : <span>Solo un jefe de turno puede validar</span>) : (
             <span
-            className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorChief}-200 text-${colorChief}-700`}
-          >
-            {episodeValidation.chief_validation === "PERTINENTE" ? "" : "No "} Aplica Ley
-          </span>
-            )}
+              className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorChief}-200 text-${colorChief}-700`}
+            >
+              {episodeValidation.chief_validation === "PERTINENTE" ? "" : "No "} Aplica Ley
+            </span>
+          )}
         </p>
       </div>
 
