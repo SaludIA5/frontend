@@ -23,6 +23,8 @@ export const mockPatients: Patient[] = [
       chiefValidation: true,
       isActive: true,
       dateOfEntry: new Date("2025-10-10"),
+      patientRut: "15.646.548-4",
+      insuranceValidation: true,
     },
   },
   {
@@ -38,6 +40,8 @@ export const mockPatients: Patient[] = [
       chiefValidation: false,
       isActive: true,
       dateOfEntry: new Date("2025-09-25"),
+      patientRut: "18.945.673-2",
+      insuranceValidation: false,
     },
   },
   {
@@ -53,6 +57,8 @@ export const mockPatients: Patient[] = [
       chiefValidation: false,
       isActive: true,
       dateOfEntry: new Date("2025-10-08"),
+      patientRut: "9.876.543-2",
+      insuranceValidation: true,
     },
   },
   {
@@ -68,6 +74,8 @@ export const mockPatients: Patient[] = [
       chiefValidation: true,
       isActive: true,
       dateOfEntry: new Date("2025-10-11"),
+      patientRut: "12.345.678-9",
+      insuranceValidation: true,
     },
   },
   {
@@ -83,6 +91,8 @@ export const mockPatients: Patient[] = [
       chiefValidation: false,
       isActive: true,
       dateOfEntry: new Date("2025-09-29"),
+      patientRut: "18.765.432-1",
+      insuranceValidation: false,
     },
   },
 ];
