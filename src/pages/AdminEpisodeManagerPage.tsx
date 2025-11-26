@@ -71,7 +71,7 @@ export default function AdminEpisodeManagerPage(){
                 const validatedEpisodes = await api.get("/episodes/?page=1&page_size=100");
                 const episodeData: Episode[] = validatedEpisodes.data.items;
         
-                let normalized = episodeData.map(e => normalizeEpisode(e));
+                const normalized = episodeData.map(e => normalizeEpisode(e));
         
                 const episodesWithRut = await Promise.all(
                     normalized.map(async episode => {
