@@ -10,8 +10,8 @@ describe('Header', () => {
 
   it('renders navigation buttons', () => {
     const { getByText } = renderWithProviders(<Header />)
-    expect(getByText('Ver Pacientes')).toBeInTheDocument()
-    expect(getByText('Ver Métricas')).toBeInTheDocument()
+    expect(getByText('Pacientes')).toBeInTheDocument()
+    expect(getByText('Métricas')).toBeInTheDocument()
     expect(getByText('Cerrar sesión')).toBeInTheDocument()
   })
 })
