@@ -3,9 +3,11 @@ import type { BloodPressure, Procedures, HospitalizationConditions, PatientState
 export interface Episode {
     id: number
     patientId: number
+    patientRut: string
     aiValidation?: boolean
     chiefValidation?: boolean
     doctorValidation?: boolean
+    insuranceValidation: boolean | null
     medicalCenter?: string
     isActive?: boolean
     // Fechas
