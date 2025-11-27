@@ -5,6 +5,7 @@ import MetricsPage from '../pages/MetricsPage.tsx';
 import DetailedMetricsPage from '../pages/DetailedMetricsPage.tsx';
 import AdminPage from '../pages/AdminPage.tsx';
 import AdminEpisodeManagerPage from '../pages/AdminEpisodeManagerPage.tsx';
+import AdminDiagnosticManagerPage from '../pages/AdminDiagnosticManagerPage.tsx';
 
 function Routing() {
     return (
@@ -15,6 +16,7 @@ function Routing() {
                 <Route path='metrics/:id' element={<DetailedMetricsPage /> } />
                 <Route path='admin' element={<AdminPage />} />
                 <Route path='admin/episodes' element={<AdminEpisodeManagerPage />} />
+                <Route path='admin/diagnostics' element={<AdminDiagnosticManagerPage />} />
             </Routes>
         </AuthGuard>
     )

@@ -35,6 +35,22 @@ export default function AdminPage(){
         checkPermission();
     });
 
+    const trainModel = async () => {
+        if (!import.meta.env.VITE_BACKEND_URL) {
+            setError(true);
+            setLoading(false);
+            return;
+        }
+        try {
+            await api.post("/ml-model/training/prod");
+        } catch (error) {
+            console.error("Error validating administrator privileges:", error);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    }
+    
     if (!isAdmin) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
         Solo el admin tiene permitido acceder a esta página </p></div></>);
     if (loading) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
@@ -59,6 +75,22 @@ export default function AdminPage(){
                 className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
             >
                 Administrar Usuarios
+            </button>
+            <button 
+                onClick={() => navigate("diagnostics")}
+                className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+            >
+                Administrar Diagnosticos
+            </button>
+            <button 
+                onClick={() => {
+                    if (confirm("¿Estás seguro de que deseas re-entrenar el modelo? Esta acción solo debe usarse en casos concretos.")) {
+                        trainModel();
+                    }
+                }}
+                className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+            >
+                Entrenar Modelo
             </button>
         </div>
     </div>

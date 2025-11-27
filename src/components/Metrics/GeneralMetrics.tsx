@@ -5,15 +5,15 @@ interface Props {
 }
 
 export default function GeneralMetrics({ metricsData }: Props) {
-  const round = (num: number, digits: number) =>
-    Math.round(num * 10 ** digits) / 10 ** digits;
+  const toPercentage = (num: number) =>
+    Math.round(num * 100);
 
-  const precision = round(metricsData.recommendation_metrics.precision, 2);
-  const concordanceRate = round(metricsData.recommendation_metrics.concordance_rate, 2);
-  const acceptanceRate = round(metricsData.recommendation_metrics.acceptance_rate, 2);
+  const precision = toPercentage(metricsData.recommendation_metrics.precision);
+  const concordanceRate = toPercentage(metricsData.recommendation_metrics.concordance_rate);
+  const acceptanceRate = toPercentage(metricsData.recommendation_metrics.acceptance_rate);
 
   const metricColor = (value: number) =>
-    value >= 0.8 ? "text-green-600" : value >= 0.6 ? "text-yellow-600" : "text-red-600";
+    value >= 80 ? "text-green-600" : value >= 60 ? "text-yellow-600" : "text-red-600";
 
   return (
     <div className="w-full max-w-5xl mx-auto my-6 p-6 bg-white rounded-2xl shadow-md border border-gray-200">
@@ -46,21 +46,21 @@ export default function GeneralMetrics({ metricsData }: Props) {
         <div className="p-4 bg-gray-50 rounded-xl shadow-sm hover:shadow transition-all duration-150">
           <p className="text-sm text-gray-500">Precisión de IA</p>
           <p className={`text-2xl font-bold ${metricColor(precision)}`}>
-            {precision}
+            {precision}%
           </p>
         </div>
 
         <div className="p-4 bg-gray-50 rounded-xl shadow-sm hover:shadow transition-all duration-150">
           <p className="text-sm text-gray-500">Tasa de Concordancia con IA</p>
           <p className={`text-2xl font-bold ${metricColor(concordanceRate)}`}>
-            {concordanceRate}
+            {concordanceRate}%
           </p>
         </div>
 
         <div className="p-4 bg-gray-50 rounded-xl shadow-sm hover:shadow transition-all duration-150">
           <p className="text-sm text-gray-500">Tasa de Aceptación</p>
           <p className={`text-2xl font-bold ${metricColor(acceptanceRate)}`}>
-            {acceptanceRate}
+            {acceptanceRate}%
           </p>
         </div>
       </div>

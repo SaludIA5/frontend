@@ -55,7 +55,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
   const payload = useMemo(() => ({
     id_episodio: episode.id,
-    numero_episodio: "0",
+    stage: "prod",
     diagnostics_id: episode.diagnostics || null,
     antecedentes_cardiaco: episode.cardiacHistory || null,
     antecedentes_diabetes: episode.diabetesHistory || null,
@@ -67,7 +67,6 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
     frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
     glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
     hemoglobina: Number(episode.levels?.hemoglobin) || null,
-    model_type: "random_forest",
     nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
     pcr: Number(episode.levels?.pcr) || null,
     potasio: Number(episode.levels?.potassium) || null,
@@ -262,7 +261,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
   const handleGenerateRecommendation = async () => {
     try {
-      const res = await api.post("/predictions", payload);
+      const res = await api.post("/ml-model/inference", payload);
       const { prediction } = res.data;
 
       setRecommendationResult(res.data);

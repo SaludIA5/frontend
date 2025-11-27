@@ -39,11 +39,11 @@ export default function DoctorMetricsList({ validations }: Props) {
               </p>
 
               <p className="text-center font-semibold">
-                {validation.acceptanceRate}
+                {Math.round(validation.acceptanceRate * 100)}%
               </p>
 
               <p className="text-center font-semibold">
-                {Math.round(validation.concordanceRate * 100)/100}
+                {Math.round(validation.concordanceRate * 100)}%
               </p>
 
               <button
