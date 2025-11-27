@@ -35,6 +35,21 @@ export default function AdminPage(){
         checkPermission();
     });
 
+    const trainModel = async () => {
+        if (!import.meta.env.VITE_BACKEND_URL) {
+            setError(true);
+            setLoading(false);
+            return;
+        }
+        try {
+            await api.post("/ml-model/training/prod");
+        } catch (error) {
+            console.error("Error validating administrator privileges:", error);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    }
     if (!isAdmin) return (<><Header /> Solo el admin tiene permitido acceder a esta página</>);
     if (loading) return (<><Header /> Cargando...</>);
     if (error) return (<><Header /> Ha habido un error.</>);
@@ -62,6 +77,16 @@ export default function AdminPage(){
                 className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
             >
                 Administrar Diagnosticos
+            </button>
+            <button 
+                onClick={() => {
+                    if (confirm("¿Estás seguro de que deseas re-entrenar el modelo? Esta acción solo debe usarse en casos concretos.")) {
+                        trainModel();
+                    }
+                }}
+                className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+            >
+                Entrenar Modelo
             </button>
         </div>
     </div>

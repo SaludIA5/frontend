@@ -22,8 +22,15 @@ export default function AdminDiagnosticManagerPage(){
             setDiagnostics(info.sort((a, b) => a.id - b.id));
         }
         getDiagnostics();
-    }
-    );
+    }, []);
+
+    const deleteDiagnostic = async (id: number) => {
+        try {
+            await api.delete(`/diagnostics/${id}`);
+        } catch (error) {
+            console.error("Error deleting diagnostic:", error);
+        }
+    }  
 
     return(
     <>
@@ -57,10 +64,14 @@ export default function AdminDiagnosticManagerPage(){
             key={i}
             className="my-1.5 border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
             >
-            <div className="grid grid-cols-[2fr_2fr_5fr] gap-4 ">
+            <div className="grid grid-cols-[2fr_2fr_3fr_2fr] gap-4 items-center">
             <p>{diag.id}</p>
             <p>{diag.cie_code}</p>
             <p>{diag.description}</p>
+            <button 
+                onClick={() => deleteDiagnostic(diag.id)}
+                className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+                >Eliminar Diagnostico</button>
             </div>
             </li>
         )})}
