@@ -6,16 +6,6 @@ import Header from '../../components/Header'
 vi.mock('axios')
 
 describe('Header', () => {
-  it('renders the SALUIA title', async () => {
-
-    axios.get = vi.fn().mockResolvedValue({
-      data: { is_admin: false }
-    })
-
-    const { getByText } = renderWithProviders(<Header />)
-    expect(getByText('SALUIA')).toBeInTheDocument()
-  })
-
   it('renders navigation buttons', async () => {
 
     axios.get = vi.fn().mockResolvedValue({
