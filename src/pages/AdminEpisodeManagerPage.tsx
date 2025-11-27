@@ -15,12 +15,34 @@ export default function AdminEpisodeManagerPage(){
     const [isAdmin, setIsAdmin] = useState(false);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [openEpisodes, setOpenEpisodes] = useState<Episode[]>();
-    const [closedEpisodes, setClosedEpisodes] = useState<Episode[]>();
+    const [openEpisodes, setOpenEpisodes] = useState<Episode[]>([]);
+    const [closedEpisodes, setClosedEpisodes] = useState<Episode[]>([]);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     const [showOpenList, setShowOpenList] = useState(false);
     const [showClosedList, setShowClosedList] = useState(false);
+    const [rutSearch, setRutSearch] = useState("");
     const navigate = useNavigate();
+
+    const normalizeRut = (rut: string) => rut.replace(/\./g, "").replace(/-/g, "").toLowerCase();
+
+    const filterByRut = (episodes: Episode[]) =>
+        episodes.filter(ep => {
+            if (!ep.patientRut) return false;
+            return normalizeRut(ep.patientRut).includes(normalizeRut(rutSearch));
+        });
+    
+    const handleUpdateEpisode = (updated: Episode) => {
+        setOpenEpisodes((prev) =>
+            prev.map((ep) => (ep.id === updated.id ? updated : ep))
+        );
+        
+        setClosedEpisodes((prev) =>
+            prev.map((ep) => (ep.id === updated.id ? updated : ep))
+        );
+    };
+          
+    const filteredOpenEpisodes = filterByRut(openEpisodes);
+    const filteredClosedEpisodes = filterByRut(closedEpisodes);
 
     useEffect(() => {
         const checkPermission = async () => {
@@ -41,47 +63,72 @@ export default function AdminEpisodeManagerPage(){
             }
         }
         checkPermission();
-    });
+    }, []);
 
     useEffect(() => {
         const getEpisodes = async () => {
-            if (!import.meta.env.VITE_BACKEND_URL) {
-                setError(true);
-                setLoading(false);
-                return;
-            }
-            try {   
+            try {
                 const validatedEpisodes = await api.get("/episodes/?page=1&page_size=100");
-                const episodeData: Episode[] = validatedEpisodes.data?.items || validatedEpisodes.data || [];
-                let normalizedEpisodeData = episodeData.map(episode => normalizeEpisode(episode));
-                normalizedEpisodeData = normalizedEpisodeData.sort((a, b)=> {return b.id - a.id})
-                setOpenEpisodes(normalizedEpisodeData.filter(episode => episode.isActive));
-                setClosedEpisodes(normalizedEpisodeData.filter(episode => !episode.isActive));
-                setError(false);
+                const episodeData: Episode[] = validatedEpisodes.data.items;
+        
+                const normalized = episodeData.map(e => normalizeEpisode(e));
+        
+                const episodesWithRut = await Promise.all(
+                    normalized.map(async episode => {
+                        try {
+                            const rutRes = await api.get(`/patients/${episode.patientId}`);
+                            return { ...episode, patientRut: rutRes.data.rut };
+                        } catch {
+                            return { ...episode, patientRut: null };
+                        }
+                    })
+                );
+        
+                setOpenEpisodes(episodesWithRut.filter(ep => ep.isActive));
+                setClosedEpisodes(episodesWithRut.filter(ep => !ep.isActive));
             } catch (error) {
                 console.error("Error fetching episodes:", error);
                 setError(true);
-              } finally {
+            } finally {
                 setLoading(false);
-              }
-        }
+            }
+        };
         getEpisodes();
     }, [])
 
-    if (!isAdmin) return (<><Header /> Solo el admin tiene permitido acceder a esta página</>);
-    if (loading) return (<><Header /> Cargando...</>);
-    if (error) return (<><Header /> Ha habido un error.</>);
+    if (!isAdmin) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Solo el admin tiene permitido acceder a esta página </p></div></>);
+    if (loading) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Cargando...</p></div></>);
+    if (error) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+    Ha habido un error.</p></div></>);
 
     return(
     <>
     <Header />
-    <div className="flex items-center justify-center">
+    <div className="flex justify-between items-center my-4 mr-15 px-6">
+
         <button 
             onClick={() => navigate("/admin")}
             className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
         >
             Volver a Panel de Administrador
         </button>
+
+        <input
+            type="text"
+            value={rutSearch}
+            onChange={(e) => setRutSearch(e.target.value)}
+            placeholder="Buscar por rut..."
+            className="
+                w-64 px-4 py-2 rounded-xl
+                shadow
+                outline-none
+                bg-white
+                placeholder-gray-400
+                text-gray-700
+            "
+        />
     </div>
     <div className="text-center">
         <div 
@@ -96,15 +143,16 @@ export default function AdminEpisodeManagerPage(){
         {showOpenList && (
             <ul className="mx-auto max-w-5xl space-y-3">
                 <li>
-                <div className="grid grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,10fr))] gap-4 items-center px-4">
+                <div className="grid grid-cols-[minmax(0,1fr)_repeat(6,minmax(0,10fr))] gap-4 items-center px-4">
                     <p className="col-start-2">ID de Episodio</p>
-                    <p>ID de Paciente</p>
+                    <p>RUT del Paciente</p>
                     <p>Decisión Doctor</p>
                     <p>Recomendacion IA</p>
                     <p>Decisión Jefe de Turno</p>
+                    <p>Decisión Aseguradora</p>
                 </div>
                 </li>
-                {openEpisodes && openEpisodes.map((openEpisode, i) => {
+                {filteredOpenEpisodes?.map((openEpisode, i) => {
                 return (
                     <li
                     key={i}
@@ -114,6 +162,7 @@ export default function AdminEpisodeManagerPage(){
                     episode={openEpisode}
                     isOpen={openIndex == i}
                     onToggle={() => setOpenIndex(openIndex == i ? null : i)}
+                    onUpdateEpisode={(updated) => handleUpdateEpisode(updated)}
                     />
                     </li>
                 );
@@ -134,16 +183,17 @@ export default function AdminEpisodeManagerPage(){
         {showClosedList && (
             <ul className="mx-auto max-w-5xl space-y-3">
                 <li>
-                <div className="grid grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,10fr))] gap-4 items-center px-4">
+                <div className="grid grid-cols-[minmax(0,1fr)_repeat(6,minmax(0,10fr))] gap-4 items-center px-4">
                     <p className="col-start-2">ID de Episodio</p>
-                    <p>ID de Paciente</p>
+                    <p>RUT del Paciente</p>
                     <p>Decisión Doctor</p>
                     <p>Recomendacion IA</p>
                     <p>Decisión Jefe de Turno</p>
+                    <p>Decisión Aseguradora</p>
                 </div>
                 </li>
-                {closedEpisodes && closedEpisodes.map((closedEpisode, i) => {
-                const index = openEpisodes ? i + openEpisodes.length : i;
+                {filteredClosedEpisodes?.map((closedEpisode, i) => {
+                const index = filteredOpenEpisodes ? i + filteredOpenEpisodes.length : i;
                 return (
                     <li
                     key={index}
@@ -153,6 +203,7 @@ export default function AdminEpisodeManagerPage(){
                     episode={closedEpisode}
                     isOpen={openIndex == index}
                     onToggle={() => setOpenIndex(openIndex == index ? null : index)}
+                    onUpdateEpisode={(updated) => handleUpdateEpisode(updated)}
                     />
                     </li>
                 );

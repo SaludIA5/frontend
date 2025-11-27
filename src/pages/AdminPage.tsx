@@ -50,9 +50,13 @@ export default function AdminPage(){
             setLoading(false);
         }
     }
-    if (!isAdmin) return (<><Header /> Solo el admin tiene permitido acceder a esta página</>);
-    if (loading) return (<><Header /> Cargando...</>);
-    if (error) return (<><Header /> Ha habido un error.</>);
+    
+    if (!isAdmin) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Solo el admin tiene permitido acceder a esta página </p></div></>);
+    if (loading) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Cargando...</p></div></>);
+    if (error) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+    Ha habido un error.</p></div></>);
 
     return(
     <>
