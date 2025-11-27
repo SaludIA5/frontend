@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
+import logo from "../assets/logo.png";
 import axios from 'axios';
 import { useAuth } from '../context/AuthContextBase';
 
@@ -24,8 +25,6 @@ export default function Header({ onLogout }: HeaderProps) {
     });
     }, []);
 
-
-
     return (
         <header className="bg-[var(--color-primary)] text-white shadow-md mb-2">
             <div className="max-w-7xl mx-auto">
@@ -34,13 +33,7 @@ export default function Header({ onLogout }: HeaderProps) {
                         className="col-start-2 flex items-center gap-3 cursor-pointer"
                         onClick={() => navigate("/")}
                     >
-                        {/* <img src="src/assets/logo.png" alt="Logo" className="h-10" /> */}
-                        <h1 
-                        onClick={() => navigate("/")}
-                        className="col-start-2 text-xl bg-primary text-white font-bold text-center cursor-pointer"
-                    >
-                        SALUIA
-                    </h1>
+                        <img src={logo} alt="Logo" className="h-4/10 w-4/10" />
                     </div>
 
                     {isAdmin && (
