@@ -4,10 +4,9 @@ interface Props {
     isOpen: boolean
     onClose: () => void
     onChoice: (decision: "PERTINENTE" | "NO PERTINENTE", comment: string) => void
-    episode_id: number
 }
 
-export default function ValidateAsChief({ isOpen, onClose, onChoice, episode_id: _episode_id }: Props) {
+export default function ValidateAsChief({ isOpen, onClose, onChoice }: Props) {
     const [selectedDecision, setSelectedDecision] = useState<"PERTINENTE" | "NO PERTINENTE" | null>(null);
     const [comment, setComment] = useState<string>("");
 
@@ -65,7 +64,7 @@ export default function ValidateAsChief({ isOpen, onClose, onChoice, episode_id:
                         </div>
                         <div className="w-full">
                             <label htmlFor="comment" className="block text-sm font-medium mb-2">
-                                Justificación  <text className="text-red-500">*</text>(requerido)
+                                Justificación  <span className="text-red-500">*</span>(requerido)
                             </label>
                             <textarea
                                 id="comment"

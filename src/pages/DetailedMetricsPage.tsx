@@ -193,7 +193,6 @@ export default function DetailedMetricsPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(!modalOpen)}
         onChoice={handleValidation}
-        episode_id={episodeToValidate?.episode_id || 0}
       />
     </>
   );
