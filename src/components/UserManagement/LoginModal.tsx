@@ -17,12 +17,6 @@ const LoginModal = () => {
                         <>
                             <p className="text-gray-600 mb-6">Por favor, inicie sesión para acceder al sistema.</p>
                             <LoginForm />
-                            <div className="mt-4 text-sm text-gray-500">
-                                ¿No tienes cuenta?{' '}
-                                <button type="button" onClick={() => setShowSignup(true)} className="underline border-0 outline-none focus:outline-none focus:ring-0 appearance-none bg-transparent p-0">
-                                    Regístrate aquí
-                                </button>
-                            </div>
                         </>
                     )}
                 </div>

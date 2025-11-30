@@ -71,7 +71,7 @@ export default function AdminPage(){
                 Administrar Episodios
             </button>
             <button 
-                onClick={() => alert("No implementado aún")}
+                onClick={() => navigate("users")}
                 className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
             >
                 Administrar Usuarios
