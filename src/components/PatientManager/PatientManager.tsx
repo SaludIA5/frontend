@@ -8,6 +8,8 @@ import type { Patient } from '../../types/patient';
 import type { Episode } from '../../types/episode';
 import type { Doctor } from '../../types/doctor';
 import { normalizeEpisode } from '../../utils/normalizeEpisode';
+import { useAuth } from '../../context/AuthContextBase';
+import { handleUnauthorized } from '../../utils/apiInterceptor';
 
 interface PatientManagerProps {
   onProcessEpisode: (episode: Episode) => void;
@@ -22,6 +24,7 @@ const api = axios.create({
 });
 
 export default function PatientManager({ onProcessEpisode, onEditPatient, onOpenCreateEpisodeModal, setDoctors: setDoctorsProp }: PatientManagerProps) {
+  const { logout } = useAuth();
   const { setPatientList, setPatientsWithEpisodes, patientsWithEpisodes } = usePatients();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -99,6 +102,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
         setError(false);
       } catch (error) {
         console.error("Error fetching initial data:", error);
+        handleUnauthorized(error, logout);
         setError(true);
       } finally {
         setLoading(false);
@@ -106,7 +110,7 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
     };
 
     fetchInitialData();
-  }, [setPatientList, setPatientsWithEpisodes]);
+  }, [setPatientList, setPatientsWithEpisodes, logout]);
 
   const filteredPatients = patientsWithEpisodes
     .filter((p) => {
@@ -117,16 +121,16 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
       );
     })
     .filter((p) => {
-      return p.episodes.some(e => (e as unknown as { validacion?: string }).validacion === filterEligible 
-      || filterEligible === "all"
-      || (e as unknown as { validacion?: string }).validacion === null && filterEligible === "NO PERTINENTE");
+      return p.episodes.some(e => (e as unknown as { validacion?: string }).validacion === filterEligible
+        || filterEligible === "all"
+        || (e as unknown as { validacion?: string }).validacion === null && filterEligible === "NO PERTINENTE");
     })
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
       if (sortBy === "rut") return a.rut.localeCompare(b.rut);
       return 0;
     });
-  
+
   if (!patientsWithEpisodes || patientsWithEpisodes.length === 0) {
     return (
       <div className="text-center py-8">

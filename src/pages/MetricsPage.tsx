@@ -5,6 +5,8 @@ import DoctorMetricsList from '../components/Metrics/DoctorMetricsList';
 import type { DoctorValidation, BackendValidationByDoctor, BackendMetricsSummary } from '../types/metrics';
 import axios from 'axios';
 import GeneralMetrics from '../components/Metrics/GeneralMetrics';
+import { useAuth } from '../context/AuthContextBase';
+import { handleUnauthorized } from '../utils/apiInterceptor';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -12,6 +14,7 @@ const api = axios.create({
 });
 
 export default function MetricsPage() {
+    const { logout } = useAuth();
     const [doctorValidations, setDoctorValidations] = useState<DoctorValidation[]>();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -30,7 +33,7 @@ export default function MetricsPage() {
             concordanceRate: doctor.concordance_rate,
             acceptanceRate: doctor.acceptance_rate
         }));
-      }
+    }
 
     useEffect(() => {
         const fetchValidationsByDoctor = async () => {
@@ -43,14 +46,14 @@ export default function MetricsPage() {
             try {
                 const userInfo = await api.get("/auth/me");
                 const userData = userInfo.data;
-                if(userData.is_chief_doctor || userData.is_admin){
+                if (userData.is_chief_doctor || userData.is_admin) {
                     setIsChief(true);
                 }
                 const res = await api.get("/metrics/validation-by-doctor");
                 const validationsData = res.data?.items || res.data || [];
                 const list = Array.isArray(validationsData) ? validationsData : [];
                 let filteredList = [];
-                if(!isChief){
+                if (!isChief) {
                     filteredList = list.filter((item) => item.doctor_id == userData.id); //Poner id de doctor actual
                 }
                 const validationsList = isChief ? normalizeValidations(list) : normalizeValidations(filteredList);
@@ -58,13 +61,14 @@ export default function MetricsPage() {
                 setError(false);
             } catch (error) {
                 console.error("Error fetching validations:", error);
+                handleUnauthorized(error, logout);
                 setError(true);
             } finally {
                 setLoading(false)
             }
         }
         fetchValidationsByDoctor();
-    }, [isChief])
+    }, [isChief, logout])
 
     useEffect(() => {
         const fetchGeneralMetrics = async () => {
@@ -80,24 +84,25 @@ export default function MetricsPage() {
                 setGeneralMetrics(recommendationMetrics);
             } catch (error) {
                 console.log(error);
+                handleUnauthorized(error, logout);
             }
 
         }
         fetchGeneralMetrics();
-    }, [isChief])
+    }, [isChief, logout])
 
     if (loading) return (
-    <>
-        <Header />
-        Cargando...
-    </>)
+        <>
+            <Header />
+            Cargando...
+        </>)
     if (error) return (
-    <>
-        <Header />
-        Ha habido un error...
-    </>)
+        <>
+            <Header />
+            Ha habido un error...
+        </>)
 
-    return(
+    return (
         <>
             <Header />
             <div className='flex justify-center my-4 text-2xl font-bold'>
