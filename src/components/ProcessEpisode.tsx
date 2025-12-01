@@ -390,13 +390,13 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
               className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm text-white"
               onClick={() => handleValidateDecision("PERTINENTE")}
             >
-              Validar
+              Aplicar Ley de Urgencia
             </button>
             <button
               className="rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2 text-sm text-white"
               onClick={() => handleValidateDecision("NO PERTINENTE")}
             >
-              Descartar
+              No Aplicar Ley de Urgencia
             </button>
           </div>
           <p className="pt-5 italic text-xs">Esta recomendación es generada con IA, por lo que se recomienda su revisión.</p>
