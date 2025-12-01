@@ -277,7 +277,7 @@ export default function EditUserModal({ user, handleClose, onSuccess }: Props) {
                     <button
                         type="submit"
                         form="edit-user-form"
-                        className="rounded-xl px-4 py-2 text-white bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)] disabled:bg-blue-400"
+                        className="rounded-xl px-4 py-2 text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] disabled:bg-blue-400"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Guardando...' : 'Guardar Cambios'}

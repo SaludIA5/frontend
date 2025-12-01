@@ -34,11 +34,11 @@ export default function AdminEpisodeManagerPage(){
     
     const handleUpdateEpisode = (updated: Episode) => {
         setOpenEpisodes((prev) =>
-            prev.map((ep) => (ep.id === updated.id ? updated : ep))
+            prev.map((ep) => ep.id === updated.id && ep !== updated ? updated : ep)
         );
-        
+    
         setClosedEpisodes((prev) =>
-            prev.map((ep) => (ep.id === updated.id ? updated : ep))
+            prev.map((ep) => ep.id === updated.id && ep !== updated ? updated : ep)
         );
     };
           
@@ -77,9 +77,19 @@ export default function AdminEpisodeManagerPage(){
                 const patientRuts = await api.get("/patients/");
                 const patientRutsData = patientRuts.data.items;
                 const patientRutsMap = new Map(patientRutsData.map((p: Patient) => [p.id, p.rut]));
+
+                const withInsurance = await Promise.all(
+                    normalized.map(async ep => {
+                      const ins = await api.get(`insurance/${ep.id}`);
+                      return {
+                        ...ep,
+                        insuranceValidation: ins.data.is_pertinent
+                      };
+                    })
+                  );
         
-                setOpenEpisodes(normalized.filter(ep => ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
-                setClosedEpisodes(normalized.filter(ep => !ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
+                setOpenEpisodes(withInsurance.filter(ep => ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
+                setClosedEpisodes(withInsurance.filter(ep => !ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
             } catch (error) {
                 console.error("Error fetching episodes:", error);
                 setError(true);

@@ -156,7 +156,7 @@ export default function AdminUserManagerPage() {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => handleEdit(user)}
-                                                className="rounded-xl px-4 py-2 text-white shadow bg-blue-500 hover:bg-blue-600 text-sm"
+                                                className="rounded-xl px-4 py-2 text-white shadow bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-sm"
                                             >
                                                 Editar
                                             </button>
