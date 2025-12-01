@@ -74,9 +74,9 @@ export default function AdminEpisodeManagerPage(){
         
                 const normalized = episodeData.map(e => normalizeEpisode(e));
         
-               const patientRuts = await api.get("/patients/");
-               const patientRutsData = patientRuts.data.items;
-               const patientRutsMap = new Map(patientRutsData.map((p: Patient) => [p.id, p.rut]));
+                const patientRuts = await api.get("/patients/");
+                const patientRutsData = patientRuts.data.items;
+                const patientRutsMap = new Map(patientRutsData.map((p: Patient) => [p.id, p.rut]));
         
                 setOpenEpisodes(normalized.filter(ep => ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
                 setClosedEpisodes(normalized.filter(ep => !ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
@@ -88,7 +88,7 @@ export default function AdminEpisodeManagerPage(){
             }
         };
         getEpisodes();
-    }, [])
+    }, []);
 
     if (!isAdmin) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
         Solo el admin tiene permitido acceder a esta página </p></div></>);

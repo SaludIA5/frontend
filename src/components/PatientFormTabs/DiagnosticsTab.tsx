@@ -69,7 +69,7 @@ export default function DiagnosticsTab({ episode, setEpisode }: DiagnosticsTabPr
         {
             return (<li key={i}>{diagnostic.cie_code} - {diagnostic.description}</li>)
 
-        })) : "No hay diagnosticos aún"} 
+        })) : "No hay diagnósticos aún"} 
       </ul>
 
       <p>Agregar diagnóstico:</p>
