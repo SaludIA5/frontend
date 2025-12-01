@@ -44,7 +44,7 @@ export default function CreateDiagnosticModal({ handleClose } : Props){
     return(
         <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
         <div className="bg-white rounded-2xl p-6 w-96 shadow-lg text-black">
-          <h2 className="text-xl font-bold mb-4">Agregar Diagnostico</h2>
+          <h2 className="text-xl font-bold mb-4">Agregar Diagnóstico</h2>
           <input
             type="text"
             placeholder="Código CIE"

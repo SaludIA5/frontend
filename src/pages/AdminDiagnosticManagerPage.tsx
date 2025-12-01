@@ -35,48 +35,50 @@ export default function AdminDiagnosticManagerPage(){
     return(
     <>
     <Header />
-    <div className="flex items-center justify-center">
-        <button 
-            onClick={() => navigate("/admin")}
-            className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
-        >
-            Volver a Panel de Administrador
-        </button>
-    </div>
-    <h2 className="text-2xl font-bold w-full text-center py-4">Diagnosticos</h2>
-    <div className="flex items-center justify-center">
-        <button 
-            onClick={() => setIsModalOpen(true)}
-            className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
-        >
-            Agregar Diagnosticos
-        </button>
-    </div>
-    <ul>
-        <div className="grid grid-cols-[2fr_2fr_5fr] gap-4 px-4 py-2">
-            <p>ID de Diagnostico</p>
-            <p>Código CIE</p>
-            <p>Descripción</p>
-        </div>
-        {diagnostics && diagnostics.map((diag, i) => {
-            return (
-            <li 
-            key={i}
-            className="my-1.5 border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
-            >
-            <div className="grid grid-cols-[2fr_2fr_3fr_2fr] gap-4 items-center">
-            <p>{diag.id}</p>
-            <p>{diag.cie_code}</p>
-            <p>{diag.description}</p>
+    <div className="px-10 py-6">
+        <div className="flex items-center flex-end">
             <button 
-                onClick={() => deleteDiagnostic(diag.id)}
+                onClick={() => navigate("/admin")}
                 className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
-                >Eliminar Diagnostico</button>
+            >
+                Volver a Panel de Administrador
+            </button>
+        </div>
+        <h2 className="text-2xl font-bold w-full text-center py-4">Diagnósticos</h2>
+        <div className="flex items-center justify-end">
+            <button 
+                onClick={() => setIsModalOpen(true)}
+                className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+            >
+                Agregar Diagnóstico
+            </button>
+        </div>
+        <ul>
+            <div className="grid grid-cols-[1.25fr_0.75fr_5fr] gap-6 px-4 py-2">
+                <p className="text-left">ID del Diagnóstico</p>
+                <p className="text-left">Código CIE</p>
+                <p className="text-left">Descripción</p>
             </div>
-            </li>
-        )})}
-    </ul>
-    {isModalOpen && <CreateDiagnosticModal handleClose={() => setIsModalOpen(false)}/>}
+            {diagnostics && diagnostics.map((diag, i) => {
+                return (
+                <li 
+                key={i}
+                className="my-1.5 border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4 cursor-pointer"
+                >
+                <div className="grid grid-cols-[2fr_1fr_5fr_2fr] gap-4 items-center">
+                <p>{diag.id}</p>
+                <p>{diag.cie_code}</p>
+                <p>{diag.description}</p>
+                <button 
+                    onClick={() => deleteDiagnostic(diag.id)}
+                    className="rounded-xl px-4 py-2 text-white shadow bg-red-500 hover:bg-red-600 text-sm"
+                    >Eliminar Diagnóstico</button>
+                </div>
+                </li>
+            )})}
+        </ul>
+        {isModalOpen && <CreateDiagnosticModal handleClose={() => setIsModalOpen(false)}/>}
+    </div>
     </>
     )
 }
