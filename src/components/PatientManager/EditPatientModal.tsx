@@ -86,7 +86,7 @@ export default function EditPatientModal({ isOpen, onClose, patient: patientProp
                     onChange={(e) => handleRutChange(e.target.value)}
                     maxLength={12}
                 />
-                {!isRutValid && (<p className="text-sm text-red-500">{"El rut es invalido"}</p>)}
+                {!isRutValid && (<p className="text-sm text-red-500">{"El rut es inválido"}</p>)}
                 <div className="flex justify-end space-x-3">
                     <button
                         className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"

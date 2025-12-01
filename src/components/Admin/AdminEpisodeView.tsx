@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import type { Episode } from "../../types/episode";
 
@@ -28,25 +28,6 @@ export default function AdminEpisodeView({
       episode.insuranceValidation === false ? "red" : "gray";
   const [showMenu, setShowMenu] = useState(false);
 
-  useEffect(() => {
-    const fetchInsuranceData = () => {
-      const fetchData = async () => {
-        try {
-          const insuranceResponse = await api.get(`insurance/${episode.id}`);
-          const insuranceData = insuranceResponse.data;
-          onUpdateEpisode({
-            ...episode,
-            insuranceValidation: insuranceData.is_pertinent,
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      fetchData();
-    };
-    fetchInsuranceData();
-  }, [episode, onUpdateEpisode]);
-
   const mapValue = (v: string): boolean | null => {
     if (v === "PERTINENTE") return true;
     if (v === "NO_PERTINENTE") return false;
@@ -56,13 +37,13 @@ export default function AdminEpisodeView({
 
   const handleInsuranceChange = async (newValue: string) => {
     setShowMenu(false);
-
+  
     try {
       await api.post(`/insurance/review`, {
         is_pertinent: mapValue(newValue),
         episode_id: episode.id
       });
-
+  
       onUpdateEpisode({
         ...episode,
         insuranceValidation: mapValue(newValue),
@@ -70,7 +51,7 @@ export default function AdminEpisodeView({
     } catch (e) {
       console.log("Error actualizando:", e);
     }
-  };
+  };  
 
   const onCloseEpisode = async () => {
     const estadoDelCaso = episode.isActive ? "Cerrado" : "Abierto";

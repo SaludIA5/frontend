@@ -141,7 +141,7 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
             maxLength={12}
           />
 
-          {!isRutValid && (<p className="text-sm text-red-500">{"El rut es invalido"}</p>)}
+          {!isRutValid && (<p className="text-sm text-red-500">{"El rut es inválido"}</p>)}
         </div>
         <p className="text-lg mt-2">Edad del paciente</p>
         <input
