@@ -67,6 +67,7 @@ interface Props {
   isChief: boolean;
   onToggle: () => void;
   onValidate: (episodeValidation: BackendValidationByEpisode) => void;
+  handleClose: () => void;
 }
 
 const api = axios.create({
@@ -83,11 +84,13 @@ export default function DetailedMetricEntry({
   isChief,
   onToggle,
   onValidate,
+  handleClose,
 }: Props) {
-  const colorDoctor = episodeValidation.doctor_validation ? "green" : "red";
+  const [episodeData, setEpisodeData] = useState<EpisodeData>();
+  const colorDoctor = episodeValidation.doctor_validation === "PERTINENTE" ? "green" : "red";
   const colorChief = episodeValidation.chief_validation === "PERTINENTE" ? "green" : "red";
   const colorAI = episodeValidation.is_concordant ? "green" : "red";
-  const [episodeData, setEpisodeData] = useState<EpisodeData>();
+  const colorState = episodeData?.estado_del_caso === "Abierto" ? "green" : "red";
   const [doctorSummaries, setDoctorSummaries] = useState<DoctorSummary[]>([]);
 
   useEffect(() => {
@@ -131,7 +134,7 @@ export default function DetailedMetricEntry({
   return (
     <>
       <div
-        className="grid grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,10fr))] gap-4 items-center px-4 py-4 -mx-4 -my-4 cursor-pointer min-h-full"
+        className="grid grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,10fr))] gap-4 items-center px-4 py-4 -mx-4 -my-4 cursor-pointer min-h-full"
         onClick={onToggle}
       >
         <span onClick={(e) => { e.stopPropagation(); onToggle(); }}>{isOpen ? "▲" : "▼"}</span>
@@ -139,9 +142,17 @@ export default function DetailedMetricEntry({
 
         <p>
           <span
+            className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorState}-200 text-${colorState}-700`}
+          >
+            {episodeData?.estado_del_caso ? episodeData.estado_del_caso : "Sin respuesta"} 
+          </span>
+        </p>
+
+        <p>
+          <span
             className={`rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorDoctor}-200 text-${colorDoctor}-700`}
           >
-            {episodeValidation.doctor_validation ? "" : "No "} Se Aplicó Ley
+            {episodeValidation.doctor_validation == "PERTINENTE" ? "" : "No "} Se Aplicó Ley
           </span>
         </p>
 
@@ -205,6 +216,13 @@ export default function DetailedMetricEntry({
                 </div>
               </div>
             )}
+            {episodeData?.estado_del_caso === "Abierto" && episodeData?.estado_del_caso !== null && episodeValidation.chief_validation &&
+            (<button
+              className="rounded-xl px-6 py-2 mt-3 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+              onClick={handleClose}
+            >
+              Cerrar Episodio
+            </button>)}
           </>
         )}
       </div>

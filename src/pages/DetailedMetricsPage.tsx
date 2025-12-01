@@ -120,7 +120,7 @@ export default function DetailedMetricsPage() {
     try {
       await api.post(`episodes/${episodeToValidate.episode_id}/chief-validate`, validationBody);
       await api.post(`doctor-summaries`, summaryBody);
-      await api.patch(`episodes/${episodeToValidate.episode_id}`, { estado_del_caso: "Cerrado" })
+      await api.patch(`episodes/${episodeToValidate.episode_id}`, { estado_del_caso: "Cerrado" });
       window.location.reload();
     } catch (error) {
       console.log(error)
@@ -130,6 +130,15 @@ export default function DetailedMetricsPage() {
   const openValidationModal = (episode: BackendValidationByEpisode) => {
     setEpisodeToValidate(episode);
     setModalOpen(!modalOpen);
+  }
+
+  const closeEpisode = async (episodeId: number) => {
+    try {
+      await api.patch(`episodes/${episodeId}`, { estado_del_caso: "Cerrado" })
+      window.location.reload();
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   if (error) return (<><Header /> Ha ocurrido un error.</>);
@@ -154,8 +163,9 @@ export default function DetailedMetricsPage() {
         {validatedEpisodes && validatedEpisodes.length > 0 ? (
           <div className="w-full">
             <li>
-              <div className="grid grid-cols-[minmax(0,1fr)_repeat(4,minmax(0,10fr))] text-center my-2 px-4 font-semibold">
+              <div className="grid grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,10fr))] text-center my-2 px-4 font-semibold">
                 <p className="col-start-2">Paciente</p>
+                <p>Estado del Caso</p>
                 <p>Decisión Doctor</p>
                 <p>Concordancia con IA</p>
                 <p>Decisión Jefe de Turno</p>
@@ -178,6 +188,7 @@ export default function DetailedMetricsPage() {
                       isChief={isChief}
                       onToggle={() => setOpenEpisodeIndex(openEpisodeIndex === i ? null : i)}
                       onValidate={openValidationModal}
+                      handleClose={() => closeEpisode(validatedEpisode.episode_id)}
                     />
                   </li>
                 );

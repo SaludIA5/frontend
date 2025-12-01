@@ -2,64 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Episode } from "../../types/episode";
 
-interface EpisodeData {
-  id?: number;
-  patient_id?: number;
-  numero_episodio?: string;
-  fecha_estabilizacion?: Date;
-  fecha_alta?: Date;
-  validacion?: string;
-  tipo?: string;
-  tipo_alerta_ugcc?: string;
-  fecha_ingreso?: Date;
-  mes_ingreso?: number;
-  fecha_egreso?: Date;
-  mes_egreso?: number;
-  centro?: string;
-  antecedentes_cardiaco?: boolean;
-  antecedentes_diabetes?: boolean;
-  antecedentes_hipertension?: boolean;
-  triage?: string;
-  presion_sistolica?: string;
-  presion_diastolica?: string;
-  presion_media?: string;
-  temperatura_c?: string;
-  saturacion_o2?: string;
-  frecuencia_cardiaca?: string;
-  frecuencia_respiratoria?: string;
-  tipo_cama?: string;
-  glasgow_score?: string;
-  fio2?: string;
-  fio2_ge_50?: boolean;
-  ventilacion_mecanica?: boolean;
-  cirugia_realizada?: boolean;
-  cirugia_mismo_dia_ingreso?: boolean;
-  hemodinamia?: boolean;
-  hemodinamia_mismo_dia_ingreso?: boolean;
-  endoscopia?: boolean;
-  endoscopia_mismo_dia_ingreso?: boolean;
-  dialisis?: boolean;
-  trombolisis?: boolean;
-  trombolisis_mismo_dia_ingreso?: boolean;
-  pcr?: string;
-  hemoglobina?: string;
-  creatinina?: string;
-  nitrogeno_ureico?: string;
-  sodio?: string;
-  potasio?: string;
-  dreo?: boolean;
-  troponinas_alteradas?: boolean;
-  ecg_alterado?: boolean;
-  rnm_protocolo_stroke?: boolean;
-  dva?: boolean;
-  transfusiones?: boolean;
-  compromiso_conciencia?: boolean;
-  estado_del_caso?: string;
-  recomendacion_modelo?: string;
-  validacion_jefe_turno?: string;
-  diagnostics_ids?: number[];
-}
-
 interface Props {
   episode: Episode;
   isOpen: boolean;
@@ -84,40 +26,25 @@ export default function AdminEpisodeView({
   const colorInsurance =
     episode.insuranceValidation === true ? "green" :
       episode.insuranceValidation === false ? "red" : "gray";
-  const [episodeData, setEpisodeData] = useState<EpisodeData>();
   const [showMenu, setShowMenu] = useState(false);
 
-  const insuranceText =
-    episode.insuranceValidation === true
-      ? "Pertinente"
-      : episode.insuranceValidation === false
-        ? "No pertinente"
-        : "Sin respuesta";
-
   useEffect(() => {
-    const fetchEpisodeData = () => {
+    const fetchInsuranceData = () => {
       const fetchData = async () => {
         try {
-          const [episodeResponse, insuranceResponse, rutResponse] = await Promise.all([
-            api.get(`episodes/${episode.id}`),
-            api.get(`insurance/${episode.id}`),
-            api.get(`patients/${episode.patientId}`)
-          ]);
-
-          const data = episodeResponse.data || {};
-          setEpisodeData(data);
-
-          episode.insuranceValidation = insuranceResponse.data.is_pertinent;
-          episode.patientRut = rutResponse.data.rut;
-
-          onUpdateEpisode(episode);
+          const insuranceResponse = await api.get(`insurance/${episode.id}`);
+          const insuranceData = insuranceResponse.data;
+          onUpdateEpisode({
+            ...episode,
+            insuranceValidation: insuranceData.is_pertinent,
+          });
         } catch (error) {
           console.log(error);
         }
       };
       fetchData();
     };
-    fetchEpisodeData();
+    fetchInsuranceData();
   }, [episode, onUpdateEpisode]);
 
   const mapValue = (v: string): boolean | null => {
@@ -142,6 +69,21 @@ export default function AdminEpisodeView({
       });
     } catch (e) {
       console.log("Error actualizando:", e);
+    }
+  };
+
+  const onCloseEpisode = async () => {
+    const estadoDelCaso = episode.isActive ? "Cerrado" : "Abierto";
+    try {
+      await api.patch(`/episodes/${episode.id}`, {
+        estado_del_caso: estadoDelCaso,
+      });
+      onUpdateEpisode({
+        ...episode,
+        isActive: !episode.isActive,
+      });
+    } catch (error) {
+      console.log("Error cerrando episodio:", error);
     }
   };
 
@@ -187,7 +129,7 @@ export default function AdminEpisodeView({
               onClick={() => setShowMenu((prev) => !prev)}
               className={`cursor-pointer rounded-full px-3 py-1 text-sm font-semibold text-center bg-${colorInsurance}-200 text-${colorInsurance}-700`}
             >
-              {insuranceText}
+              {episode.insuranceValidation === true ? "Pertinente" : episode.insuranceValidation === false ? "No pertinente" : "Sin respuesta"}
             </span>
 
             {showMenu && (
@@ -216,9 +158,10 @@ export default function AdminEpisodeView({
         </div>
       </div>
 
-      {isOpen && episodeData && (
+      {isOpen && episode && (
+        <div>
         <div className="mt-4 pt-3 bg-gray-200 rounded-lg text-left px-6 text-gray-700 grid grid-cols-2 gap-y-1 max-h-[400px] overflow-y-auto">
-          {Object.entries(episodeData)
+          {Object.entries(episode)
             .filter(([, value]) => value !== null && value !== undefined && value !== "")
             .map(([key, value]) => (
               <p key={key}>
@@ -226,6 +169,15 @@ export default function AdminEpisodeView({
                 {typeof value === "boolean" ? (value ? "Sí" : "No") : String(value)}
               </p>
             ))}
+        </div>
+        {episode.chiefValidation && (
+          <button 
+            className="rounded-xl px-6 py-2 mt-3 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+            onClick={onCloseEpisode}
+          >
+            {episode.isActive ? "Cerrar Episodio" : "Abrir Episodio"}
+          </button>
+        )}
         </div>
       )}
     </>
