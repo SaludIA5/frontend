@@ -5,6 +5,7 @@ import AdminEpisodeView from "../components/Admin/AdminEpisodeView";
 import { useNavigate } from "react-router-dom";
 import type { Episode } from "../types/episode";
 import { normalizeEpisode } from "../utils/normalizeEpisode";
+import type { Patient } from "../types/patient";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -68,24 +69,17 @@ export default function AdminEpisodeManagerPage(){
     useEffect(() => {
         const getEpisodes = async () => {
             try {
-                const validatedEpisodes = await api.get("/episodes/?page=1&page_size=100");
+                const validatedEpisodes = await api.get("/episodes/?page=1&page_size=20");
                 const episodeData: Episode[] = validatedEpisodes.data.items;
         
                 const normalized = episodeData.map(e => normalizeEpisode(e));
         
-                const episodesWithRut = await Promise.all(
-                    normalized.map(async episode => {
-                        try {
-                            const rutRes = await api.get(`/patients/${episode.patientId}`);
-                            return { ...episode, patientRut: rutRes.data.rut };
-                        } catch {
-                            return { ...episode, patientRut: null };
-                        }
-                    })
-                );
+               const patientRuts = await api.get("/patients/");
+               const patientRutsData = patientRuts.data.items;
+               const patientRutsMap = new Map(patientRutsData.map((p: Patient) => [p.id, p.rut]));
         
-                setOpenEpisodes(episodesWithRut.filter(ep => ep.isActive));
-                setClosedEpisodes(episodesWithRut.filter(ep => !ep.isActive));
+                setOpenEpisodes(normalized.filter(ep => ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
+                setClosedEpisodes(normalized.filter(ep => !ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
             } catch (error) {
                 console.error("Error fetching episodes:", error);
                 setError(true);
@@ -140,7 +134,7 @@ export default function AdminEpisodeManagerPage(){
                 ▼
             </span>
         </div>
-        {showOpenList && (
+        {showOpenList && (filteredOpenEpisodes.length > 0 ? (
             <ul className="mx-auto max-w-5xl space-y-3">
                 <li>
                 <div className="grid grid-cols-[minmax(0,1fr)_repeat(6,minmax(0,10fr))] gap-4 items-center px-4">
@@ -168,7 +162,9 @@ export default function AdminEpisodeManagerPage(){
                 );
                 })}
             </ul>
-        )}
+        ) : (
+            <p className="text-gray-500">No hay episodios abiertos.</p>
+        ))}
     </div>
     <div className="text-center">
         <div 
@@ -180,7 +176,7 @@ export default function AdminEpisodeManagerPage(){
                 ▼
             </span>
         </div>
-        {showClosedList && (
+        {showClosedList && (filteredClosedEpisodes.length > 0 ? (
             <ul className="mx-auto max-w-5xl space-y-3">
                 <li>
                 <div className="grid grid-cols-[minmax(0,1fr)_repeat(6,minmax(0,10fr))] gap-4 items-center px-4">
@@ -209,7 +205,9 @@ export default function AdminEpisodeManagerPage(){
                 );
                 })}
             </ul>
-        )}
+        ) : (
+            <p className="text-gray-500">No hay episodios cerrados.</p>
+        ))}
     </div>
     </>
     )
