@@ -24,7 +24,7 @@ export default function AdminEpisodeView({
   const colorChief = episode.chiefValidation ? "green" : "red";
   const colorAI = episode.aiValidation == episode.doctorValidation ? "green" : "red";
   const colorInsurance =
-    episode.insuranceValidation === true ? "green" : 
+    episode.insuranceValidation === true ? "green" :
       episode.insuranceValidation === false ? "red" : "gray";
   const [showMenu, setShowMenu] = useState(false);
 
@@ -45,31 +45,31 @@ export default function AdminEpisodeView({
       fetchData();
     };
     fetchInsuranceData();
-  }, [episode.id]);
+  }, [episode, onUpdateEpisode]);
 
   const mapValue = (v: string): boolean | null => {
     if (v === "PERTINENTE") return true;
     if (v === "NO_PERTINENTE") return false;
     return null;
   };
-  
+
 
   const handleInsuranceChange = async (newValue: string) => {
     setShowMenu(false);
 
     try {
-        await api.post(`/insurance/review`, {
-          is_pertinent: mapValue(newValue),
-          episode_id: episode.id
-        });
-        
-        onUpdateEpisode({
-          ...episode,
-          insuranceValidation: mapValue(newValue),
-        });
-    } catch(e) {
+      await api.post(`/insurance/review`, {
+        is_pertinent: mapValue(newValue),
+        episode_id: episode.id
+      });
+
+      onUpdateEpisode({
+        ...episode,
+        insuranceValidation: mapValue(newValue),
+      });
+    } catch (e) {
       console.log("Error actualizando:", e);
-    }    
+    }
   };
 
   const onCloseEpisode = async () => {
