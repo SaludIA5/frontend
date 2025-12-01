@@ -8,6 +8,12 @@ type HeaderProps = {
     onLogout?: () => void
 }
 
+const api = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    withCredentials: true,
+});
+  
+
 export default function Header({ onLogout }: HeaderProps) {
     const navigate = useNavigate();
     const { logout } = useAuth();
@@ -20,7 +26,7 @@ export default function Header({ onLogout }: HeaderProps) {
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-    axios.get("/auth/me").then(res => {
+    api.get("/auth/me").then(res => {
         setIsAdmin(res.data.is_admin);
     });
     }, []);
