@@ -53,6 +53,12 @@ export default function DiagnosticsTab({ episode, setEpisode }: DiagnosticsTabPr
         return allDiagnostics.find(diagnostic => diagnostic.cie_code === code);
     }
 
+    const handleDelete = (cie_code: string) => {
+        if (!episode.diagnostics) return;
+        const newDiagnostics = episode.diagnostics.filter((diag) => diag.cie_code != cie_code);
+        setEpisode({ ...episode, diagnostics: newDiagnostics });
+    }
+
     const handleSubmitDiagnostic = () => {
         const existingDiagnostics = Array.isArray(episode.diagnostics) ? episode.diagnostics : [];
         if (!currentDiagnostic) return;
@@ -67,7 +73,17 @@ export default function DiagnosticsTab({ episode, setEpisode }: DiagnosticsTabPr
       <ul>
         {Array.isArray(episode.diagnostics) && episode.diagnostics.length > 0 ? (episode.diagnostics.map((diagnostic, i) => 
         {
-            return (<li key={i}>{diagnostic.cie_code} - {diagnostic.description}</li>)
+            return(
+            <li key={i} className="flex flex-row gap-2">
+                <div 
+                onClick={() => handleDelete(diagnostic.cie_code)}
+                className="text-red-500 hover:cursor-default"
+                >
+                    X
+                </div> 
+                {diagnostic.cie_code} - {diagnostic.description}
+            </li>
+            )
 
         })) : "No hay diagnósticos aún"} 
       </ul>

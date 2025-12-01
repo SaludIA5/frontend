@@ -7,6 +7,7 @@ import AdminPage from '../pages/AdminPage.tsx';
 import AdminEpisodeManagerPage from '../pages/AdminEpisodeManagerPage.tsx';
 import AdminDiagnosticManagerPage from '../pages/AdminDiagnosticManagerPage.tsx';
 import AdminUserManagerPage from '../pages/AdminUserManagerPage.tsx';
+import AdminModelManagerPage from '../pages/AdminModelManagerPage.tsx';
 
 function Routing() {
     return (
@@ -19,6 +20,7 @@ function Routing() {
                 <Route path='admin/episodes' element={<AdminEpisodeManagerPage />} />
                 <Route path='admin/diagnostics' element={<AdminDiagnosticManagerPage />} />
                 <Route path='admin/users' element={<AdminUserManagerPage />} />
+                <Route path='admin/models' element={<AdminModelManagerPage />} />
             </Routes>
         </AuthGuard>
     )

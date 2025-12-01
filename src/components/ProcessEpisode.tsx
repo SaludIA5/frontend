@@ -56,7 +56,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const payload = useMemo(() => ({
     id_episodio: episode.id,
     stage: "prod",
-    diagnostics_id: episode.diagnostics || null,
+    diagnostics_ids: episode.diagnostics ? episode.diagnostics.map((diagnostic) => {return diagnostic.cie_code}) : null,
     antecedentes_cardiaco: episode.cardiacHistory || null,
     antecedentes_diabetes: episode.diabetesHistory || null,
     antecedentes_hipertension: episode.hypertensionHistory || null,
@@ -225,6 +225,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
     try {
       const res = await api.patch(`/episodes/${episode.id}`, patchPayload);
       const updatedEpisodeData = res.data;
+      console.log(updatedEpisodeData);
       const normalizedUpdatedEpisode = normalizeEpisode(updatedEpisodeData);
       
       const patientIdToUse = patient.id > 0 
