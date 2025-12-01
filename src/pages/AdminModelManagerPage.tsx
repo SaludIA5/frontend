@@ -101,7 +101,7 @@ export default function AdminModelManagerPage() {
     return (
         <>
         <Header />
-        <div className="flex flex-col items-center justify-center gap-4 py-3">
+        <div className="flex items-center flex-end gap-4 py-3 px-8">
             <button 
                 onClick={() => navigate("/admin")}
                 className="rounded-xl px-6 py-2 text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
@@ -156,7 +156,7 @@ export default function AdminModelManagerPage() {
             >
                 Re-entrenar Modelo Activo
             </button>
-            <p>¡Solo presionar este botón en caso de emergencia!</p>
+            <p>¡Sólo presionar este botón en caso de emergencia!</p>
         </div>
         </>
     )

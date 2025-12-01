@@ -10,8 +10,6 @@ type Props = {
 export default function PatientControls({
     search,
     setSearch,
-    filterEligible,
-    setFilterEligible,
     sortBy,
     setSortBy
 }: Props) {
@@ -24,16 +22,6 @@ export default function PatientControls({
                 onChange={(e) => setSearch(e.target.value)}
                 className="rounded-lg bg-white p-2 w-64"
             />
-
-            <select
-                value={filterEligible}
-                onChange={(e) => setFilterEligible(e.target.value as "all" | "PERTINENTE" | "NO PERTINENTE")}
-                className="rounded-lg bg-white p-2"
-            >
-                <option value="all">Todos</option>
-                <option value="PERTINENTE">Solo aplica</option>
-                <option value="NO PERTINENTE">No aplica</option>
-            </select>
 
             <select
                 value={sortBy}
