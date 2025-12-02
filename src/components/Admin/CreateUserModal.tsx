@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { validateRUT } from "../../utils/rutValidation";
+import { validateEmail } from "../../utils/mailValidation";
 
 interface Props {
     handleClose: () => void;
@@ -25,6 +26,8 @@ export default function CreateUserModal({ handleClose, onSuccess }: Props) {
     const [isLoading, setIsLoading] = useState(false);
 
     const isRutValid = validateRUT(rut) || !rut;
+
+    const isMailValid = validateEmail(email) || !email;
 
     const handleRutChange = (value: string) => {
         let clean = value.replace(/[^0-9kK]/g, '');
@@ -61,7 +64,7 @@ export default function CreateUserModal({ handleClose, onSuccess }: Props) {
         if (e) e.preventDefault();
         setError(null);
 
-        if (!email.includes('@')) {
+        if (!isMailValid) {
             setError('Por favor ingresar un email válido');
             return;
         }
@@ -140,7 +143,7 @@ export default function CreateUserModal({ handleClose, onSuccess }: Props) {
                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${isRutValid
                                 ? "border-gray-300 focus:border-black focus:ring-blue-500"
                                 : "border-red-500 focus:border-red-500 focus:ring-red-300"
-                                }`}
+                            }`}
                             maxLength={12}
                             placeholder="12.345.678-9"
                         />
@@ -153,7 +156,10 @@ export default function CreateUserModal({ handleClose, onSuccess }: Props) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${isMailValid
+                                ? "border-gray-300 focus:border-black focus:ring-blue-500"
+                                : "border-red-500 focus:border-red-500 focus:ring-red-300"
+                            }`}
                         />
                     </div>
 

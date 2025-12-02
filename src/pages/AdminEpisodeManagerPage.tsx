@@ -12,6 +12,14 @@ const api = axios.create({
     withCredentials: true,
 });
 
+interface InsuranceInfo {
+    created_at: Date
+    episode_id: number
+    id: number
+    is_pertinent: boolean | null
+    updated_at: Date | null
+}
+
 export default function AdminEpisodeManagerPage(){
     const [isAdmin, setIsAdmin] = useState(false);
     const [error, setError] = useState(false);
@@ -69,7 +77,7 @@ export default function AdminEpisodeManagerPage(){
     useEffect(() => {
         const getEpisodes = async () => {
             try {
-                const validatedEpisodes = await api.get("/episodes/?page=1&page_size=20");
+                const validatedEpisodes = await api.get("/episodes/?page=1&page_size=100");
                 const episodeData: Episode[] = validatedEpisodes.data.items;
         
                 const normalized = episodeData.map(e => normalizeEpisode(e));
@@ -77,16 +85,16 @@ export default function AdminEpisodeManagerPage(){
                 const patientRuts = await api.get("/patients/");
                 const patientRutsData = patientRuts.data.items;
                 const patientRutsMap = new Map(patientRutsData.map((p: Patient) => [p.id, p.rut]));
+                
+                const insuranceInfo = await api.get("insurance/all");
 
-                const withInsurance = await Promise.all(
-                    normalized.map(async ep => {
-                      const ins = await api.get(`insurance/${ep.id}`);
+                const withInsurance = normalized.map(ep => {
+                      const ins = insuranceInfo.data.find((ins : InsuranceInfo) => ins.episode_id == ep.id);
                       return {
                         ...ep,
-                        insuranceValidation: ins.data.is_pertinent
+                        insuranceValidation: ins?.is_pertinent || null
                       };
-                    })
-                  );
+                    });
         
                 setOpenEpisodes(withInsurance.filter(ep => ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
                 setClosedEpisodes(withInsurance.filter(ep => !ep.isActive).map(ep => ({ ...ep, patientRut: patientRutsMap.get(ep.patientId) as string })));
