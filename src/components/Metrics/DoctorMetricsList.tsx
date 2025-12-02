@@ -7,6 +7,7 @@ interface Props {
 
 export default function DoctorMetricsList({ validations }: Props) {
   const navigate = useNavigate();
+  if (validations.length == 0) return (<div className="w-full text-center"> No hay métricas por doctor aún. </div>)
   return (
     <ul className="mx-auto max-w-5xl space-y-3">
       <li>

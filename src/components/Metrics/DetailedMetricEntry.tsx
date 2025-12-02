@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { BackendValidationByEpisode, DoctorSummary } from "../../types/metrics";
 import axios from "axios";
+import type { Diagnostic } from "../../types/patientInfo";
 
 interface EpisodeData {
   id?: number;
@@ -106,6 +107,11 @@ export default function DetailedMetricEntry({
     fetchEpisodeData();
   }, [episodeValidation]);
 
+  const displayDiagnostics = (diagnostics: Diagnostic[]) => {
+    const displayForm = diagnostics.map((diagnostic) => `${diagnostic.cie_code} - ${diagnostic.description}`);
+    return displayForm.toString();
+  }
+
   useEffect(() => {
     const fetchDoctorSummaries = async () => {
       if (!isOpen) return;
@@ -167,7 +173,7 @@ export default function DetailedMetricEntry({
         <p className="flex items-center h-8">
           {!episodeValidation.chief_validation ? (isChief ? (
             <button
-              className="rounded-xl px-6 py-1 text-sm text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
+              className="rounded-xl px-6 py-2 text-sm text-white shadow bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-hover)]"
               onClick={(e) => {
                 e.stopPropagation();
                 onValidate(episodeValidation);
@@ -197,7 +203,9 @@ export default function DetailedMetricEntry({
                 .map(([key, value]) => (
                   <p key={key}>
                     <b>{formatKey(key)}:</b>{" "}
-                    {typeof value === "boolean" ? (value ? "Sí" : "No") : String(value)}
+                    {typeof value === "boolean" ? 
+                    (value ? "Sí" : "No") : 
+                    key == "diagnostics" ? displayDiagnostics(value) : String(value)}
                   </p>
                 ))}
             </div>
@@ -232,6 +240,7 @@ export default function DetailedMetricEntry({
 
 
 function formatKey(key: string): string {
+  if (key == "diagnostics") return "Diagnósticos";
   return key
     .replace(/_/g, " ")
     .replace(/\b\w/g, (l) => l.toUpperCase());

@@ -70,7 +70,6 @@ export default function PatientManager({ onProcessEpisode, onEditPatient, onOpen
             const normalizedEpisode = normalizeEpisode(episode);
             // Preserve fields that might not be in normalizeEpisode but are in the API response
             const rawEpisode = episode as EpisodeWithPatientData & { antecedentes_cardiaco?: boolean; antecedentes_diabetes?: boolean; antecedentes_hipertension?: boolean };
-            if(episode.id == 117) console.log(rawEpisode);
             const episodeWithPatientData: EpisodeWithPatientData = {
               ...normalizedEpisode,
               patient_id: episode.patient_id,

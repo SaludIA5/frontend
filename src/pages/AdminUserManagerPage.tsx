@@ -37,7 +37,30 @@ export default function AdminUserManagerPage() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [error, setError] = useState(false);
 
+    useEffect(() => {
+        const checkPermission = async () => {
+            if (!import.meta.env.VITE_BACKEND_URL) {
+                setError(true);
+                setLoading(false);
+                return;
+            }
+            try {
+                const res = await api.get("auth/me");
+                const data = res.data;
+                setIsAdmin(data.is_admin);
+            } catch (error) {
+                console.error("Error validating administrator privileges:", error);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        }
+        checkPermission();
+    }, []);
+    
     useEffect(() => {
         fetchUsers(currentPage);
     }, [currentPage]);
@@ -102,6 +125,13 @@ export default function AdminUserManagerPage() {
         return formattedBody + "-" + dv;
     };
 
+    if (!isAdmin) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Solo el admin tiene permitido acceder a esta página </p></div></>);
+    if (loading) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+        Cargando...</p></div></>);
+    if (error) return (<><Header /> <div className="text-center py-8"><p className="text-gray-500">
+    Ha habido un error.</p></div></>);
+
     return (
         <>
             <Header />
@@ -123,13 +153,8 @@ export default function AdminUserManagerPage() {
                         Crear Usuario
                     </button>
                 </div>
-                {loading ? (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500">Cargando...</p>
-                    </div>
-                ) : (
                     <ul className="px-4 md:px-8 lg:px-16">
-                        <div className="grid grid-cols-[0.5fr_2.5fr_1.5fr_2.5fr_1fr_1fr_1fr_2fr] gap-4 px-4 py-2 font-semibold">
+                        <div className="grid grid-cols-[0.5fr_2.5fr_1.5fr_2.5fr_1fr_1fr_1fr_2fr] gap-4 px-4 py-2 font-semibold [&>p]:text-center">
                             <p>ID</p>
                             <p>Nombre</p>
                             <p>RUT</p>
@@ -145,7 +170,7 @@ export default function AdminUserManagerPage() {
                                     key={user.id}
                                     className="my-1.5 border border-gray-200 rounded-2xl shadow-sm bg-white transition-all duration-200 hover:shadow-md p-4"
                                 >
-                                    <div className="grid grid-cols-[0.5fr_2.5fr_1.5fr_2.5fr_1fr_1fr_1fr_2fr] gap-4 items-center overflow-x-auto">
+                                    <div className="grid grid-cols-[0.5fr_2.5fr_1.5fr_2.5fr_1fr_1fr_1fr_2fr] gap-4 items-center overflow-x-auto [&>p]:text-center">
                                         <p>{user.id}</p>
                                         <p className="text-ellipsis whitespace-nowrap overflow-hidden">{user.name}</p>
                                         <p>{user.is_admin ? "-" : formatRut(user.rut)}</p>
@@ -162,7 +187,8 @@ export default function AdminUserManagerPage() {
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(user.id)}
-                                                className="rounded-xl px-4 py-2 text-white shadow bg-red-500 hover:bg-red-600 text-sm"
+                                                className="rounded-xl px-4 py-2 text-white shadow bg-red-500 disabled:bg-gray-400 hover:bg-red-600 text-sm"
+                                                disabled={user.is_admin}
                                             >
                                                 Eliminar
                                             </button>
@@ -172,7 +198,6 @@ export default function AdminUserManagerPage() {
                             );
                         })}
                     </ul>
-                )}
                 {paginationMeta && paginationMeta.total_pages > 1 && (
                     <div className="flex items-center justify-center gap-2 mt-6 mb-4">
                         <button

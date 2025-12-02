@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import type { Episode } from "../../types/episode";
+import { flattenObject, type JSONValue } from "../../utils/flattenObjects";
 
 interface Props {
   episode: Episode;
@@ -65,8 +66,12 @@ export default function AdminEpisodeView({
       });
     } catch (error) {
       console.log("Error cerrando episodio:", error);
+    } finally {
+      window.location.reload();
     }
   };
+
+
 
   return (
     <>
@@ -142,14 +147,13 @@ export default function AdminEpisodeView({
       {isOpen && episode && (
         <div>
         <div className="mt-4 pt-3 bg-gray-200 rounded-lg text-left px-6 text-gray-700 grid grid-cols-2 gap-y-1 max-h-[400px] overflow-y-auto">
-          {Object.entries(episode)
-            .filter(([, value]) => value !== null && value !== undefined && value !== "")
-            .map(([key, value]) => (
-              <p key={key}>
-                <b>{formatKey(key)}:</b>{" "}
-                {typeof value === "boolean" ? (value ? "Sí" : "No") : String(value)}
-              </p>
-            ))}
+        {Object.entries(flattenObject(episode as unknown as JSONValue))
+          .map(([key, value]) => (
+            <p key={key}>
+              <b>{formatKey(key.replace(/\./g, " ").replace(/\[\d+\]/g, ""))}:</b>{" "}
+              {typeof value === "boolean" ? (value ? "Sí" : "No") : String(value)}
+            </p>
+        ))}
         </div>
         {episode.chiefValidation && (
           <button 
