@@ -33,7 +33,7 @@ export default function MetricsPage() {
             concordanceRate: doctor.concordance_rate,
             acceptanceRate: doctor.acceptance_rate
         }));
-    }
+      }
 
     useEffect(() => {
         const fetchValidationsByDoctor = async () => {
@@ -92,15 +92,15 @@ export default function MetricsPage() {
     }, [isChief, logout])
 
     if (loading) return (
-        <>
-            <Header />
-            Cargando...
-        </>)
+    <>
+        <Header />
+        Cargando...
+    </>)
     if (error) return (
-        <>
-            <Header />
-            Ha habido un error...
-        </>)
+    <>
+        <Header />
+        Ha habido un error...
+    </>)
 
     return (
         <>
