@@ -29,3 +29,6 @@ dist-ssr
 .cursor
 
 .env
+
+# Testing
+coverage
