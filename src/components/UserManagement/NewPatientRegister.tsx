@@ -3,6 +3,7 @@ import type { Patient } from "../../types/patient";
 import { usePatients } from "../../hooks/usePatients";
 import axios from 'axios';
 import { emptyEpisode } from "../../utils/emptyEpisode";
+import { validateRUT } from "../../utils/rutValidation";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -25,6 +26,8 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
     turnoB: "",
     turnoC: "",
   });
+
+  const isRutValid = validateRUT(newPatient.rut) || !newPatient.rut;
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -57,6 +60,16 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
 
   const handleSubmit = async () => {
     const age = Number(newPatient.age);
+
+    if (!isRutValid){
+      alert("Por favor ingresar RUT valido");
+      return;
+    }
+
+    if (!newPatient.rut){
+      alert("Por favor ingresar un RUT de paciente");
+      return;
+    }
 
     const doctorsPayload = Object.entries(selectedDoctors)
       .filter(([, doctorId]) => doctorId !== "")
@@ -118,15 +131,18 @@ export default function NewPatientRegister({ isOpen, onClose }: { isOpen: boolea
           }
         />
 
-        <input
-          type="text"
-          placeholder="RUT (12.345.678-9)"
-          className="w-full mb-3 rounded border border-gray-300 p-2"
-          value={newPatient.rut}
-          onChange={(e) => handleRutChange(e.target.value)}
-          maxLength={12}
-        />
+        <div className="flex flex-col gap-0">
+          <input
+            type="text"
+            placeholder="RUT (12.345.678-9)"
+            className={`w-full mb-3 rounded border p-2 focus:outline-none ${isRutValid ? "border-gray-300 focus:border-black" : "border-red-500 focus:border-red-500"}`}
+            value={newPatient.rut}
+            onChange={(e) => handleRutChange(e.target.value)}
+            maxLength={12}
+          />
 
+          {!isRutValid && (<p className="text-sm text-red-500">{"El rut es inválido"}</p>)}
+        </div>
         <p className="text-lg mt-2">Edad del paciente</p>
         <input
           type="text"

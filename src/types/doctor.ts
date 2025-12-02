@@ -7,6 +7,7 @@ export interface Doctor {
   isDoctor: boolean;
   isChiefDoctor: boolean;
   episodes?: Episode[] //Una llamada a back entrega episodios
+  turn?: string;
 }
 
 export const mockDoctors: Doctor[] = [
@@ -43,6 +44,8 @@ export const mockDoctors: Doctor[] = [
         cardiacHistory: true,
         hypertensionHistory: true,
         diabetesHistory: false,
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 102,
@@ -54,6 +57,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2025-04-12"),
         dateOfExit: new Date("2025-04-14"),
+        patientRut: "",
+        insuranceValidation: null
       },
       // Bárbara Hanna
       {
@@ -65,6 +70,8 @@ export const mockDoctors: Doctor[] = [
         medicalCenter: "Hospital Félix Bulnes",
         isActive: true,
         dateOfEntry: new Date("2025-09-25"),
+        patientRut: "",
+        insuranceValidation: null
       },
     ],
   },
@@ -85,6 +92,8 @@ export const mockDoctors: Doctor[] = [
         medicalCenter: "Hospital San Juan de Dios",
         isActive: true,
         dateOfEntry: new Date("2025-10-08"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 302,
@@ -96,6 +105,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2024-11-05"),
         dateOfExit: new Date("2024-11-20"),
+        patientRut: "",
+        insuranceValidation: null
       },
       // Felipe Navarro
       {
@@ -107,6 +118,8 @@ export const mockDoctors: Doctor[] = [
         medicalCenter: "Hospital Luis Tisné",
         isActive: true,
         dateOfEntry: new Date("2025-09-29"),
+        patientRut: "",
+        insuranceValidation: null
       },
     ],
   },
@@ -128,6 +141,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2024-09-21"),
         dateOfExit: new Date("2024-09-24"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 202,
@@ -139,6 +154,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2025-01-10"),
         dateOfExit: new Date("2025-01-15"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 303,
@@ -150,6 +167,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2023-06-10"),
         dateOfExit: new Date("2023-06-14"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 401,
@@ -160,6 +179,8 @@ export const mockDoctors: Doctor[] = [
         medicalCenter: "Clínica Santa María",
         isActive: true,
         dateOfEntry: new Date("2025-10-11"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 402,
@@ -171,6 +192,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2024-03-20"),
         dateOfExit: new Date("2024-03-27"),
+        patientRut: "",
+        insuranceValidation: null
       },
       {
         id: 502,
@@ -182,6 +205,8 @@ export const mockDoctors: Doctor[] = [
         isActive: false,
         dateOfEntry: new Date("2023-12-02"),
         dateOfExit: new Date("2023-12-09"),
+        patientRut: "",
+        insuranceValidation: null
       },
     ],
   },

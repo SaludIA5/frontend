@@ -7,11 +7,11 @@ export function normalizeEpisode(apiEp: any): Episode {
         ...base,
         id: apiEp?.id ?? base.id,
         patientId: apiEp?.patient_id ?? apiEp?.patientId ?? base.patientId,
-        aiValidation: apiEp?.aiValidation ?? (typeof apiEp?.validacion === "string" ? apiEp.validacion === "PERTINENTE" : base.aiValidation),
-        chiefValidation: apiEp?.chiefValidation ?? base.chiefValidation,
-        doctorValidation: apiEp?.doctorValidation ?? base.doctorValidation,
+        aiValidation: apiEp?.aiValidation ?? (typeof apiEp?.recomendacion_modelo === "string" ? apiEp.recomendacion_modelo === "PERTINENTE" : base.aiValidation),
+        chiefValidation: apiEp?.chiefValidation ?? (typeof apiEp?.validacion_jefe_turno === "string" ? apiEp.validacion_jefe_turno === "PERTINENTE" : base.chiefValidation),
+        doctorValidation: apiEp?.doctorValidation ?? (typeof apiEp?.validacion === "string" ? apiEp.validacion === "PERTINENTE" : base.doctorValidation),
         medicalCenter: apiEp?.medicalCenter,
-        isActive: apiEp?.isActive,
+        isActive: apiEp?.isActive ?? (apiEp?.estado_del_caso === "Cerrado" ? false : true),
         dateOfEntry: apiEp?.dateOfEntry ?? apiEp?.fecha_ingreso ?? base.dateOfEntry,
         dateOfStabilization: apiEp?.dateOfStabilization ?? base.dateOfStabilization,
         dateOfExit: apiEp?.dateOfExit ?? apiEp?.fecha_egreso ?? base.dateOfExit,
@@ -59,5 +59,11 @@ export function normalizeEpisode(apiEp: any): Episode {
             sodium: apiEp?.sodio ?? base.levels?.sodium,
         },
         wasLawApplied: apiEp?.wasLawApplied ?? base.wasLawApplied,
+        // Medical history fields
+        cardiacHistory: apiEp?.antecedentes_cardiaco ?? apiEp?.cardiacHistory ?? base.cardiacHistory,
+        diabetesHistory: apiEp?.antecedentes_diabetes ?? apiEp?.diabetesHistory ?? base.diabetesHistory,
+        hypertensionHistory: apiEp?.antecedentes_hipertension ?? apiEp?.hypertensionHistory ?? base.hypertensionHistory,
+        // Diagnostics - preserve if present in API response
+        diagnostics: apiEp?.diagnostics ?? base.diagnostics,
     };
 }

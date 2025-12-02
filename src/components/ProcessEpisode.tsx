@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { Patient } from "../types/patient";
 import type { Episode } from "../types/episode";
 import axios from 'axios';
@@ -14,6 +14,7 @@ import { emptyEpisode } from "../utils/emptyEpisode";
 import type { EpisodeWithPatientData } from "../types/patient-episode";
 import { useAuth } from "../context/AuthContextBase";
 import { normalizeEpisode } from "../utils/normalizeEpisode";
+import DiagnosticsTab from "./PatientFormTabs/DiagnosticsTab";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -39,20 +40,23 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const [isEligibleToGenerate, setIsEligibleToGenerate] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"personal" | "vitals"
-    | "medhistory" | "procedures" | "conditions" | "levels">("personal");
+    | "medhistory" | "procedures" | "conditions" | "levels" | "diagnostics">("personal");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [recommendationResult, setRecommendationResult] = useState<null | { label: string; prediction: number; probability: number }>(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  
+  const currentEpisodeIdRef = useRef<number | null>(null);
+  const wasOpenRef = useRef(false);
 
-  const { updatePatient } = usePatients();
+  const { updatePatient, updateEpisode, patientsWithEpisodes } = usePatients();
   const { user } = useAuth();
 
   const payload = useMemo(() => ({
     id_episodio: episode.id,
-    numero_episodio: "0",
-    diagnostics: null,
+    stage: "prod",
+    diagnostics_ids: episode.diagnostics ? episode.diagnostics.map((diagnostic) => {return diagnostic.cie_code}) : null,
     antecedentes_cardiaco: episode.cardiacHistory || null,
     antecedentes_diabetes: episode.diabetesHistory || null,
     antecedentes_hipertension: episode.hypertensionHistory || null,
@@ -63,7 +67,6 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
     frecuencia_respiratoria: Number(episode.patientState?.respirationRate) || null,
     glasgow_score: Number(episode.hospitalizationConditions?.glasgowScore) || null,
     hemoglobina: Number(episode.levels?.hemoglobin) || null,
-    model_type: "random_forest",
     nitrogeno_ureico: Number(episode.levels?.ureic_nitro) || null,
     pcr: Number(episode.levels?.pcr) || null,
     potasio: Number(episode.levels?.potassium) || null,
@@ -98,26 +101,69 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   }), [episode]);
 
   useEffect(() => {
+    const justOpened = isOpen && !wasOpenRef.current;
+    const episodeChanged = episodeProp && episodeProp.id !== currentEpisodeIdRef.current;
+    
     if (isOpen) {
-      setIsLoading(true);
-      if (episodeProp) {
-        const episodeData = episodeProp as EpisodeWithPatientData;
-        setPatient({
-          id: episodeData.patient_id,
-          name: episodeData.patient_name,
-          rut: episodeData.patient_rut,
-          age: episodeData.patient_age,
-        });
-        const normalized = normalizeEpisode(episodeProp);
-        setEpisode(normalized);
+      if (justOpened || episodeChanged) {
+        setIsLoading(true);
+        if (episodeProp) {
+          currentEpisodeIdRef.current = episodeProp.id;
+          
+          let latestEpisode: Episode | null = null;
+          let patientData: { id: number; name: string; rut: string; age: number } | null = null;
+          
+          for (const patient of patientsWithEpisodes) {
+            const foundEpisode = patient.episodes.find(ep => ep.id === episodeProp.id);
+            if (foundEpisode) {
+              latestEpisode = foundEpisode;
+              patientData = {
+                id: patient.id,
+                name: patient.name,
+                rut: patient.rut,
+                age: patient.age,
+              };
+              break;
+            }
+          }
+          
+          const episodeToUse = latestEpisode || episodeProp;
+          const episodeData = episodeToUse as EpisodeWithPatientData;
+          
+          if (patientData) {
+            setPatient({
+              id: patientData.id,
+              name: patientData.name,
+              rut: patientData.rut,
+              age: patientData.age,
+            });
+          } else {
+            setPatient({
+              id: episodeData.patient_id || episodeData.patientId || episodeToUse.patientId || -1,
+              name: episodeData.patient_name || "",
+              rut: episodeData.patient_rut || "",
+              age: episodeData.patient_age || 0,
+            });
+          }
+          
+          if (latestEpisode) {
+            setEpisode(latestEpisode);
+          } else {
+            const normalized = normalizeEpisode(episodeProp);
+            setEpisode(normalized);
+          }
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
+      wasOpenRef.current = true;
     } else {
       setEpisode(emptyEpisode);
       setIsEditing(false);
       setPatient({ id: -1, name: "", rut: "", age: 0 });
+      currentEpisodeIdRef.current = null;
+      wasOpenRef.current = false;
     }
-  }, [episodeProp, isOpen]);
+  }, [episodeProp, isOpen, patientsWithEpisodes]);
 
   useEffect(() => {
     const filledFields = Object.values(payload).filter(
@@ -130,7 +176,9 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
   const handleSave = async () => {
     if (!patient) return;
 
+    const diagnosticsIds = episode.diagnostics?.map((diagnostic) => diagnostic.id);
     const patchPayload = {
+      diagnostics_ids: diagnosticsIds,
       antecedentes_cardiaco: episode.cardiacHistory,
       antecedentes_diabetes: episode.diabetesHistory,
       antecedentes_hipertension: episode.hypertensionHistory,
@@ -176,7 +224,30 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
     try {
       const res = await api.patch(`/episodes/${episode.id}`, patchPayload);
-      updatePatient(patient.id, { ...patient, openEpisode: res.data });
+      const updatedEpisodeData = res.data;
+      const normalizedUpdatedEpisode = normalizeEpisode(updatedEpisodeData);
+      
+      const patientIdToUse = patient.id > 0 
+        ? patient.id 
+        : (normalizedUpdatedEpisode.patientId || episode.patientId || (updatedEpisodeData as EpisodeWithPatientData)?.patient_id) || -1;
+      
+      const mergedEpisode: Episode = {
+        ...normalizedUpdatedEpisode,
+        id: episode.id,
+        patientId: patientIdToUse,
+        diagnostics: episode.diagnostics ?? normalizedUpdatedEpisode.diagnostics,
+        cardiacHistory: episode.cardiacHistory ?? normalizedUpdatedEpisode.cardiacHistory,
+        diabetesHistory: episode.diabetesHistory ?? normalizedUpdatedEpisode.diabetesHistory,
+        hypertensionHistory: episode.hypertensionHistory ?? normalizedUpdatedEpisode.hypertensionHistory,
+      };
+      
+      if (patientIdToUse > 0 && episode.id > 0) {
+        updateEpisode(patientIdToUse, episode.id, mergedEpisode);
+      }
+      setEpisode(mergedEpisode);
+      if (patient.id > 0) {
+        updatePatient(patient.id, { ...patient, openEpisode: updatedEpisodeData });
+      }
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating episode:", error);
@@ -190,7 +261,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
   const handleGenerateRecommendation = async () => {
     try {
-      const res = await api.post("/predictions", payload);
+      const res = await api.post("/ml-model/inference", payload);
       const { prediction } = res.data;
 
       setRecommendationResult(res.data);
@@ -229,7 +300,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-      <div className="bg-white rounded-2xl shadow-lg text-black max-h-screen flex flex-col w-[40rem] min-h-[32rem]">
+      <div className="bg-white rounded-2xl shadow-lg text-black max-h-screen flex flex-col w-[48rem] min-h-[32rem]">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" onClick={onClose} className="hover:cursor-pointer self-end mx-3 my-2">
           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
         </svg>
@@ -241,6 +312,7 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Procedimientos" code="procedures" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Condiciones Hospitalización" code="conditions" />
           <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Niveles" code="levels" />
+          <TabButton activeTab={activeTab} setActiveTab={handleTabChange} label="Diagnósticos" code="diagnostics" />
         </div>
 
         {/* Form content */}
@@ -258,8 +330,12 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
               <ProceduresTab episode={episode} setEpisode={setEpisode} />
             ) : activeTab === "conditions" ? (
               <ConditionsTab episode={episode} setEpisode={setEpisode} />
-            ) : (
+            ) : activeTab === "diagnostics" ? (
+              <DiagnosticsTab episode={episode} setEpisode={setEpisode} />
+            ) : activeTab === "levels" ? (
               <LevelsTab episode={episode} setEpisode={setEpisode} />
+            ) : (
+              <div>Error: Pestaña no encontrada</div>
             )}
           </fieldset>
         </div>
@@ -313,13 +389,13 @@ export default function ProcessEpisode({ isOpen, onClose, episode: episodeProp }
               className="rounded-xl bg-green-600 hover:bg-green-700 px-4 py-2 text-sm text-white"
               onClick={() => handleValidateDecision("PERTINENTE")}
             >
-              Validar
+              Aplicar Ley de Urgencia
             </button>
             <button
               className="rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2 text-sm text-white"
               onClick={() => handleValidateDecision("NO PERTINENTE")}
             >
-              Descartar
+              No Aplicar Ley de Urgencia
             </button>
           </div>
           <p className="pt-5 italic text-xs">Esta recomendación es generada con IA, por lo que se recomienda su revisión.</p>

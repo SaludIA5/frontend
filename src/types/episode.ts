@@ -1,11 +1,13 @@
-import type { BloodPressure, Procedures, HospitalizationConditions, PatientState, Levels } from "./patientInfo"
+import type { BloodPressure, Procedures, HospitalizationConditions, PatientState, Levels, Diagnostic } from "./patientInfo"
 
 export interface Episode {
     id: number
     patientId: number
+    patientRut: string
     aiValidation?: boolean
     chiefValidation?: boolean
     doctorValidation?: boolean
+    insuranceValidation: boolean | null
     medicalCenter?: string
     isActive?: boolean
     // Fechas
@@ -21,6 +23,7 @@ export interface Episode {
     hypertensionHistory?: boolean
     proceduresDone?: Procedures
     hospitalizationConditions?: HospitalizationConditions
+    diagnostics?: Diagnostic[]
     levels?: Levels
     wasLawApplied?: boolean
 }

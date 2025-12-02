@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Patient } from '../../types/patient';
 import axios from 'axios';
 import { usePatients } from '../../hooks/usePatients';
+import { validateRUT } from '../../utils/rutValidation';
 
 interface EditPatientModalProps {
     isOpen: boolean;
@@ -17,12 +18,15 @@ const api = axios.create({
 export default function EditPatientModal({ isOpen, onClose, patient: patientProp }: EditPatientModalProps) {
     const [name, setName] = useState('');
     const [rut, setRut] = useState('');
+
+    const isRutValid = validateRUT(rut) || rut.length == 0;
+    
     const { updatePatient } = usePatients();
 
     useEffect(() => {
         if (patientProp) {
             setName(patientProp.name);
-            setRut(patientProp.rut);
+            setRut((patientProp.rut));
         }
     }, [patientProp]);
 
@@ -39,6 +43,16 @@ export default function EditPatientModal({ isOpen, onClose, patient: patientProp
 
     const handleSave = async () => {
         if (!patientProp) return;
+        
+        if (!isRutValid){
+            alert("Por favor ingresar RUT valido");
+            return;
+        }
+      
+        if (!rut){
+            alert("Por favor ingresar un RUT de paciente");
+            return;
+        }
         try {
             const res = await api.patch(`/patients/${patientProp.id}`, {
                 name: name,
@@ -67,11 +81,12 @@ export default function EditPatientModal({ isOpen, onClose, patient: patientProp
                 <input
                     type="text"
                     placeholder="RUT"
-                    className="w-full mb-3 rounded border border-gray-300 p-2"
+                    className={`w-full mb-3 rounded border focus:outline-none p-2 ${isRutValid ? "border-gray-300 focus:border-black" : "border-red-500 focus:border-red-500"}`}
                     value={rut}
                     onChange={(e) => handleRutChange(e.target.value)}
                     maxLength={12}
                 />
+                {!isRutValid && (<p className="text-sm text-red-500">{"El rut es inválido"}</p>)}
                 <div className="flex justify-end space-x-3">
                     <button
                         className="rounded-xl bg-gray-300 px-4 py-2 hover:bg-gray-400"

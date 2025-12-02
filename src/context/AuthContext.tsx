@@ -61,7 +61,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string) => {
         const url = baseURL ? `${baseURL}/auth/login` : '/auth/login';
-        const res = await axios.post(url, { email, password }, { withCredentials: true });
+        const res = await axios.post(url, { email, password }, {
+            withCredentials: true,
+            headers: {
+                Authorization: undefined
+            }
+        });
         const data = res.data as {
             access_token: string;
             token_type: string;
@@ -98,7 +103,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         setToken(null);
         setUser(null);
+        localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(USER_KEY);
+        delete axios.defaults.headers.common.Authorization;
     };
 
     const value = useMemo<AuthContextValue>(() => ({

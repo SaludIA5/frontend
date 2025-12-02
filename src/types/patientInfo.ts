@@ -45,3 +45,9 @@ export interface Levels {
     potassium: string | number | readonly string[] | undefined
     pcr: string | number | readonly string[] | undefined
 }
+
+export interface Diagnostic {
+    id: number
+    cie_code: string
+    description: string
+}
